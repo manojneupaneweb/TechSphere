@@ -1,5 +1,5 @@
 import { app } from "./app.js";
-import ConnectDB from "./DataBase/Connect.js";
+import ConnectDB from './Config/Connect.js';
 const port = process.env.PORT
 
 ConnectDB().then(() => {
