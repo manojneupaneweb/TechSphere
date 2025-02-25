@@ -1,15 +1,15 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../Config/Connect.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../Config/Connect.js';
 
-const User = sequelize.define('User', {
+const User = sequelize.define('users', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    name: {
+    fullName: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -22,27 +22,40 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    wishlist: {
+        type: DataTypes.JSON,
+        defaultValue: []
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
     role: {
         type: DataTypes.ENUM('user', 'admin'),
         defaultValue: 'user'
+    },
+    // profilePicture: {
+    //     type: DataTypes.STRING,
+    //     defaultValue: 'default_profile_picture.jpg'
+    // },
+    resetToken: {
+        type: DataTypes.STRING
     }
 }, {
     timestamps: true
 });
 
 // Hash password before saving
-User.beforeCreate(async (user) => {
-    user.password = await bcrypt.hash(user.password, 10);
+User.beforeSave(async (user) => {
+    if (user.isNewRecord || user.changed('password')) {
+        user.password = await bcrypt.hash(user.password, 10);
+    }
 });
-
-// Add instance methods
-User.prototype.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password);
-};
 
 User.prototype.generateAccessToken = function () {
     return jwt.sign(
-        { id: this.id, email: this.email, name: this.name },
+        { id: this.id, email: this.email, fullName: this.fullName },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
     );

@@ -12,7 +12,6 @@ import Tablets from './pages/Tablets';
 import Smartphones from './pages/Smartphones';
 import Carts from './pages/Carts';
 
-
 //Admin panel 
 import AdminLayout from './Admin/AdminLayout';
 import Dashboard from './Admin/Dashboard';
@@ -20,6 +19,17 @@ import Users from './Admin/Users';
 import Products from './Admin/Products';
 import Orders from './Admin/Orders';
 import Settings from './Admin/Settings';
+
+// Auth Routes
+import Signup from './pages/AuthPage/Signup';
+import Login from './pages/AuthPage/Login';
+
+
+      {/* API Calls */}
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:3000'; 
+
 
 const App = () => {
   return (
@@ -29,14 +39,14 @@ const App = () => {
         <div>
           <Header />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/smartphones" element={<Smartphones />} />
-            <Route path="/laptops" element={<Laptops />} />
-            <Route path="/accessories" element={<Accessories />} />
-            <Route path="/smartwatches" element={<Smartwatches />} />
-            <Route path="/tablets" element={<Tablets />} />
-            <Route path="/carts" element={<Carts />} />
+            <Route path="" element={<Home />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="smartphones" element={<Smartphones />} />
+            <Route path="laptops" element={<Laptops />} />
+            <Route path="accessories" element={<Accessories />} />
+            <Route path="smartwatches" element={<Smartwatches />} />
+            <Route path="tablets" element={<Tablets />} />
+            <Route path="carts" element={<Carts />} />
           </Routes>
           <Footer />
         </div>
@@ -50,6 +60,14 @@ const App = () => {
         <Route path="/admin/orders" element={<Orders />} />
         <Route path="/admin/settings" element={<Settings />} />
       </Route>
+
+
+      {/* Auth Routes without Header and Footer */}
+      <Route path="/auth">
+        <Route path="signup" element={<Signup />} />
+        <Route path="login" element={<Login />} />
+      </Route>
+
 
 
 
