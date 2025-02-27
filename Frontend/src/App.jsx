@@ -32,6 +32,7 @@ import UserManagement from './pages/Admin/User-management';
 import { Settings } from 'lucide-react';
 import Analytics from './pages/Admin/Analytics';
 import Marketing from './pages/Admin/Marketing';
+import Reports from './pages/Admin/Reports';
 
 axios.defaults.baseURL = 'http://localhost:3000';
 
@@ -64,6 +65,7 @@ const App = () => {
           <Route path="orders" element={<Orders />} />
           <Route path="customers" element={<Customers />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="reports" element={<Reports />} />
           <Route path="marketing" element={<Marketing />} />
           <Route path="settings" element={<Settings />} />
           <Route path="user-management" element={<UserManagement />} />
