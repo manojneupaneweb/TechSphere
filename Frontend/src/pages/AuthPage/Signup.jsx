@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -29,7 +31,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const form = new FormData();
     form.append("fullName", formData.fullName);
     form.append("email", formData.email);
@@ -39,40 +41,35 @@ const Signup = () => {
       form.append("profilePicture", formData.profilePicture);
     }
     console.log(formData.profilePicture);
-    
-  
+
+
     try {
       setLoading(true);
-      await axios.post("http://localhost:3000/api/v1/user/registeruser", form, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await axios.post("http://localhost:3000/api/v1/user/registeruser", form, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      
-      
       console.log(response.data);
       setNotification({ message: "Registration Successful!", type: "success" });
-  
+      navigate('/auth/login');
       setLoading(false);
     } catch (error) {
       console.error("Error registering user:", error);
       setNotification({ message: "Error registering user!", type: "error" });
-  
+
       setLoading(false);
     }
   };
-  
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       {/* Notification */}
       {notification.message && (
         <div
-          className={`fixed top-5 right-5 p-3 rounded-lg text-white transition-all duration-300 ${
-            notification.type === "success"
-              ? "bg-green-500"
-              : "bg-red-500"
-          }`}
+          className={`fixed top-5 right-5 p-3 rounded-lg text-white transition-all duration-300 ${notification.type === "success"
+            ? "bg-green-500"
+            : "bg-red-500"
+            }`}
           style={{
             width: notification.message.length > 20 ? "300px" : "200px",
           }}

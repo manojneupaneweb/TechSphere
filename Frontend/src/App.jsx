@@ -12,23 +12,28 @@ import Tablets from './pages/Tablets';
 import Smartphones from './pages/Smartphones';
 import Carts from './pages/Carts';
 
-//Admin panel 
-import AdminLayout from './Admin/AdminLayout';
-import Dashboard from './Admin/Dashboard';
-import Users from './Admin/Users';
-import Products from './Admin/Products';
-import Orders from './Admin/Orders';
-import Settings from './Admin/Settings';
-
 // Auth Routes
 import Signup from './pages/AuthPage/Signup';
 import Login from './pages/AuthPage/Login';
 
 
-      {/* API Calls */}
+{/* API Calls */ }
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:3000'; 
+
+// Admin Panel
+import AdminLayout from './pages/Admin/AdminLayout';
+import Dashboard from './pages/Admin/Dashboard';
+import AddProduct from './pages/Admin/AddProduct';
+import Orders from './pages/Admin/Ordres';
+import Customers from './pages/Admin/Customers';
+import HelpSupport from './pages/Admin/Help-support';
+import UserManagement from './pages/Admin/User-management';
+import { Settings } from 'lucide-react';
+import Analytics from './pages/Admin/Analytics';
+import Marketing from './pages/Admin/Marketing';
+
+axios.defaults.baseURL = 'http://localhost:3000';
 
 
 const App = () => {
@@ -53,25 +58,30 @@ const App = () => {
       } />
 
       {/* Admin Routes without Header and Footer */}
-      <Route path="/admin" element={<AdminLayout />} >
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/users" element={<Users />} />
-        <Route path="/admin/products" element={<Products />} />
-        <Route path="/admin/orders" element={<Orders />} />
-        <Route path="/admin/settings" element={<Settings />} />
-      </Route>
+      <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="add-product" element={<AddProduct />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="marketing" element={<Marketing />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="user-management" element={<UserManagement />} />
+          <Route path="help-&-support" element={<HelpSupport />} />
+          {/* Add more nested routes here */}
+        </Route>
 
 
-      {/* Auth Routes without Header and Footer */}
-      <Route path="/auth">
-        <Route path="signup" element={<Signup />} />
-        <Route path="login" element={<Login />} />
-      </Route>
+{/* Auth Routes without Header and Footer */ }
+< Route path="/auth" >
+  <Route path="signup" element={<Signup />} />
+  <Route path="login" element={<Login />} />
+</Route >
 
 
 
 
-    </Routes>
+    </Routes >
   );
 };
 

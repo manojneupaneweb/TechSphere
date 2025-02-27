@@ -35,11 +35,11 @@ const User = sequelize.define('users', {
         type: DataTypes.ENUM('user', 'admin'),
         defaultValue: 'user'
     },
-    // profilePicture: {
-    //     type: DataTypes.STRING,
-    //     defaultValue: 'default_profile_picture.jpg'
-    // },
-    resetToken: {
+    profilePicture: {
+        type: DataTypes.STRING,
+        defaultValue: 'default_profile_picture.jpg'
+    },
+    refreshToken: {
         type: DataTypes.STRING
     }
 }, {
