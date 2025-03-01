@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Menu, Search, Bell, Moon, User } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
+import Logo from '../../assets/image/favicon.png'
 
 const AdminLayout = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -11,7 +12,8 @@ const AdminLayout = ({ children }) => {
         <div className={`${darkMode ? "dark" : ""} flex h-screen overflow-hidden`}>
             {/* Sidebar */}
             <aside className={`bg-gray-900 text-white p-5 w-64 transition-all ${isSidebarOpen ? "block" : "hidden"} md:block`}>
-                <h2 className="text-2xl font-bold mb-6">Admin Panel</h2>
+
+                <a href="/" className=" flex justify-center"><img src={Logo} alt="" className="w-40 h-14" /> </a>
                 <nav className="space-y-4">
                     {[
                         "Dashboard",
@@ -25,7 +27,7 @@ const AdminLayout = ({ children }) => {
                         "User Management",
                         "Help & Support",
                     ].map((link) => (
-                        <Link key={link} to={`/admin/${link.toLowerCase().replace(/ /g, "-")}`} className="block px-3 py-2 rounded hover:bg-gray-700">
+                        <Link key={link} to={`/admin/${link.toLowerCase().replace(/ /g, "-")}`} className="block mt-5 px-3 py-2 rounded hover:bg-gray-700">
                             {link}
                         </Link>
                     ))}
@@ -33,7 +35,7 @@ const AdminLayout = ({ children }) => {
             </aside>
 
             {/* Main Section */}
-            <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="flex flex-col flex-1 ">
                 {/* Navbar */}
                 <header className="bg-white dark:bg-gray-800 flex justify-between items-center p-4 shadow-md">
                     <div className="flex items-center gap-4">
@@ -80,7 +82,7 @@ const AdminLayout = ({ children }) => {
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1 p-6 bg-gray-100">
+                <main className="flex-1 p-6 bg-gray-100 overflow-y-scroll">
                     <Outlet />
                 </main>
             </div>

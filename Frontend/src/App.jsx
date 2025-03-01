@@ -33,6 +33,8 @@ import { Settings } from 'lucide-react';
 import Analytics from './pages/Admin/Analytics';
 import Marketing from './pages/Admin/Marketing';
 import Reports from './pages/Admin/Reports';
+import ProductDetails from './pages/ProductDetails';
+import ProductShow from './pages/ProductShow';
 
 axios.defaults.baseURL = 'http://localhost:3000';
 
@@ -53,6 +55,9 @@ const App = () => {
             <Route path="smartwatches" element={<Smartwatches />} />
             <Route path="tablets" element={<Tablets />} />
             <Route path="carts" element={<Carts />} />
+            <Route path="/product/product.title" element={<ProductDetails />} />
+            <Route path="/productshow" element={<ProductShow />} />
+            
           </Routes>
           <Footer />
         </div>

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-react"; // Importing icons for arrows
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Link } from "lucide-react"; // Importing icons for arrows
+import { FaMobileAlt, FaClock, FaHeadphonesAlt, FaBatteryFull, FaShieldAlt, FaPlug, FaLaptop } from 'react-icons/fa';
 import laptops from "../assets/image/laptops.jpeg";
 import laptops2 from "../assets/image/laptops-slide2.jpeg";
 import laptops3 from "../assets/image/laptops3.jpg";
@@ -31,7 +32,7 @@ const HeroSection = () => {
 
   return (
     <section
-      className="relative h-[80vh] flex items-center justify-center text-white transition-all duration-700 -z-10"
+      className="relative h-[70vh]  flex items-center justify-center text-white transition-all duration-700 -z-10"
       style={{
         backgroundImage: `url(${images[currentIndex]})`,
         backgroundSize: "cover",
@@ -79,58 +80,39 @@ const HeroSection = () => {
 
 const NewlyLaunchedProducts = () => {
   const products = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/300",
-      title: "UltraBook Pro X",
-      description: "The thinnest and lightest laptop with unmatched performance.",
-      link: "#",
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/300",
-      title: "Quantum Phone Z",
-      description: "A revolutionary smartphone with AI-powered features.",
-      link: "#",
-    },
-    {
-      id: 3,
-      image: "https://via.placeholder.com/300",
-      title: "Nova Watch 3",
-      description: "A smartwatch with advanced health monitoring and fitness tracking.",
-      link: "#",
-    },
-    {
-      id: 4,
-      image: "https://via.placeholder.com/300",
-      title: "PixelPad Pro",
-      description: "A high-performance tablet for work and entertainment.",
-      link: "#",
-    },
+    { id: 1, image: "https://via.placeholder.com/300", title: "UltraBook Pro X", description: "Thin, light, and powerful.", link: "#" },
+    { id: 2, image: "https://via.placeholder.com/300", title: "Quantum Phone Z", description: "AI-powered smartphone.", link: "#" },
+    { id: 3, image: "https://via.placeholder.com/300", title: "Nova Watch 3", description: "Advanced health monitoring.", link: "#" },
+    { id: 4, image: "https://via.placeholder.com/300", title: "PixelPad Pro", description: "High-performance tablet.", link: "#" },
+    { id: 5, image: "https://via.placeholder.com/300", title: "EcoBuds Wireless", description: "Crystal-clear audio.", link: "#" },
+    { id: 6, image: "https://via.placeholder.com/300", title: "Smart Home Hub", description: "Voice-controlled home automation.", link: "#" },
+    { id: 7, image: "https://via.placeholder.com/300", title: "VR Vision X", description: "Next-gen VR experience.", link: "#" },
+    { id: 8, image: "https://via.placeholder.com/300", title: "Gaming Beast 5", description: "Ultimate gaming PC.", link: "#" },
+    { id: 9, image: "https://via.placeholder.com/300", title: "Drone AirMax", description: "High-speed drone.", link: "#" },
+    { id: 10, image: "https://via.placeholder.com/300", title: "AutoBot Car AI", description: "Self-driving car assistant.", link: "#" },
   ];
+
+  const scrollRef = useRef(null);
 
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-6">
         <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:scale-105 transition-all"
-            >
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-56 object-cover"
-              />
+
+        {/* Horizontal Scroll Section */}
+        <div
+          ref={scrollRef}
+          className="flex space-x-4 overflow-x-scroll  scroll-smooth  p-2"
+        >
+          {products.slice(0, 10).map((product) => (
+            <div key={product.id} className="min-w-[250px] snap-start bg-white shadow-lg rounded-lg overflow-hidden">
+              <img src={product.image} alt={product.title} className="w-full h-56 object-cover" />
               <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">{product.title}</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  <a href={`/product/${product.title}`}>{product.title}</a>
+                </h3>
                 <p className="text-gray-700 mb-4">{product.description}</p>
-                <a
-                  href={product.link}
-                  className="text-blue-600 hover:text-blue-800 font-semibold"
-                >
+                <a href={product.link} className="text-blue-600 hover:text-blue-800 font-semibold">
                   Learn More
                 </a>
               </div>
@@ -141,6 +123,7 @@ const NewlyLaunchedProducts = () => {
     </section>
   );
 };
+
 
 const ShopByBrand = () => (
   <section className="py-16 bg-gray-100">
@@ -376,10 +359,151 @@ const NewsletterSection = () => (
   </section>
 );
 
+
+
+
+const ShopByCategory = () => {
+  const scrollContainerRef = useRef();
+
+  // Scroll by one element (right or left)
+  const scrollRight = () => {
+    scrollContainerRef.current.scrollBy({ left: 250, behavior: 'smooth' });
+  };
+
+  const scrollLeft = () => {
+    scrollContainerRef.current.scrollBy({ left: -250, behavior: 'smooth' });
+  };
+
+  return (
+    <section className="bg-gray-100 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">Shop by Category</h2>
+
+        <div className="relative">
+          {/* Left Arrow Button */}
+          <button 
+            onClick={scrollLeft} 
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow-md"
+          >
+            &#8592;
+          </button>
+
+          {/* Category Grid */}
+          <div 
+            ref={scrollContainerRef} 
+            className="flex overflow-x-auto space-x-8 py-4 scrollbar-hide"
+          >
+            {/* Smartphones Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-blue-500 mb-4">
+                <FaMobileAlt />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Smartphones</h3>
+              <p className="text-gray-600 mb-4">Explore the latest smartphones from top brands.</p>
+              <a href="/smartphones" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+
+            {/* Smartwatches Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-gray-700 mb-4">
+                <FaClock />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Smartwatches</h3>
+              <p className="text-gray-600 mb-4">Track your fitness and style with the latest smartwatches.</p>
+              <a href="/smartwatches" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+
+            {/* Headphones Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-purple-600 mb-4">
+                <FaHeadphonesAlt />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Headphones</h3>
+              <p className="text-gray-600 mb-4">Discover high-quality headphones for every taste.</p>
+              <a href="/headphones" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+
+            {/* Power Banks Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-green-500 mb-4">
+                <FaBatteryFull />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Power Banks</h3>
+              <p className="text-gray-600 mb-4">Stay powered up with the latest power banks.</p>
+              <a href="/powerbanks" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+
+            {/* Screen Protectors Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-yellow-500 mb-4">
+                <FaShieldAlt />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Screen Protectors</h3>
+              <p className="text-gray-600 mb-4">Protect your devices with durable screen protectors.</p>
+              <a href="/screen-protectors" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+
+            {/* Chargers Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-orange-600 mb-4">
+                <FaPlug />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Chargers</h3>
+              <p className="text-gray-600 mb-4">Find fast and reliable chargers for all your devices.</p>
+              <a href="/chargers" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+
+            {/* Cases Category */}
+            <div className="bg-white p-6 shadow-lg rounded-lg text-center min-w-[200px]">
+              <div className="text-4xl text-gray-800 mb-4">
+                <FaLaptop />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Cases</h3>
+              <p className="text-gray-600 mb-4">Protect your devices with stylish and durable cases.</p>
+              <a href="/cases" className="text-red-700 font-bold hover:underline">
+                View All
+              </a>
+            </div>
+          </div>
+
+          {/* Right Arrow Button */}
+          <button 
+            onClick={scrollRight} 
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow-md"
+          >
+            &#8594;
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
+
+
+
+
+
+
+
 const Home = () => (
   <>
     <HeroSection />
     <NewlyLaunchedProducts/>
+    <ShopByCategory/>
     <ShopByBrand />
    <Product/>
     <Testimonials />
