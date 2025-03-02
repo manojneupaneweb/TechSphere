@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../Config/Connect.js';
+import { Wishlist } from './Others.model.js';
 
 const User = sequelize.define('users', {
     id: {
@@ -24,7 +25,10 @@ const User = sequelize.define('users', {
     },
     wishlist: {
         type: DataTypes.JSON,
-        defaultValue: []
+        references:{
+            model: Wishlist,
+            key: 'id'
+        }
     },
     phone: {
         type: DataTypes.STRING,
@@ -40,7 +44,7 @@ const User = sequelize.define('users', {
         defaultValue: 'default_profile_picture.jpg'
     },
     refreshToken: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT
     }
 }, {
     timestamps: true

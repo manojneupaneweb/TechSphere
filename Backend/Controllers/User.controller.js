@@ -7,19 +7,19 @@ import { Option } from "../Utils/option.util.js";
 import bcrypt from "bcrypt";
 
 
-const generateAccessRefreshToken = async (userId) => {  
-  const user = await User.findByPk(userId);  
-  if (!user) {  
-    throw new ApiError(404, "User not found");  
-  }  
+const generateAccessRefreshToken = async (userId) => {
+  const user = await User.findByPk(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
 
   const accessToken = await user.generateAccessToken();
-  const refreshToken = await user.generateRefreshToken(); 
+  const refreshToken = await user.generateRefreshToken();
 
-  await user.update({ refreshToken });  
+  await user.update({ refreshToken });
 
-  return { accessToken, refreshToken };  
-};  
+  return { accessToken, refreshToken };
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -41,7 +41,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     const newUser = await User.create({
       fullName,
       email,
@@ -77,7 +77,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
-  } 
+  }
 
   const { accessToken, refreshToken } = await generateAccessRefreshToken(user.id);
 
@@ -96,4 +96,60 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
 });
 
-export { registerUser, loginUser };
+const logOutUser = asyncHandler(async (req, res, next) => {
+  try {
+    res.clearCookie("accessToken", Option);
+    res.clearCookie("refreshToken", Option);
+    return res.status(200).json(new ApiResponse(200, { message: "User logged out successfully" }));
+  } catch (error) {
+    console.error("Error during user logout:", error);
+    next(error);
+  }
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  await user.destroy();
+  res.status(200).json(new ApiResponse(200, "User deleted successfully"));
+});
+
+const getUserProfile = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "User profile fetched successfully", user));
+});
+
+const changePassword = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) {
+    throw new ApiError(400, "Old password is incorrect");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+  await user.save();
+
+  res.status(200).json(new ApiResponse(200, "Password updated successfully"));
+});
+
+
+export { registerUser, loginUser, logOutUser ,deleteUser, getUserProfile, changePassword };
