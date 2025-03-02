@@ -1,131 +1,104 @@
-import React, { useState } from 'react';
-import { FaStar } from 'react-icons/fa';
+import React, { useState } from "react";
+import { useParams, Link } from "react-router-dom";
 
-const KeySpecification = {
-    Model: "iPad Pro 11-Inch 256GB",
-    Display: "11-inch Ultra Retina XDR OLED display with a resolution of 2420 x 1668 pixels at 264 ppi, supporting ProMotion technology with adaptive refresh rates from 10Hz to 120Hz",
-    CPU: "Apple M4 chip with a 9-core CPU (3 performance cores and 6 efficiency cores) and a 10-core GPU.",
-    RAM: "8GB",
-    Storage: "256GB",
-    Battery: "Li-Po 8160 mAh",
-};
+const ProductDetails = [
+    {
+        id: 1,
+        name: "iPhone 12 Pro Max",
+        price: 12000,
+        description: "A powerful smartphone with a new chipset",
+        image: "https://sabkophone.com/wp-content/uploads/2024/01/iphone-12-pro-max-pacific-blue-sabko-phone-768x768.jpg",
+        rating: 4.5,
+        reviewCount: 1000,
+    },
+    {
+        id: 2,
+        name: "Samsung Galaxy S21 Ultra",
+        price: 11000,
+        description: "A powerful smartphone with a new chipset",
+        image: "https://images.samsung.com/is/image/samsung/p6pim/africa_en/sm-g998bzsgxfe/gallery/africa-en-galaxy-s21-ultra-5g-g988-371048-sm-g998bzsgxfe-414591354?$624_624_PNG$",
+        rating: 4.2,
+        reviewCount: 2000,
+    },
+    {
+        id: 3,
+        name: "Google Pixel 5",
+        price: 90000,
+        description: "A powerful smartphone with a new chipset",
+        image: "https://i5.walmartimages.com/seo/Google-Pixel-5-128GB-8GB-Dual-SIM-Factory-Unlocked-6-in-5G-Phone-Sorta-Sage_4ed3d808-90b3-4e90-9b97-641accca8565.c8ef3aed7d37bfd736c30089a9d9f491.jpeg",
+        rating: 4.3,
+        reviewCount: 3000,
+    },
+];
 
 function ProductShow() {
-    const [activeTab, setActiveTab] = useState("Specifications");
+    const { catagory, brandname } = useParams();
+    const [minPrice, setMinPrice] = useState(1000);
+    const [maxPrice, setMaxPrice] = useState(100000);
 
     return (
-        <>
-        <div className="max-w-screen-xl mx-auto px-6 py-10 sm:px-12 md:px-16">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-10">
-                {/* Image Section */}
-                <div className="h-full">
-                    <img
-                        src="https://itti.com.np/_next/image?url=https%3A%2F%2Fadmin.itti.com.np%2Fstorage%2Fproduct%2Fapple-ipad-pro-11-inch-256gb-wifi-2024-m4%2Fdfe0399c-83c6-4ce3-9144-94970f4bdc20.webp&w=1920&q=75" 
-                        alt="iPad Pro"
-                        className="w-full h-96 object-cover rounded-lg shadow-lg"
-                    />
-                </div>
-
-                {/* Product Details Section */}
-                <div className="w-full md:w-1/2 px-4 md:px-10">
-                    <h1 className="text-3xl font-semibold text-gray-800">Apple | iPad Pro 11-Inch 256GB WiFi 2024 - M4</h1>
-                    <p className="text-yellow-500 flex gap-1 mt-2">
-                        <FaStar /><FaStar /><FaStar />
-                    </p>
-                    <div className="flex justify-between items-center mt-4">
-                        <h2 className="text-2xl font-bold text-gray-800">Price: 
-                            <span className="text-red-600 ml-4">रु 1,65,000</span>
-                        </h2>
-                        <h3 className="text-green-600 font-bold">In Stock</h3>
-                    </div>
-
-                    <div className="flex items-center mt-6">
-                        <span className="text-xl font-semibold mr-4">Qty:</span>
-                        <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">-</button>
-                        <span className="text-xl mx-4">1</span>
-                        <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">+</button>
-                    </div>
-
-                    <button className="bg-blue-700 text-white font-bold py-3 px-12 rounded-lg mt-8 transition hover:bg-blue-800">
-                        Add to Cart
-                    </button>
-
-                    {/* Key Specification Section */}
-                    <div className="mt-8">
-                        <h2 className="text-xl font-semibold text-gray-800">Key Specifications</h2>
-                        <ul className="list-disc pl-6 mt-3 space-y-2">
-                            {Object.entries(KeySpecification).map(([key, value]) => (
-                                <li key={key} className="text-sm text-gray-700">
-                                    <strong>{key}:</strong> {value}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
+        <div className="px-5 md:px-20 lg:px-44 py-5">
+            <div>
+                <p>
+                    <Link to="/">Home</Link>
+                    <span> {">"} {catagory}{" >"}</span>
+                    <Link to={`/${catagory}/${brandname}`} className="text-red-700"> {brandname}</Link>
+                </p>
             </div>
 
-            {/* Product Tabs Section */}
-            <div className="mt-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Details</h2>
-                <div className="flex gap-8">
-                    <div 
-                        className={`cursor-pointer font-semibold text-lg ${activeTab === 'Specifications' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
-                        onClick={() => setActiveTab("Specifications")}
-                    >
-                        Specifications
-                    </div>
-                    <div 
-                        className={`cursor-pointer font-semibold text-lg ${activeTab === 'Description' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
-                        onClick={() => setActiveTab("Description")}
-                    >
-                        Description
-                    </div>
-                    <div 
-                        className={`cursor-pointer font-semibold text-lg ${activeTab === 'Reviews' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
-                        onClick={() => setActiveTab("Reviews")}
-                    >
-                        Reviews
+            <div className="flex flex-col md:flex-row my-10 gap-10">
+                {/* Filter Section */}
+                <div className="w-full md:w-1/4">
+                    <h1 className="font-bold text-xl">Filters</h1>
+                    <div className="my-5">
+                        <p className="font-bold">Price Range</p>
+                        <div className="flex justify-between my-3">
+                            <span>{minPrice}</span>
+                            <span>{maxPrice}</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <input
+                                type="range"
+                                min="1000"
+                                max="100000"
+                                step="100"
+                                value={minPrice}
+                                onChange={(e) => setMinPrice(e.target.value)}
+                                className="w-full"
+                            />
+
+                        </div>
                     </div>
                 </div>
 
-                {/* Dynamic Content Based on Active Tab */}
-                <div className="mt-6">
-                    {activeTab === "Specifications" && (
-                        <div>
-                            <h3 className="text-xl font-semibold">Specifications</h3>
-                            <ul className="list-disc pl-6 mt-3 space-y-2">
-                                {Object.entries(KeySpecification).map(([key, value]) => (
-                                    <li key={key} className="text-lg text-gray-700">
-                                        <strong>{key}:</strong> {value}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {activeTab === "Description" && (
-                        <div>
-                            <h3 className="text-xl font-semibold">Product Description</h3>
-                            <p className="text-lg text-gray-700 mt-3">
-                                The iPad Pro 11-Inch is designed for the ultimate portable experience, featuring the powerful Apple M4 chip, a stunning Ultra Retina XDR OLED display, and the largest storage options.
-                            </p>
-                        </div>
-                    )}
-
-                    {activeTab === "Reviews" && (
-                        <div>
-                            <h3 className="text-xl font-semibold">Customer Reviews</h3>
-                            <div className="mt-3 space-y-3">
-                                <p className="text-lg text-gray-700"><strong>John Doe:</strong> Amazing tablet, super fast and the display is gorgeous!</p>
-                                <p className="text-lg text-gray-700"><strong>Jane Smith:</strong> Worth every penny. Great performance for work and entertainment.</p>
+                {/* Product Listing Section */}
+                <div className="w-full md:w-3/4">
+                    <h1 className="font-bold text-2xl capitalize">{brandname}</h1>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 my-5">
+                        {ProductDetails.filter(product => product.price >= minPrice && product.price <= maxPrice).map((product) => (
+                            <div
+                                key={product.id}
+                                className="flex flex-col p-5 border border-gray-300 rounded-lg shadow-md"
+                            >
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-full h-56 object-cover rounded-md"
+                                />
+                                <h2 className="text-lg font-bold my-1">{product.name}</h2>
+                                <p className="text-gray-600">{product.description}</p>
+                                <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+                                <div className="flex justify-between text-xl py-2">
+                                    <p className="text-gray-700">Rating: {product.rating}</p>
+                                    <p className="text-gray-700">Reviews: {product.reviewCount}</p>
+                                </div>
+                                <button className="bg-red-800 text-white py-2 rounded-md">Add to Cart</button>
                             </div>
-                        </div>
-                    )}
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
-        </>
-
     );
 }
 

@@ -1,44 +1,47 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import { sequelize } from '../Config/Connect.js';
 
-const Product = sequelize.define('Product', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
+const Product = sequelize.define("Product", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  description: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   price: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
   },
-  imageUrl: {
+  highlights: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
+  warranty: {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  category: {
+  payment_options: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
+  return_policy: {
     type: DataTypes.STRING,
+    allowNull: true,
+  },
+  description: {
+    type: DataTypes.TEXT,
     allowNull: false,
   },
-  stock: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0,
+  specifications: {
+    type: DataTypes.JSON,
+    allowNull: true,
   },
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: Sequelize.NOW,
+  ratings: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0.0,
   },
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: Sequelize.NOW,
+  reviews: {
+    type: DataTypes.JSON,
+    allowNull: true,
   },
 });
 
-module.exports = Product;
+export  {Product};

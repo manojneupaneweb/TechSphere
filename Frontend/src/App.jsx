@@ -4,12 +4,6 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Contact from './pages/Contact';
-import Smartphone from './pages/Smartphones';
-import Laptops from './pages/Laptops';
-import Accessories from './pages/Accessories';
-import Smartwatches from './pages/Smartwatches';
-import Tablets from './pages/Tablets';
-import Smartphones from './pages/Smartphones';
 import Carts from './pages/Carts';
 
 // Auth Routes
@@ -35,6 +29,7 @@ import Marketing from './pages/Admin/Marketing';
 import Reports from './pages/Admin/Reports';
 import ProductDetails from './pages/ProductDetails';
 import ProductShow from './pages/ProductShow';
+import PageNotFound from './pages/PageNotFound';
 
 axios.defaults.baseURL = 'http://localhost:3000';
 
@@ -49,15 +44,17 @@ const App = () => {
           <Routes>
             <Route path="" element={<Home />} />
             <Route path="contact" element={<Contact />} />
-            <Route path="smartphones" element={<Smartphones />} />
-            <Route path="laptops" element={<Laptops />} />
-            <Route path="accessories" element={<Accessories />} />
-            <Route path="smartwatches" element={<Smartwatches />} />
-            <Route path="tablets" element={<Tablets />} />
+
+            <Route path=":catagory/:brandname" element={<ProductShow />} />
+
             <Route path="carts" element={<Carts />} />
-            <Route path="/product/product.title" element={<ProductDetails />} />
-            <Route path="/productshow" element={<ProductShow />} />
+
+            <Route path="*" element={<PageNotFound />} />
             
+            <Route path="/product/product.title" element={<ProductDetails />} />
+            <Route path="/productdetails" element={<ProductDetails />} />
+            <Route path="/ProductShow" element={<ProductShow />} />
+
           </Routes>
           <Footer />
         </div>
@@ -65,25 +62,25 @@ const App = () => {
 
       {/* Admin Routes without Header and Footer */}
       <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="add-product" element={<AddProduct />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="customers" element={<Customers />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="marketing" element={<Marketing />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="user-management" element={<UserManagement />} />
-          <Route path="help-&-support" element={<HelpSupport />} />
-          {/* Add more nested routes here */}
-        </Route>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="add-product" element={<AddProduct />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="marketing" element={<Marketing />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="user-management" element={<UserManagement />} />
+        <Route path="help-&-support" element={<HelpSupport />} />
+        {/* Add more nested routes here */}
+      </Route>
 
 
-{/* Auth Routes without Header and Footer */ }
-< Route path="/auth" >
-  <Route path="signup" element={<Signup />} />
-  <Route path="login" element={<Login />} />
-</Route >
+      {/* Auth Routes without Header and Footer */}
+      < Route path="/auth" >
+        <Route path="signup" element={<Signup />} />
+        <Route path="login" element={<Login />} />
+      </Route >
 
 
 
