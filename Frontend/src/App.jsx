@@ -30,6 +30,7 @@ import Reports from './pages/Admin/Reports';
 import ProductDetails from './pages/ProductDetails';
 import ProductShow from './pages/ProductShow';
 import PageNotFound from './pages/PageNotFound';
+import Cart from './pages/Cart';
 
 axios.defaults.baseURL = 'http://localhost:3000';
 
@@ -44,6 +45,7 @@ const App = () => {
           <Routes>
             <Route path="" element={<Home />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="cart" element={<Cart />} />
 
             <Route path=":catagory/:brandname" element={<ProductShow />} />
 

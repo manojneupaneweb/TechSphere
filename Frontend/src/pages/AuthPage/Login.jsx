@@ -12,13 +12,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Sending:", data);
-
-      const response = await axios.post("/api/v1/user/loginuser", data, {
+      const response = await axios.post("/api/v1/user/login", data, {
         withCredentials: true
       });
-      
-      console.log(response.data);
       naviget("/")
     } catch (error) {
       console.error(error);

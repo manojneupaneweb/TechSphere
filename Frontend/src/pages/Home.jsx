@@ -33,7 +33,7 @@ const HeroSection = () => {
 
   return (
     <section
-      className="relative h-[70vh]  flex items-center justify-center text-white transition-all duration-700 -z-10"
+      className="relative h-[80vh]  flex items-center justify-center text-white transition-all duration-700 -z-10"
       style={{
         backgroundImage: `url(${images[currentIndex]})`,
         backgroundSize: "cover",
@@ -104,7 +104,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 3,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 1453,
       title: "Quantum Phone Z",
       description: "AI-powered smartphone.",
       rating: 4.7,
@@ -114,7 +114,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 4,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 1512,
       title: "Nova Watch 3",
       description: "Advanced health monitoring.",
       rating: 4.5,
@@ -124,7 +124,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 5,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 1450,
       title: "PixelPad Pro",
       description: "High-performance tablet.",
       rating: 4.2,
@@ -134,7 +134,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 6,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 1230,
       title: "EcoBuds Wireless",
       description: "Crystal-clear audio.",
       rating: 4.8,
@@ -144,7 +144,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 7,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 8940,
       title: "Smart Home Hub",
       description: "Voice-controlled home automation.",
       rating: 4.3,
@@ -154,7 +154,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 8,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 1350,
       title: "VR Vision X",
       description: "Next-gen VR experience.",
       rating: 4.6,
@@ -174,7 +174,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 10,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 5430,
       title: "Drone AirMax",
       description: "High-speed drone.",
       rating: 4.4,
@@ -184,7 +184,7 @@ const NewlyLaunchedProducts = () => {
     {
       id: 11,
       image: "https://via.placeholder.com/300",
-      price: 1023,
+      price: 9870,
       title: "AutoBot Car AI",
       description: "Self-driving car assistant.",
       rating: 4.2,
@@ -210,7 +210,7 @@ const NewlyLaunchedProducts = () => {
                 <h2 className="text-lg font-bold my-1 ">{product.title}</h2>
                 <p className="text-black-600 ">{product.description}</p>
                 <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
-                <div className="flex justify-between text-lg py-2">
+                <div className="flex justify-between text-lg py-2 px-1">
                   <p className="text-gray-700">Rating: {product.rating}</p>
                   <p className="text-gray-700">Reviews: {product.reviews}</p>
                 </div>

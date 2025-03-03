@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios"; // Import axios
 import Logo from "../assets/image/logo.png";
 import userIcon from "../assets/image/user.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,10 +11,40 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [data, setData] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleDropdown = (menu) => setIsDropdownOpen(isDropdownOpen === menu ? null : menu);
   const isActive = (link) => (activeLink === link ? "text-red-700 font-bold" : "hover:text-red-700");
+
+  const fetchUserProfile = async () => {
+    const AccessToken = localStorage.getItem('accessToken');
+    try {
+      const response = await axios.get("/api/v1/user/getprofile",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${AccessToken}`
+          }
+        }
+      );
+      console.log("user data:", data);
+      setData(response);
+
+      setIsLoggedIn(true);
+      if (response.data.role === "admin") {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      console.error('Error fetching Profile data', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   return (
     <>
@@ -76,21 +107,37 @@ const Header = () => {
                 <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-2.5 text-gray-600" />
               </div>
 
-              <FontAwesomeIcon icon={faShoppingCart} size="lg" className="cursor-pointer text-gray-600 hover:text-gray-800 hidden lg:block" />
+              <a href="/cart"><FontAwesomeIcon icon={faShoppingCart} size="lg" className="cursor-pointer text-gray-600 hover:text-gray-800 hidden lg:block" /></a>
               {/* User Menu */}
               <div className="relative">
                 <button onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="p-1 rounded-full">
                   <img src={userIcon} className="w-8 h-8 border border-gray-950 p-1 rounded-full" alt="User" />
                 </button>
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
-                    <Link to="/auth/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                      Signup
-                    </Link>
-                    <Link to="/auth/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
-                      Login
-                    </Link>
-                  </div>
+                  isLoggedIn ? (
+                    <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
+                      <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Profile
+                      </Link>
+                      {isAdmin && (
+                        <Link to="/admin" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                          Admin
+                        </Link>
+                      )}
+                      <Link to="/auth/logout" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Logout
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
+                      <Link to="/auth/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Signup
+                      </Link>
+                      <Link to="/auth/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        Login
+                      </Link>
+                    </div>
+                  )
                 )}
               </div>
 
