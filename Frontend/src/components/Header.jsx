@@ -5,6 +5,7 @@ import Logo from "../assets/image/logo.png";
 import userIcon from "../assets/image/user.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faSearch, faBars, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { Logout } from "../utils/AuthContext";
 
 const Header = () => {
   const [activeLink, setActiveLink] = useState("home");
@@ -20,25 +21,24 @@ const Header = () => {
   const isActive = (link) => (activeLink === link ? "text-red-700 font-bold" : "hover:text-red-700");
 
   const fetchUserProfile = async () => {
-    const AccessToken = localStorage.getItem('accessToken');
-    if (!AccessToken) {
-      setIsLoggedIn(false);
-      return;
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      return null;
     }
     try {
+
       const response = await axios.get("/api/v1/user/getprofile",
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${AccessToken}`
+            Authorization: `Bearer ${accessToken}`
           }
         }
       );
-      console.log("user data:", data);
-      setData(response);
-
+      setData(response.data.message);
       setIsLoggedIn(true);
-      if (response.data.role === "admin") {
+      if (response.data.message.role === "admin") {
         setIsAdmin(true);
       }
     } catch (error) {
@@ -49,6 +49,11 @@ const Header = () => {
   useEffect(() => {
     fetchUserProfile();
   }, []);
+  const HandelLogout = async () => {
+    await Logout();
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+  }
 
   return (
     <>
@@ -77,7 +82,7 @@ const Header = () => {
               ].map((menu) => (
                 <div key={menu.path} className="relative group">
                   <button className={`${isActive(menu.path)} text-gray-900 text-sm flex items-center`}>
-                    {menu.label} 
+                    {menu.label}
                     {/* <FontAwesomeIcon icon={faChevronDown} className="ml-1" /> */}
                   </button>
                   <div className="absolute top-full left-0 hidden group-hover:flex flex-col bg-white shadow-lg rounded-lg w-48 mt-1 z-50">
@@ -115,25 +120,27 @@ const Header = () => {
               {/* User Menu */}
               <div className="relative">
                 <button onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="p-1 rounded-full">
-                  <img src={userIcon} className="w-8 h-8 border border-gray-950 p-1 rounded-full" alt="User" />
+                  <img src={data ? (data.profilePicture) : (userIcon)} className="w-8 h-8 border border-gray-950  rounded-full" alt="User" />
                 </button>
                 {isUserMenuOpen && (
-                  isLoggedIn ? (
-                    <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
+                  isLoggedIn ? ( 
+                    <div  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
                       <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Profile
                       </Link>
-                      {isAdmin && (
+                      {isAdmin ? (
                         <Link to="/admin" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                           Admin
                         </Link>
-                      )}
-                      <Link to="/logout" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                      ) : (null)}
+                      <button onClick={() => HandelLogout()} className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Logout
-                      </Link>
+                      </button>
+
+
                     </div>
                   ) : (
-                    <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
+                    <div onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
                       <Link to="/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Signup
                       </Link>
@@ -183,7 +190,7 @@ const Header = () => {
                     ))}
                   </div>
                 )}
-                
+
               </div>
             ))}
 

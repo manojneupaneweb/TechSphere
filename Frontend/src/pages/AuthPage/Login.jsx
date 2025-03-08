@@ -17,9 +17,13 @@ const Login = () => {
       const response = await axios.post("/api/v1/user/login", data, {
         withCredentials: true,
       });
+      
+      localStorage.setItem("accessToken", response.data.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.data.refreshToken);
+
       toast.success("Login successful!", { position: "top-right" });
       setTimeout(() => {
-        navigate("/");
+        navigate("/profile");
       }, 2000);
     } catch (error) {
       toast.error(

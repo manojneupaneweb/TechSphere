@@ -14,9 +14,20 @@ const AdminAccess = ({ children }) => {
 
   React.useEffect(() => {
     const fetchProfile = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        return null;
+      }
       try {
-        const response = await axios.get("/profile");
-        if (response.data.role === "admin" || response.data.role === "administrative") {
+        const response = await axios.get("/api/v1/user/getprofile",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`
+            }
+          }
+        );
+        if (response.data.message.role === "admin" || response.data.role === "administrative") {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
@@ -46,4 +57,21 @@ const UserAccess = ({ children }) => {
   return children;
 };
 
-export { AdminAccess, UserAccess };
+const Logout = async () => {
+  try {
+    const accessToken = localStorage.getItem("accessToken")
+    const response = await axios.get("/api/v1/user/logout", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+
+    window.location.href = "/login";
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+}
+export { AdminAccess, UserAccess, Logout };

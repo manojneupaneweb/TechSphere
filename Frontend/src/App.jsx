@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route,useLocation  } from "react-router-dom";
 import React from "react";
 import { AdminAccess, UserAccess } from "./utils/AuthContext.jsx";
 
@@ -29,12 +29,18 @@ axios.defaults.baseURL = 'http://localhost:3000';
 
 
 
+
 const App = () => {
+  const location = useLocation();
+  const noHeaderFooterRoutes = ["/signup", "/login", "/admin"];
+
   return (
     <>
-      <Header />
+      {!noHeaderFooterRoutes.includes(location.pathname) && <Header />}
+      
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:title" element={<ProductDetails />} />
 
@@ -57,9 +63,12 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
-          <Footer />
+
+      {!noHeaderFooterRoutes.includes(location.pathname) && <Footer />}
     </>
   );
 };
+
+
 
 export default App;
