@@ -4,7 +4,7 @@ import { ApiError } from "../Utils/apiError.util.js";
 import { ApiResponse } from "../Utils/apiResponse.util.js";
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../Utils/cloudiny.util.js";
-import { Option } from "../Utils/option.util.js";
+import { cookieOption } from "../Utils/cookieOption.util.js";
 import bcrypt from "bcrypt";
 
 
@@ -70,47 +70,38 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email and password are required");
   }
 
-  // Find user in the database
   const user = await User.findOne({ where: { email } });
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
 
-  // Use the instance method to check password
   const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
-  
-  console.log("Entered Password:", password);
-  console.log("Hashed Password from DB:", user.password);
-  console.log("Password Match:", isPasswordValid);
 
-
-  // Generate access and refresh tokens
   const { accessToken, refreshToken } = await generateAccessRefreshToken(user.id);
   
   if (!accessToken || !refreshToken) {
     throw new ApiError(500, "Failed to generate tokens");
   }
 
-  // Fetch user data without password
   const loggedInUser = await User.findByPk(user.id, {
     attributes: { exclude: ["password", "refreshToken"] }
   });
 
-  // Send response with cookies
   res.status(200)
-    .cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: 'Strict' })
-    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' })
+    .cookie("accessToken", accessToken, cookieOption)
+    .cookie("refreshToken", refreshToken, cookieOption)
     .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
 });
 
 
 const logOutUser = asyncHandler(async (req, res, next) => {
   try {
-    res.clearCookie("accessToken", Option);
-    res.clearCookie("refreshToken", Option);
+
+    res.clearCookie("accessToken", cookieOption);
+    res.clearCookie("refreshToken", cookieOption);
     return res.status(200).json(new ApiResponse(200, { message: "User logged out successfully" }));
   } catch (error) {
     console.error("Error during user logout:", error);
@@ -132,15 +123,18 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  console.log("userId", userId);
 
-  const user = await User.findByPk(userId).select("-password");
+  const user = await User.findByPk(userId, {
+    attributes: { exclude: ["password"] } // ✅ Correct way to exclude fields in Sequelize
+  });
+
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
   res.status(200).json(new ApiResponse(200, "User profile retrieved", user));
 });
+
 
 const changePassword = asyncHandler(async (req, res) => {
   const { id } = req.params;

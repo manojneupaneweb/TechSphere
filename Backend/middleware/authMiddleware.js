@@ -2,32 +2,34 @@
 import jwt from "jsonwebtoken";
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
 import { ApiError } from "../Utils/apiError.util.js";
-import User from "../models/User.model.js";
+import User from "../models/User.model.js"; // Ensure this is a Sequelize model
 
 const verifyJwt = asyncHandler(async (req, _, next) => {
     const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
-
-    // console.log("Received Token:", token);
 
     if (!token) {
         console.error("❌ No Token Provided");
         throw new ApiError(401, "Unauthorized request");
     }
-    
+
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log("decodedToken", decodedToken);
     
     if (!decodedToken) {
-        console.error("❌ JWT Verification Failed:", error.message);
+        console.error("❌ JWT Verification Failed");
         throw new ApiError(401, "Invalid Access Token");
     }
 
-    const user = await User.findById(decodedToken?.id).select("-password -refreshToken");
+    // Fetch user from SQL database using Sequelize
+    const user = await User.findOne({
+        where: { id: decodedToken?.id }, 
+        attributes: { exclude: ["password", "refreshToken"] } // Exclude sensitive fields
+    });
 
     if (!user) {
         console.error("❌ No User Found for This Token");
         throw new ApiError(401, "Invalid Access Token");
     }
+
     console.log("Decoded Token:", decodedToken);
     console.log("User Found:", user);
 
@@ -35,4 +37,4 @@ const verifyJwt = asyncHandler(async (req, _, next) => {
     next();
 });
 
-export default verifyJwt
+export default verifyJwt;
