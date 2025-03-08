@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -13,6 +13,16 @@ const Signup = () => {
     profilePicture: null,
   });
   const [notification, setNotification] = useState({ message: "", type: "" });
+
+  // Auto-hide notification after 3 seconds
+  useEffect(() => {
+    if (notification.message) {
+      const timer = setTimeout(() => {
+        setNotification({ message: "", type: "" });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,8 +50,6 @@ const Signup = () => {
     if (formData.profilePicture) {
       form.append("profilePicture", formData.profilePicture);
     }
-    console.log(formData.profilePicture);
-
 
     try {
       setLoading(true);
@@ -49,30 +57,28 @@ const Signup = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log(response.data);
+
       setNotification({ message: "Registration Successful!", type: "success" });
-      navigate('/auth/login');
-      setLoading(false);
+
+      // Navigate after short delay to show notification
+      setTimeout(() => navigate("/auth/login"), 2000);
     } catch (error) {
       console.error("Error registering user:", error);
       setNotification({ message: "Error registering user!", type: "error" });
-
+    } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      {/* Notification */}
+      {/* Notification Box */}
       {notification.message && (
         <div
-          className={`fixed top-5 right-5 p-3 rounded-lg text-white transition-all duration-300 ${notification.type === "success"
-            ? "bg-green-500"
-            : "bg-red-500"
-            }`}
-          style={{
-            width: notification.message.length > 20 ? "300px" : "200px",
-          }}
+          className={`fixed top-5 right-5 p-3 rounded-lg text-white shadow-lg transition-all duration-300 ${
+            notification.type === "success" ? "bg-green-500" : "bg-red-500"
+          }`}
+          style={{ width: "auto", minWidth: "200px", maxWidth: "300px" }}
         >
           {notification.message}
         </div>
@@ -194,7 +200,7 @@ const Signup = () => {
 
           <p className="mt-6 text-center text-gray-500">
             Already have an account?{" "}
-            <a href="/auth/login" className="text-blue-500">
+            <a href="/login" className="text-blue-500">
               Login
             </a>
           </p>

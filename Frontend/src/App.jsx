@@ -1,92 +1,65 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';  // Import Routes and Route
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import Contact from './pages/Contact';
-import Carts from './pages/Carts';
+import { Routes, Route } from "react-router-dom";
+import React from "react";
+import { AdminAccess, UserAccess } from "./utils/AuthContext.jsx";
 
-// Auth Routes
-import Signup from './pages/AuthPage/Signup';
-import Login from './pages/AuthPage/Login';
+// Components
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+
+// Pages
+import Home from "./pages/Home";
+import Contact from "./pages/Contact";
+import Cart from "./pages/Cart";
+import ProductDetails from "./pages/ProductDetails";
+import Profile from "./pages/Profile";
+
+// Auth Pages
+import Signup from "./pages/AuthPage/Signup";
+import Login from "./pages/AuthPage/Login";
+
+// Admin Pages
+import AdminLayout from "./pages/Admin/AdminLayout";
+import Dashboard from "./pages/Admin/Dashboard";
 
 
-{/* API Calls */ }
-import axios from 'axios';
-
-
-// Admin Panel
-import AdminLayout from './pages/Admin/AdminLayout';
-import Dashboard from './pages/Admin/Dashboard';
-import AddProduct from './pages/Admin/AddProduct';
-import Orders from './pages/Admin/Ordres';
-import Customers from './pages/Admin/Customers';
-import HelpSupport from './pages/Admin/Help-support';
-import UserManagement from './pages/Admin/User-management';
-import { Settings } from 'lucide-react';
-import Analytics from './pages/Admin/Analytics';
-import Marketing from './pages/Admin/Marketing';
-import Reports from './pages/Admin/Reports';
-import ProductDetails from './pages/ProductDetails';
-import ProductShow from './pages/ProductShow';
-import PageNotFound from './pages/PageNotFound';
-import Cart from './pages/Cart';
-
+import axios from "axios";
+// Set up Axios globally
 axios.defaults.baseURL = 'http://localhost:3000';
+
+
 
 
 const App = () => {
   return (
-    <Routes>
-      {/* Public Routes with Header and Footer */}
-      <Route path="/*" element={
-        <div>
-          <Header />
-          <Routes>
-            <Route path="" element={<Home />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="cart" element={<Cart />} />
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/product/:title" element={<ProductDetails />} />
 
-            <Route path=":catagory/:brandname" element={<ProductShow />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
 
-            <Route path="carts" element={<Carts />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminAccess>
+              <AdminLayout />
+            </AdminAccess>
+          }
+        >
+          <Route index element={<Dashboard />} />
+        </Route>
 
-            <Route path="*" element={<PageNotFound />} />
-            
-            <Route path="/product/product.title" element={<ProductDetails />} />
-            <Route path="/productdetails" element={<ProductDetails />} />
-            <Route path="/ProductShow" element={<ProductShow />} />
-
-          </Routes>
+        <Route element={<UserAccess />}>
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+      </Routes>
           <Footer />
-        </div>
-      } />
-
-      {/* Admin Routes without Header and Footer */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="add-product" element={<AddProduct />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="customers" element={<Customers />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="marketing" element={<Marketing />} />
-        <Route path="settings" element={<Settings />} />
-        <Route path="user-management" element={<UserManagement />} />
-        <Route path="help-&-support" element={<HelpSupport />} />
-        {/* Add more nested routes here */}
-      </Route>
-
-
-      {/* Auth Routes without Header and Footer */}
-      < Route path="/auth" >
-        <Route path="signup" element={<Signup />} />
-        <Route path="login" element={<Login />} />
-      </Route >
-
-    </Routes >
+    </>
   );
 };
-
 
 export default App;

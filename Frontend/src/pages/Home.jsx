@@ -7,78 +7,38 @@ import laptops3 from "../assets/image/laptops3.jpg";
 import mobiles from "../assets/image/mobiles.jpeg";
 import mobiles2 from "../assets/image/mobiles2.jpg";
 import Loading from "../components/Loading";
+import { CartAdd } from "../utils/Cart.utils";
+import { toast , ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
 
-const HeroSection = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-slide every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [currentIndex]); // Runs on index change
+const cartButton = (product) => {
+  // Add product to local storage
+  CartAdd(product);
+  
+  // Display success notification with a green background
+  toast.success(`${product.title} added to cart!`, {
+    // position: toast.POSITION.TOP_RIGHT,
+    style: {
+      position:'top',
+      backgroundColor: 'white',
+      color: '#2d2d2d',
+      fontWeight: 'bold',
+      borderRadius: '8px',
+      padding: '12px 20px',
+      fontSize: '16px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      transition: 'all 0.3s ease',
+      maxWidth: '350px',
+      marginTop: '10px',
+    },
+  });
+  
 
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
-
-  return (
-    <section
-      className="relative h-[80vh]  flex items-center justify-center text-white transition-all duration-700 -z-10"
-      style={{
-        backgroundImage: `url(${images[currentIndex]})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-50"></div>
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 md:px-12">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 animate__animated animate__fadeInUp">
-          Welcome to TechSphere
-        </h1>
-        <p className="text-xl md:text-2xl mb-6 animate__animated animate__fadeInUp animate__delay-1s">
-          Find the latest tech gadgets and accessories here!
-        </p>
-        <a
-          href="#products"
-          className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 animate__animated animate__fadeInUp animate__delay-2s"
-        >
-          Explore Now
-        </a>
-      </div>
-
-      {/* Left Arrow */}
-      <button
-        className="absolute left-4 md:left-10 z-20 bg-black/50 p-3 rounded-full hover:bg-black/80 transition-all"
-        onClick={prevSlide}
-      >
-        <ChevronLeft size={30} className="text-white" />
-      </button>
-
-      {/* Right Arrow */}
-      <button
-        className="absolute right-4 md:right-10 z-20 bg-black/50 p-3 rounded-full hover:bg-black/80 transition-all"
-        onClick={nextSlide}
-      >
-        <ChevronRight size={30} className="text-white" />
-      </button>
-    </section>
-  );
+  console.log(product);
 };
-
 const NewlyLaunchedProducts = () => {
   const products = [
     {
@@ -201,11 +161,11 @@ const NewlyLaunchedProducts = () => {
         {/* Horizontal Scroll Section */}
         <div
           ref={scrollRef}
-          className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth  p-3"
+          className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3"
         >
           {products.slice(0, 10).map((product) => (
             <div key={product.id} className="min-w-[300px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
-              <img src={product.image} alt={product.title} className="w-full border border-black  h-56 object-cover" />
+              <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
               <div className="">
                 <h2 className="text-lg font-bold my-1 ">{product.title}</h2>
                 <p className="text-black-600 ">{product.description}</p>
@@ -214,7 +174,9 @@ const NewlyLaunchedProducts = () => {
                   <p className="text-gray-700">Rating: {product.rating}</p>
                   <p className="text-gray-700">Reviews: {product.reviews}</p>
                 </div>
-                <button className="bg-red-800 w-full text-white py-2 rounded-md">Add to Cart</button>
+                <button onClick={() => cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                  Add to Cart
+                </button>
               </div>
             </div>
           ))}
@@ -223,6 +185,77 @@ const NewlyLaunchedProducts = () => {
     </section>
   );
 };
+
+
+const HeroSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [currentIndex]); // Runs on index change
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  return (
+    <section
+      className="relative h-[80vh]  flex items-center justify-center text-white transition-all duration-700 -z-10"
+      style={{
+        backgroundImage: `url(${images[currentIndex]})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+
+      {/* Content */}
+      <div className="relative z-10 text-center px-6 md:px-12">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4 animate__animated animate__fadeInUp">
+          Welcome to TechSphere
+        </h1>
+        <p className="text-xl md:text-2xl mb-6 animate__animated animate__fadeInUp animate__delay-1s">
+          Find the latest tech gadgets and accessories here!
+        </p>
+        <a
+          href="#products"
+          className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 animate__animated animate__fadeInUp animate__delay-2s"
+        >
+          Explore Now
+        </a>
+      </div>
+
+      {/* Left Arrow */}
+      <button
+        className="absolute left-4 md:left-10 z-20 bg-black/50 p-3 rounded-full hover:bg-black/80 transition-all"
+        onClick={prevSlide}
+      >
+        <ChevronLeft size={30} className="text-white" />
+      </button>
+
+      {/* Right Arrow */}
+      <button
+        className="absolute right-4 md:right-10 z-20 bg-black/50 p-3 rounded-full hover:bg-black/80 transition-all"
+        onClick={nextSlide}
+      >
+        <ChevronRight size={30} className="text-white" />
+      </button>
+    </section>
+  );
+};
+
 
 const ShopByCategory = () => {
   const scrollContainerRef = useRef();
@@ -470,9 +503,7 @@ const TabletsProducts = () => {
                   <p className="text-gray-700">Rating: {product.rating}</p>
                   <p className="text-gray-700">Reviews: {product.reviews}</p>
                 </div>
-                <button className="bg-red-800 w-full text-white py-2 rounded-md">
-                  Add to Cart
-                </button>
+                <button onClick={()=>cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">Add to Cart</button>
               </div>
             </div>
           ))}
@@ -481,7 +512,6 @@ const TabletsProducts = () => {
     </section>
   );
 };
-
 
 const FAQSection = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -514,16 +544,16 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-gray-100 to-gray-200">
+    <section className="py-10 bg-gradient-to-br ">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
           Frequently Asked Questions
         </h2>
         <div className="max-w-2xl mx-auto space-y-4">
           {faqs.map((faq, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div key={index} className="bg-slate-100 rounded-xl shadow-lg overflow-hidden">
               <button
-                className="w-full text-left p-6 flex justify-between items-center focus:outline-none hover:bg-gray-100 transition-all"
+                className="w-full text-left px-6 py-3 flex justify-between items-center focus:outline-none hover:bg-gray-100 transition-all"
                 onClick={() => toggleFAQ(index)}
                 aria-expanded={activeIndex === index}
                 aria-controls={`faq-${index}`}
@@ -535,9 +565,8 @@ const FAQSection = () => {
               </button>
               <div
                 id={`faq-${index}`}
-                className={`px-6 pb-4 text-gray-700 overflow-hidden transition-all ${
-                  activeIndex === index ? "max-h-40 opacity-100 py-2" : "max-h-0 opacity-0"
-                }`}
+                className={`px-6 pb-4 text-gray-700 overflow-hidden transition-all ${activeIndex === index ? "max-h-40 opacity-100 py-2" : "max-h-0 opacity-0"
+                  }`}
                 aria-hidden={activeIndex !== index}
               >
                 {faq.answer}
@@ -654,7 +683,7 @@ const LaptopProducts = () => {
   ];
 
   const scrollRef = useRef(null);
-  
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-6">
@@ -676,7 +705,7 @@ const LaptopProducts = () => {
                   <p className="text-gray-700">Rating: {product.rating}</p>
                   <p className="text-gray-700">Reviews: {product.reviews}</p>
                 </div>
-                <button className="bg-red-800 w-full text-white py-2 rounded-md">Add to Cart</button>
+                <button onClick={()=>cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">Add to Cart</button>
               </div>
             </div>
           ))}
@@ -687,25 +716,25 @@ const LaptopProducts = () => {
 };
 
 const NewsletterSection = () => (
-  <section className="py-16 bg-gradient-to-r from-blue-100 to-blue-200 text-gray-900 text-center">
+  <section className="py-16 bg-gradient-to-r from-blue-50 to-blue-200 text-gray-900 text-center">
     <div className="container mx-auto px-6">
       <h2 className="text-4xl font-extrabold mb-4">
-        Stay Updated with <span className="text-blue-600">TechSphere</span>
+        Stay Updated with <span className="text-red-800">TechSphere</span>
       </h2>
       <p className="text-lg md:text-xl mb-8 text-gray-700">
         Subscribe to our newsletter for the latest tech news, gadgets, and exclusive offers.
       </p>
-      <div className="max-w-lg mx-auto bg-white/90 backdrop-blur-lg p-6 rounded-xl shadow-lg border border-gray-200">
+      <div className="max-w-lg mx-auto bg-white/90 backdrop-blur-lg p-3 rounded-xl shadow-lg border border-gray-200">
         <form className="flex flex-col md:flex-row gap-4">
           <input
             type="email"
             placeholder="Enter your email"
             aria-label="Enter your email to subscribe"
-            className="w-full p-4 text-lg rounded-lg border-2 border-gray-300 bg-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all"
+            className="w-full p-2 text-lg rounded-lg border-2 border-gray-300 bg-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all"
           />
           <button
             type="submit"
-            className="px-6 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all"
+            className="px-6 py-2 bg-red-800 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-900 transition-all"
           >
             Subscribe
           </button>
@@ -719,12 +748,13 @@ const Home = () => (
   <>
     <HeroSection />
     <NewlyLaunchedProducts />
+    <TabletsProducts />
     <ShopByCategory />
-    <TabletsProducts/>
-    <ShopByBrand />
-    <LaptopProducts/>
-    <FAQSection />
+    <LaptopProducts />
     <NewsletterSection />
+    <ShopByBrand />
+    <FAQSection />
+    <ToastContainer />  {/* Add this line */}
   </>
 );
 

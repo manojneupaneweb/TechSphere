@@ -1,23 +1,31 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
-  const naviget = useNavigate();
+  const navigate = useNavigate();
   const [data, setData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post("/api/v1/user/login", data, {
-        withCredentials: true
+        withCredentials: true,
       });
-      naviget("/")
+      toast.success("Login successful!", { position: "top-right" });
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
-      console.error(error);
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again!",
+        { position: "top-right" }
+      );
     }
   };
 
@@ -30,14 +38,24 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+      <ToastContainer />
       <div className="flex max-w-4xl rounded-2xl bg-white shadow-lg overflow-hidden">
         {/* Left Section */}
         <div className="hidden w-1/2 bg-orange-500 p-10 text-white md:flex flex-col justify-center">
-          <h2 className="text-3xl font-bold">Simplify management with our dashboard.</h2>
-          <p className="mt-4">Simplify your e-commerce management with our user-friendly admin dashboard.</p>
+          <h2 className="text-3xl font-bold">
+            Simplify management with our dashboard.
+          </h2>
+          <p className="mt-4">
+            Simplify your e-commerce management with our user-friendly admin
+            dashboard.
+          </p>
           <div className="mt-6 flex space-x-4">
-            <div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center text-black text-lg font-semibold">👨‍💼</div>
-            <div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center text-black text-lg font-semibold">👩‍💼</div>
+            <div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center text-black text-lg font-semibold">
+              👨‍💼
+            </div>
+            <div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center text-black text-lg font-semibold">
+              👩‍💼
+            </div>
           </div>
         </div>
 
@@ -74,10 +92,14 @@ const Login = () => {
             </div>
 
             <div className="mt-2 text-right">
-              <a href="#" className="text-orange-500 text-sm">Forgot password?</a>
+              <a href="#" className="text-orange-500 text-sm">
+                Forgot password?
+              </a>
             </div>
 
-            <button className="mt-4 w-full rounded-lg bg-orange-500 p-3 text-white font-bold hover:bg-orange-600">Login</button>
+            <button className="mt-4 w-full rounded-lg bg-orange-500 p-3 text-white font-bold hover:bg-orange-600">
+              Login
+            </button>
           </form>
 
           <div className="mt-6 flex items-center justify-between">
@@ -88,17 +110,28 @@ const Login = () => {
 
           <div className="mt-4 flex space-x-4">
             <button className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-5 h-5" />
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                alt="Google"
+                className="w-5 h-5"
+              />
               <span className="ml-2">Google</span>
             </button>
             <button className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook" className="w-5 h-5" />
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
+                alt="Facebook"
+                className="w-5 h-5"
+              />
               <span className="ml-2">Facebook</span>
             </button>
           </div>
 
           <p className="mt-6 text-center text-gray-500">
-            Don't have an account? <a href="/auth/signup" className="text-orange-500">Signup</a>
+            Don't have an account?{" "}
+            <a href="/signup" className="text-orange-500">
+              Signup
+            </a>
           </p>
         </div>
       </div>

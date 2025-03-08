@@ -21,6 +21,10 @@ const Header = () => {
 
   const fetchUserProfile = async () => {
     const AccessToken = localStorage.getItem('accessToken');
+    if (!AccessToken) {
+      setIsLoggedIn(false);
+      return;
+    }
     try {
       const response = await axios.get("/api/v1/user/getprofile",
         {
@@ -73,7 +77,8 @@ const Header = () => {
               ].map((menu) => (
                 <div key={menu.path} className="relative group">
                   <button className={`${isActive(menu.path)} text-gray-900 text-sm flex items-center`}>
-                    {menu.label} <FontAwesomeIcon icon={faChevronDown} className="ml-1" />
+                    {menu.label} 
+                    {/* <FontAwesomeIcon icon={faChevronDown} className="ml-1" /> */}
                   </button>
                   <div className="absolute top-full left-0 hidden group-hover:flex flex-col bg-white shadow-lg rounded-lg w-48 mt-1 z-50">
                     {menu.links.map((item) => (
@@ -106,7 +111,6 @@ const Header = () => {
                 />
                 <FontAwesomeIcon icon={faSearch} className="absolute right-3 top-2.5 text-gray-600" />
               </div>
-
               <a href="/cart"><FontAwesomeIcon icon={faShoppingCart} size="lg" className="cursor-pointer text-gray-600 hover:text-gray-800 hidden lg:block" /></a>
               {/* User Menu */}
               <div className="relative">
@@ -124,16 +128,16 @@ const Header = () => {
                           Admin
                         </Link>
                       )}
-                      <Link to="/auth/logout" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                      <Link to="/logout" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Logout
                       </Link>
                     </div>
                   ) : (
                     <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-50">
-                      <Link to="/auth/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                      <Link to="/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Signup
                       </Link>
-                      <Link to="/auth/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                      <Link to="/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         Login
                       </Link>
                     </div>
@@ -179,6 +183,7 @@ const Header = () => {
                     ))}
                   </div>
                 )}
+                
               </div>
             ))}
 
