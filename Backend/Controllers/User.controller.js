@@ -81,7 +81,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const { accessToken, refreshToken } = await generateAccessRefreshToken(user.id);
-  
+
   if (!accessToken || !refreshToken) {
     throw new ApiError(500, "Failed to generate tokens");
   }
@@ -95,7 +95,6 @@ const loginUser = asyncHandler(async (req, res) => {
     .cookie("refreshToken", refreshToken, cookieOption)
     .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
 });
-
 
 const logOutUser = asyncHandler(async (req, res, next) => {
   try {

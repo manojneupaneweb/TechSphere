@@ -65,9 +65,8 @@ const AdminLayout = ({ children }) => {
                                 <User className="w-8 h-8 text-gray-700 dark:text-white rounded-full border p-1" />
                             </button>
                             {profileMenu && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg overflow-hidden">
+                                <div onClick={() => setProfileMenu(!profileMenu)} className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg overflow-hidden">
                                     {[
-                                        "Profile",
                                         "Settings",
                                         "Logout",
                                     ].map((item) => (
