@@ -1,3 +1,4 @@
+import { log } from "console";
 import User from "../models/User.model.js";
 import { ApiError } from "../Utils/apiError.util.js";
 import { ApiResponse } from "../Utils/apiResponse.util.js";
@@ -13,8 +14,8 @@ const generateAccessRefreshToken = async (userId) => {
     throw new ApiError(404, "User not found");
   }
 
-  const accessToken = await user.generateAccessToken();
-  const refreshToken = await user.generateRefreshToken();
+  const accessToken = user.generateAccessToken();
+  const refreshToken = user.generateRefreshToken();
 
   await user.update({ refreshToken });
 
@@ -69,32 +70,42 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email and password are required");
   }
 
+  // Find user in the database
   const user = await User.findOne({ where: { email } });
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  // Use the instance method to check password
+  const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
+  
+  console.log("Entered Password:", password);
+  console.log("Hashed Password from DB:", user.password);
+  console.log("Password Match:", isPasswordValid);
 
+
+  // Generate access and refresh tokens
   const { accessToken, refreshToken } = await generateAccessRefreshToken(user.id);
-
-
-
+  
   if (!accessToken || !refreshToken) {
     throw new ApiError(500, "Failed to generate tokens");
   }
 
-  const loggedInUser = await User.findByPk(user.id, { attributes: { exclude: ["password", "refreshToken"] } });
+  // Fetch user data without password
+  const loggedInUser = await User.findByPk(user.id, {
+    attributes: { exclude: ["password", "refreshToken"] }
+  });
 
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, Option)
-    .cookie("refreshToken", refreshToken, Option)
+  // Send response with cookies
+  res.status(200)
+    .cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: 'Strict' })
+    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' })
     .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
 });
+
 
 const logOutUser = asyncHandler(async (req, res, next) => {
   try {
@@ -120,14 +131,15 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const userId = req.user.id;
+  console.log("userId", userId);
 
-  const user = await User.findByPk(id);
+  const user = await User.findByPk(userId).select("-password");
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  res.status(200).json(new ApiResponse(200, "User profile fetched successfully", user));
+  res.status(200).json(new ApiResponse(200, "User profile retrieved", user));
 });
 
 const changePassword = asyncHandler(async (req, res) => {
@@ -151,5 +163,30 @@ const changePassword = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Password updated successfully"));
 });
 
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { username, email } = req.body;
 
-export { registerUser, loginUser, logOutUser ,deleteUser, getUserProfile, changePassword };
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (email) {
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser && existingUser.id !== id) {
+      throw new ApiError(400, "Email is already taken by another user");
+    }
+    user.email = email;
+  }
+
+  if (username) {
+    user.username = username;
+  }
+
+  await user.save();
+  res.status(200).json(new ApiResponse(200, "User profile updated successfully", user));
+});
+
+
+export { registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile };

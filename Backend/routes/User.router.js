@@ -19,7 +19,7 @@ router.route('/login').post(loginUser);
 
 // Protected routes (requires JWT)
 router.route('/logout').get(verifyJWT, logOutUser);
-router.route('/profile/:id').get(verifyJWT, getUserProfile);
+router.route('/getprofile').get(verifyJWT, getUserProfile);
 router.route('/profile/:id').put(verifyJWT, updateUserProfile);
 router.route('/profile/:id').delete(verifyJWT, deleteUser);
 router.route('/profile/:id/change-password').put(verifyJWT, changePassword);

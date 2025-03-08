@@ -23,13 +23,6 @@ const User = sequelize.define('users', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    wishlist: {
-        type: DataTypes.JSON,
-        references:{
-            model: Wishlist,
-            key: 'id'
-        }
-    },
     phone: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -50,21 +43,28 @@ const User = sequelize.define('users', {
     timestamps: true
 });
 
-// Hash password before saving
-User.beforeSave(async (user) => {
-    if (user.isNewRecord || user.changed('password')) {
-        user.password = await bcrypt.hash(user.password, 10);
-    }
-});
+// Associations
+User.hasMany(Wishlist, { foreignKey: 'userId' });
+Wishlist.belongsTo(User, { foreignKey: 'userId' });
 
+
+User.prototype.isPasswordCorrect = async function (password) {
+    console.log("password" ,password);
+    console.log("this.password" , this.password);
+
+    return await bcrypt.compare(password, this.password);
+};
+
+// Generate Access Token
 User.prototype.generateAccessToken = function () {
     return jwt.sign(
-        { id: this.id, email: this.email, fullName: this.fullName },
+        { id: this.id, email: this.email, fullName: this.fullName, role: this.role },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
     );
 };
 
+// Generate Refresh Token
 User.prototype.generateRefreshToken = function () {
     return jwt.sign(
         { id: this.id },
@@ -72,5 +72,19 @@ User.prototype.generateRefreshToken = function () {
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
     );
 };
+
+// Hash password before creating a user
+// User.beforeCreate(async (user) => {
+//     if (user.password && !user.password.startsWith('$2b$')) {
+//         user.password = await bcrypt.hash(user.password, 10);
+//     }
+// });
+
+// Hash password before updating if changed
+User.beforeUpdate(async (user) => {
+    if (user.changed('password') && !user.password.startsWith('$2b$')) {
+        user.password = await bcrypt.hash(user.password, 10);
+    }
+});
 
 export default User;
