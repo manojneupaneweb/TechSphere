@@ -2,9 +2,12 @@ import { Product } from '../models/Product.model.js'
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
-import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';
+import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';; 
+
+
 
 const addProduct = asyncHandler(async (req, res) => {
+  console.log("Request Body:", req.body); 
   const { name, price, highlights, warranty, payment_options, return_policy, description, specifications } = req.body;
 
   if (!name || !price || !description) {
@@ -17,33 +20,26 @@ const addProduct = asyncHandler(async (req, res) => {
   }
 
   const imageUrl = await uploadOnCloudinary(localFilePath);
-  if (!imageUrl?.url) {
+  if (!imageUrl) {
     throw new ApiError(500, "Failed to upload image to Cloudinary");
   }
-
-  let parsedSpecifications, parsedHighlights, parsedPaymentOptions;
-  try {
-    parsedSpecifications = specifications ? JSON.parse(specifications) : null;
-    parsedHighlights = highlights ? JSON.parse(highlights) : null;
-    parsedPaymentOptions = payment_options ? JSON.parse(payment_options) : null;
-  } catch (error) {
-    throw new ApiError(400, "Invalid JSON format in one of the fields");
-  }
-
+  
   const newProduct = await Product.create({
     name,
     price,
-    highlights: parsedHighlights,
+    highlights,
     warranty,
-    payment_options: parsedPaymentOptions,
+    payment_options,
     return_policy,
     description,
-    specifications: parsedSpecifications,
+    specifications,
     image: imageUrl.url,
   });
 
   res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));
 });
+
+
 const editProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, price, highlights, warranty, payment_options, return_policy, description, specifications, stock } = req.body;

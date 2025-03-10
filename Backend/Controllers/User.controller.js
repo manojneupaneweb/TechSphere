@@ -134,7 +134,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "User profile retrieved", user));
 });
 
-
 const changePassword = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { oldPassword, newPassword } = req.body;
@@ -181,5 +180,23 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "User profile updated successfully", user));
 });
 
+const getAllUserProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const isAdmin = await IsAdmin(userId);
 
-export { registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile };
+  if (!isAdmin) {
+      throw new ApiError(401, "Unauthorized");
+  }
+
+  const users = await User.findAll({
+      attributes: { exclude: ["password"] } // Exclude password from results
+  });
+
+  if (!users || users.length === 0) {
+      throw new ApiError(404, "No users found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "Users profiles retrieved", users));
+});
+
+export { registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile };

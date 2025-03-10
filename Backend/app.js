@@ -16,10 +16,9 @@ app.use(
 
 import UserRoute from "./routes/User.router.js";
 import ProductRoute from './routes/Product.routee.js'
-import AdminRoute from './routes/Admin.route.js'
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/product", ProductRoute);
-app.use("/api/v1/admin", AdminRoute);
+
 
 
 export { app };
