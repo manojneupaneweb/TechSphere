@@ -18,17 +18,14 @@ const Dashboard = () => {
   const HandleFetch = async () => {
     try {
       const accessToken = localStorage.getItem('accessToken');
-      const response = await axios.get('/api/v1/admin/getalluser',{
+      const response = await axios.get('/api/v1/admin/getalluser', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-     
-      setStats({
-        products: response.data.products,
-        orders: response.data.orders,
-        users: response.data.users,
-      });
+      console.log(response.data.message);
+      
+      setUser(response.data.message);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -52,7 +49,7 @@ const Dashboard = () => {
               Orders: {stats.orders}
             </div>
             <div className="p-4 bg-white rounded-lg shadow-md">
-              Users: {stats.users}
+              Users: {user.length}
             </div>
           </div>
         </main>

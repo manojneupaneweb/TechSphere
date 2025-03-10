@@ -1,4 +1,4 @@
-import { Routes, Route,useLocation  } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import React from "react";
 import { AdminAccess, UserAccess } from "./utils/AuthContext.jsx";
 
@@ -20,54 +20,51 @@ import Login from "./pages/AuthPage/Login";
 // Admin Pages
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
+import Orders from "./pages/Admin/Ordres.jsx";
 
 
 import axios from "axios";
+import AddProduct from "./pages/Admin/AddProduct.jsx";
+import PageNotFound from "./pages/PageNotFound.jsx";
 // Set up Axios globally
 axios.defaults.baseURL = 'http://localhost:3000';
-
-
-
 
 
 const App = () => {
   const location = useLocation();
   const noHeaderFooterRoutes = ["/signup", "/login", "/admin"];
 
+  // Check if the current route is in the noHeaderFooterRoutes array
+  const shouldShowHeaderFooter = !noHeaderFooterRoutes.includes(location.pathname);
+
   return (
     <>
-      {!noHeaderFooterRoutes.includes(location.pathname) && <Header />}
-      
+      {shouldShowHeaderFooter && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:title" element={<ProductDetails />} />
 
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-
-        <Route
-          path="/admin"
-          element={
-            <AdminAccess>
-              <AdminLayout />
-            </AdminAccess>
-          }
-        >
-          <Route index element={<Dashboard />} />
-        </Route>
-
         <Route element={<UserAccess />}>
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
-      </Routes>
 
-      {!noHeaderFooterRoutes.includes(location.pathname) && <Footer />}
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/admin" element={<AdminAccess><AdminLayout /></AdminAccess>}>
+          <Route index path="/admin/Dashboard" element={<Dashboard />} />
+          <Route path="/admin/add-product" element={<AddProduct />} />
+          <Route path="/admin/orders" element={<Orders />} />
+        </Route>
+      </Routes>
+      {shouldShowHeaderFooter && <Footer />}
     </>
   );
 };
+
 
 
 
