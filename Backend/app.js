@@ -14,8 +14,8 @@ app.use(
     })
 );
 
-import UserRoute from "./routes/User.router.js";
-import ProductRoute from './routes/Product.routee.js'
+import UserRoute from "./routes/User.route.js";
+import ProductRoute from './routes/Product.route.js'
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/product", ProductRoute);
 

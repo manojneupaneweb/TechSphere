@@ -1,14 +1,9 @@
 import { Router } from "express";
 import { upload } from "../middleware/multer.middleware.js";
-import { 
-  addProduct, 
-  editProduct, 
-  deleteProduct, 
-  getProductById, 
-  getAllProducts, 
-  searchProducts 
-} from "../Controllers/Product.controller.js";
-import verifyAdmin from "../middleware/adminMiddleware.js";
+import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts } from "../Controllers/Product.controller.js";
+import verifyAdmin from "../middleware/admin.middleware.js";
+import { addToWishlist } from "../Controllers/Others.controller.js";
+import verifyJwt from "../middleware/auth.middleware.js";
 
 const router = Router();
 
@@ -19,5 +14,10 @@ router.route('/deleteproduct/:id').delete(deleteProduct);
 router.route('/product/:id').get(getProductById);
 router.route('/products').get(getAllProducts);
 router.route('/search').get(searchProducts);
+
+
+//wishlist routes
+router.route('/wishlist').post(verifyJwt, addToWishlist);
+
 
 export default router;

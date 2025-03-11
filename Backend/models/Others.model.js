@@ -137,8 +137,9 @@ const Wishlist = sequelize.define('Wishlist', {
     },
     user_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
-            model: 'User',
+            model: 'Users',  // ✅ Use table name as a string
             key: 'id'
         },
         onDelete: 'CASCADE',
@@ -146,12 +147,16 @@ const Wishlist = sequelize.define('Wishlist', {
     },
     product_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
-            model: Product,
+            model: 'Products',  // ✅ Use table name as a string
             key: 'id'
         },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     }
-}, { timestamps: true });
+}, {
+    timestamps: true
+});
 
 export { Category, Brand, Order, OrderItem, Payment, Review, Cart, Wishlist };

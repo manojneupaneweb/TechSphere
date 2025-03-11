@@ -39,7 +39,6 @@ const addProduct = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));
 });
 
-
 const editProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, price, highlights, warranty, payment_options, return_policy, description, specifications, stock } = req.body;
