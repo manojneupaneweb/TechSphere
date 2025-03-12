@@ -1,41 +1,97 @@
-import { Wishlist } from "../models/Others.model.js";
+import { Wishlist, Cart } from "../models/Others.model.js";
+import { Product } from "../models/Product.model.js";
+import { asyncHandler } from "../Utils/asyncHandler.util.js";
 
-
-const cartlist = async (req, res) => {
-  const { user_id, product_id } = req.body;
-
+// cartlist controller
+const cartlist = asyncHandler(async (req, res) => {
   try {
-    const wishlistItem = await Wishlist.create({
-      user_id,
-      product_id,
+    const { productId } = req.body;
+    const userId = req.user.id;
+
+    if (!productId || !userId) {
+      return res.status(400).json({ message: "Please provide product ID and user ID" });
+    }
+
+    let cartItem = await Cart.findOne({ where: { user_id: userId } });
+
+    if (cartItem) {
+      let productIds = cartItem.product_id.split(",").map(Number);
+
+      if (productIds.includes(productId)) {
+        return res.status(400).json({ message: "Product already in cart" });
+      }
+
+      // Push new product ID
+      productIds.push(productId);
+      cartItem.product_id = productIds.join(",");
+      await cartItem.save();
+
+      return res.status(200).json({
+        message: "Product added to cart",
+        cartItem,
+      });
+    }
+
+    // Create a new cart entry for the user
+    cartItem = await Cart.create({
+      user_id: userId,
+      product_id: productId.toString(),
+      quantity: 1,
     });
 
-    res.status(201).json({
-      message: 'Item added to wishlist',
-      data: wishlistItem
+    return res.status(200).json({
+      message: "Item added to cart",
+      cartItem,
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("Error adding item to cart:", error);
     res.status(500).json({
-      message: 'Error adding item to wishlist',
-      error: error.message
+      message: "Error adding item to cart",
+      error: error.message,
     });
   }
-};
+});
+
+const getCartItems = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log("User ID:", userId);
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    const cartItem = await Cart.findOne({  user_id: userId  });
+    console.log("Cart Item:", cartItem);
+    if (!cartItem) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    console.log("Product IDs from cart item:", cartItem.product_id);
+    const productIds = cartItem.product_id.split(",").map(Number);
+    console.log("Parsed Product IDs:", productIds);
+
+    return res.status(200).json({ cartItem, productIds });
+
+  } catch (error) {
+    console.error("Error fetching cart items:", error);
+    res.status(500).json({ message: "Error fetching cart items", error: error.message });
+  }
+});
+
+
+
+
 const addToWishlist = async (req, res) => {
-  const { user_id, product_id } = req.body;
-
   try {
-    console.log(user_id, product_id);
-    
-    const wishlistItem = await Wishlist.create({
-      user_id,
-      product_id, 
-    });
+    const { product_id } = req.body;
+    const userId = req.user.id
 
-    res.status(201).json({
+    console.log("userId", userId);
+    console.log("product_id", product_id);
+    return res.status(200).json({
       message: 'Item added to wishlist',
-      data: wishlistItem
     });
   } catch (error) {
     console.error(error);
@@ -45,6 +101,7 @@ const addToWishlist = async (req, res) => {
     });
   }
 };
+
 
 const getUserWishlist = async (req, res) => {
   const { user_id } = req.params;  // Get user_id from request params
@@ -96,9 +153,12 @@ const removeFromWishlist = async (req, res) => {
   }
 };
 
-export{
+export {
+  //Cart exports
+  getCartItems,
+  cartlist,
+
   addToWishlist,
   getUserWishlist,
   removeFromWishlist,
-  cartlist,
 };

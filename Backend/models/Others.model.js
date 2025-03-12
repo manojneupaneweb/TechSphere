@@ -104,30 +104,32 @@ const Review = sequelize.define('Review', {
     comment: { type: DataTypes.TEXT }
 }, { timestamps: true });
 
+
 const Cart = sequelize.define('Cart', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+    },
     user_id: {
         type: DataTypes.INTEGER,
-        references: {
-            model: 'User',
-            key: 'id'
-        },
+        allowNull: false,
+        references: { model: 'Users', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     },
     product_id: {
         type: DataTypes.INTEGER,
-        references: {
-            model: Product,
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
+        allowNull: false,
+        references: { model: 'Products', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     },
-    quantity: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    }
-}, { timestamps: true });
+    quantity: { type: DataTypes.INTEGER, allowNull: false }
+}, { timestamps: true, tableName: 'Cart' });
+
+
 
 const Wishlist = sequelize.define('Wishlist', {
     id: {

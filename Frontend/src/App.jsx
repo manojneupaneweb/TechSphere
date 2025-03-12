@@ -9,7 +9,6 @@ import Footer from "./components/Footer";
 // Pages
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
-import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import Profile from "./pages/Profile";
 
@@ -26,6 +25,7 @@ import Orders from "./pages/Admin/Ordres.jsx";
 import axios from "axios";
 import AddProduct from "./pages/Admin/AddProduct.jsx";
 import PageNotFound from "./pages/PageNotFound.jsx";
+import Cart from "./pages/Cart.jsx";
 // Set up Axios globally
 axios.defaults.baseURL = 'http://localhost:3000';
 
@@ -42,12 +42,12 @@ const App = () => {
       {shouldShowHeaderFooter && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:title" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="*" element={<PageNotFound />} />
 
         <Route element={<UserAccess />}>
-          <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
 
