@@ -1,13 +1,36 @@
 import { Wishlist } from "../models/Others.model.js";
 
 
-const addToWishlist = async (req, res) => {
+const cartlist = async (req, res) => {
   const { user_id, product_id } = req.body;
 
   try {
     const wishlistItem = await Wishlist.create({
       user_id,
       product_id,
+    });
+
+    res.status(201).json({
+      message: 'Item added to wishlist',
+      data: wishlistItem
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Error adding item to wishlist',
+      error: error.message
+    });
+  }
+};
+const addToWishlist = async (req, res) => {
+  const { user_id, product_id } = req.body;
+
+  try {
+    console.log(user_id, product_id);
+    
+    const wishlistItem = await Wishlist.create({
+      user_id,
+      product_id, 
     });
 
     res.status(201).json({
@@ -77,4 +100,5 @@ export{
   addToWishlist,
   getUserWishlist,
   removeFromWishlist,
+  cartlist,
 };
