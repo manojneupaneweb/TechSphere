@@ -1,190 +1,145 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Link } from "lucide-react"; // Importing icons for arrows
-import { FaMobileAlt, FaClock, FaHeadphonesAlt, FaBatteryFull, FaShieldAlt, FaPlug, FaLaptop } from 'react-icons/fa';
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Link } from "lucide-react";
+import { FaMobileAlt, FaClock, FaHeadphonesAlt, FaBatteryFull, FaShieldAlt, FaPlug, FaLaptop, FaHeart } from 'react-icons/fa';
 import laptops from "../assets/image/laptops.jpeg";
 import laptops2 from "../assets/image/laptops-slide2.jpeg";
 import laptops3 from "../assets/image/laptops3.jpg";
 import mobiles from "../assets/image/mobiles.jpeg";
 import mobiles2 from "../assets/image/mobiles2.jpg";
 import Loading from "../components/Loading";
-import { CartAdd } from "../utils/Cart.utils";
-import { toast , ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
+import { MobileProducts } from "../data";
+import axios from "axios";
+import { CartList, Wishlist } from "../utils/Cart.utils";
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
-
-
-const cartButton = (product) => {
-  // Add product to local storage
-  CartAdd(product);
-  
-  // Display success notification with a green background
-  toast.success(`${product.title} added to cart!`, {
-    // position: toast.POSITION.TOP_RIGHT,
-    style: {
-      position:'top',
-      backgroundColor: 'white',
-      color: '#2d2d2d',
-      fontWeight: 'bold',
-      borderRadius: '8px',
-      padding: '12px 20px',
-      fontSize: '16px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      transition: 'all 0.3s ease',
-      maxWidth: '350px',
-      marginTop: '10px',
-    },
-  });
-  
-
-  console.log(product);
+const handleCartList = async (product) => { // Renamed function
+  await CartList(product);
 };
-const NewlyLaunchedProducts = () => {
-  const products = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/300",
-      price: 90000,
-      title: "Google Pixel 5",
-      description: "A powerful smartphone ",
-      rating: 4.3,
-      reviews: 3000,
-      link: "#",
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/300",
-      price: 1023,
-      title: "UltraBook Pro X",
-      description: "Thin, light, and powerful.",
-      rating: 4.1,
-      reviews: 1200,
-      link: "#",
-    },
-    {
-      id: 3,
-      image: "https://via.placeholder.com/300",
-      price: 1453,
-      title: "Quantum Phone Z",
-      description: "AI-powered smartphone.",
-      rating: 4.7,
-      reviews: 800,
-      link: "#",
-    },
-    {
-      id: 4,
-      image: "https://via.placeholder.com/300",
-      price: 1512,
-      title: "Nova Watch 3",
-      description: "Advanced health monitoring.",
-      rating: 4.5,
-      reviews: 1500,
-      link: "#",
-    },
-    {
-      id: 5,
-      image: "https://via.placeholder.com/300",
-      price: 1450,
-      title: "PixelPad Pro",
-      description: "High-performance tablet.",
-      rating: 4.2,
-      reviews: 1300,
-      link: "#",
-    },
-    {
-      id: 6,
-      image: "https://via.placeholder.com/300",
-      price: 1230,
-      title: "EcoBuds Wireless",
-      description: "Crystal-clear audio.",
-      rating: 4.8,
-      reviews: 600,
-      link: "#",
-    },
-    {
-      id: 7,
-      image: "https://via.placeholder.com/300",
-      price: 8940,
-      title: "Smart Home Hub",
-      description: "Voice-controlled home automation.",
-      rating: 4.3,
-      reviews: 950,
-      link: "#",
-    },
-    {
-      id: 8,
-      image: "https://via.placeholder.com/300",
-      price: 1350,
-      title: "VR Vision X",
-      description: "Next-gen VR experience.",
-      rating: 4.6,
-      reviews: 1100,
-      link: "#",
-    },
-    {
-      id: 9,
-      image: "https://via.placeholder.com/300",
-      price: 1023,
-      title: "Gaming Beast 5",
-      description: "Ultimate gaming PC.",
-      rating: 4.9,
-      reviews: 2000,
-      link: "#",
-    },
-    {
-      id: 10,
-      image: "https://via.placeholder.com/300",
-      price: 5430,
-      title: "Drone AirMax",
-      description: "High-speed drone.",
-      rating: 4.4,
-      reviews: 750,
-      link: "#",
-    },
-    {
-      id: 11,
-      image: "https://via.placeholder.com/300",
-      price: 9870,
-      title: "AutoBot Car AI",
-      description: "Self-driving car assistant.",
-      rating: 4.2,
-      reviews: 1800,
-      link: "#",
-    },
-  ];
-  const scrollRef = useRef(null);
-  return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
 
-        {/* Horizontal Scroll Section */}
-        <div
-          ref={scrollRef}
-          className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3"
-        >
-          {products.slice(0, 10).map((product) => (
-            <div key={product.id} className="min-w-[300px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
-              <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
-              <div className="">
-                <h2 className="text-lg font-bold my-1 ">{product.title}</h2>
-                <p className="text-black-600 ">{product.description}</p>
-                <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
-                <div className="flex justify-between text-lg py-2 px-1">
-                  <p className="text-gray-700">Rating: {product.rating}</p>
-                  <p className="text-gray-700">Reviews: {product.reviews}</p>
-                </div>
-                <button onClick={() => cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
-                  Add to Cart
-                </button>
+const NewlyLaunchedProducts = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+      setProducts(MobileProducts);
+  }, []);
+
+  return (
+      <section className="py-16 bg-white">
+          <div className="container mx-auto px-6">
+              <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
+
+              <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+                  {products.map((product) => (
+                      <div key={product.id} className="min-w-[300px] bg-white shadow-lg rounded-lg p-3 relative">
+                          <button
+                              aria-label="Toggle Wishlist"
+                              className="absolute top-5 right-5 text-xl cursor-pointer"
+                              onClick={() => Wishlist(product)}
+                          >
+                              <FaHeart className="text-red-800" />
+                          </button>
+
+                          <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
+
+                          <div className="p-2">
+                              <h2 className="text-lg font-bold my-1">{product.title}</h2>
+                              <p className="text-gray-600">{product.description}</p>
+                              <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+
+                              <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                                  Add to Cart
+                              </button>
+                          </div>
+                      </div>
+                  ))}
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+          </div>
+      </section>
   );
 };
+
+// const TabletsProducts = () => {
+//   const [products, setProducts] = useState([]);
+//   const scrollRef = useRef(null);
+//   setProducts( TabletsProducts)
+//   useEffect(() => {
+//     // Fetch products from an API or data source
+//     // setProducts(data);
+//   }, []);
+
+//   const cartButton = (product) => {
+//     // Handle adding to cart
+//   };
+
+//   return (
+//     <section className="py-16 bg-white">
+//       <div className="container mx-auto px-6">
+//         <h2 className="text-3xl font-bold text-center mb-8">Best Tablets for Every Need</h2>
+
+//         <div ref={scrollRef} className="flex space-x-6 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+//           {products.slice(0, 10).map((product) => (
+//             <div key={product.id} className="min-w-[220px] sm:min-w-[280px] md:min-w-[320px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
+//               <img
+//                 src={product.image}
+//                 alt={product.title}
+//                 className="w-full border border-black h-56 object-cover"
+//               />
+//               <div>
+//                 <h2 className="text-lg font-bold my-1">{product.title}</h2>
+//                 <p className="text-gray-600">{product.description}</p>
+//                 <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+//                 <div className="flex justify-between text-lg py-2">
+//                   <p className="text-gray-700">Rating: {product.rating}</p>
+//                   <p className="text-gray-700">Reviews: {product.reviews}</p>
+//                 </div>
+//                 <button onClick={() => cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+//                   Add to Cart
+//                 </button>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+// const LaptopProducts = () => {
+//   const [products, setProducts] = useState([]);
+//   const scrollRef = useRef(null);
+//   setProducts( LaptopProducts)
+  
+
+//   return (
+//     <section className="py-16 bg-white">
+//       <div className="container mx-auto px-6">
+//         <h2 className="text-3xl font-bold text-center mb-8">Best Laptops for Work & Play</h2>
+
+//         <div ref={scrollRef} className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+//           {products.slice(0, 10).map((product) => (
+//             <div key={product.id} className="min-w-[300px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
+//               <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
+//               <div className="">
+//                 <h2 className="text-lg font-bold my-1">{product.title}</h2>
+//                 <p className="text-black-600">{product.description}</p>
+//                 <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+//                 <div className="flex justify-between text-lg py-2">
+//                   <p className="text-gray-700">Rating: {product.rating}</p>
+//                   <p className="text-gray-700">Reviews: {product.reviews}</p>
+//                 </div>
+//                 <button onClick={() => cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+//                   Add to Cart
+//                 </button>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
 
 
 const HeroSection = () => {
@@ -255,7 +210,6 @@ const HeroSection = () => {
     </section>
   );
 };
-
 
 const ShopByCategory = () => {
   const scrollContainerRef = useRef();
@@ -362,156 +316,7 @@ const ShopByBrand = () => {
   );
 };
 
-const TabletsProducts = () => {
-  const products = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/300",
-      price: 90000,
-      title: "iPad Pro 12.9",
-      description: "High-end tablet with advanced features",
-      rating: 4.8,
-      reviews: 3000,
-      link: "#",
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/300",
-      price: 75000,
-      title: "Samsung Galaxy Tab S7",
-      description: "Fast and reliable tablet with a stunning display",
-      rating: 4.7,
-      reviews: 2000,
-      link: "#",
-    },
-    {
-      id: 3,
-      image: "https://via.placeholder.com/300",
-      price: 40000,
-      title: "Lenovo Tab P11",
-      description: "Affordable yet powerful tablet for everyday use",
-      rating: 4.5,
-      reviews: 1800,
-      link: "#",
-    },
-    {
-      id: 4,
-      image: "https://via.placeholder.com/300",
-      price: 85000,
-      title: "Microsoft Surface Pro 7",
-      description: "Versatile 2-in-1 tablet for professionals",
-      rating: 4.6,
-      reviews: 2200,
-      link: "#",
-    },
-    {
-      id: 5,
-      image: "https://via.placeholder.com/300",
-      price: 32000,
-      title: "Fire HD 10 Tablet",
-      description: "Great budget-friendly option for entertainment",
-      rating: 4.3,
-      reviews: 1500,
-      link: "#",
-    },
-    {
-      id: 6,
-      image: "https://via.placeholder.com/300",
-      price: 10000,
-      title: "Huawei MatePad T10",
-      description: "Affordable tablet with decent performance",
-      rating: 4.1,
-      reviews: 900,
-      link: "#",
-    },
-    {
-      id: 7,
-      image: "https://via.placeholder.com/300",
-      price: 12000,
-      title: "Alcatel 1T 10",
-      description: "Basic tablet for everyday use",
-      rating: 3.9,
-      reviews: 700,
-      link: "#",
-    },
-    {
-      id: 8,
-      image: "https://via.placeholder.com/300",
-      price: 45000,
-      title: "Samsung Galaxy Tab A7",
-      description: "A tablet with a larger screen for media consumption",
-      rating: 4.4,
-      reviews: 1300,
-      link: "#",
-    },
-    {
-      id: 9,
-      image: "https://via.placeholder.com/300",
-      price: 30000,
-      title: "Huawei MediaPad M5 Lite",
-      description: "Affordable tablet with a decent screen",
-      rating: 4.0,
-      reviews: 1100,
-      link: "#",
-    },
-    {
-      id: 10,
-      image: "https://via.placeholder.com/300",
-      price: 68000,
-      title: "iPad Air 2020",
-      description: "Great performance with a sleek design",
-      rating: 4.7,
-      reviews: 2500,
-      link: "#",
-    },
-    {
-      id: 11,
-      image: "https://via.placeholder.com/300",
-      price: 55000,
-      title: "Xiaomi Pad 5",
-      description: "Feature-packed tablet for entertainment and work",
-      rating: 4.6,
-      reviews: 1300,
-      link: "#",
-    },
-  ];
 
-  const scrollRef = useRef(null);
-
-  return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Best Tablets for Every Need</h2>
-
-        {/* Horizontal Scroll Section */}
-        <div
-          ref={scrollRef}
-          className="flex space-x-6 overflow-x-scroll no-scrollbar scroll-smooth p-3"
-        >
-          {products.slice(0, 10).map((product) => (
-            <div key={product.id} className="min-w-[220px] sm:min-w-[280px] md:min-w-[320px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full border border-black h-56 object-cover"
-              />
-              <div>
-                <h2 className="text-lg font-bold my-1">{product.title}</h2>
-                <p className="text-gray-600">{product.description}</p>
-                <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
-                <div className="flex justify-between text-lg py-2">
-                  <p className="text-gray-700">Rating: {product.rating}</p>
-                  <p className="text-gray-700">Reviews: {product.reviews}</p>
-                </div>
-                <button onClick={()=>cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">Add to Cart</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
 
 const FAQSection = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -578,142 +383,7 @@ const FAQSection = () => {
     </section>
   );
 };
-const LaptopProducts = () => {
-  const products = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/300",
-      price: 90000,
-      title: "Dell XPS 13",
-      description: "Premium ultra-light laptop.",
-      rating: 4.6,
-      reviews: 3200,
-      link: "#",
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/300",
-      price: 110000,
-      title: "Apple MacBook Pro",
-      description: "High-performance laptop for professionals.",
-      rating: 4.8,
-      reviews: 1500,
-      link: "#",
-    },
-    {
-      id: 3,
-      image: "https://via.placeholder.com/300",
-      price: 95000,
-      title: "HP Spectre x360",
-      description: "Versatile 2-in-1 laptop.",
-      rating: 4.5,
-      reviews: 2100,
-      link: "#",
-    },
-    {
-      id: 4,
-      image: "https://via.placeholder.com/300",
-      price: 80000,
-      title: "Lenovo ThinkPad X1",
-      description: "Business-class laptop with durability.",
-      rating: 4.7,
-      reviews: 1800,
-      link: "#",
-    },
-    {
-      id: 5,
-      image: "https://via.placeholder.com/300",
-      price: 105000,
-      title: "Asus ZenBook Pro",
-      description: "Compact laptop with power-packed features.",
-      rating: 4.4,
-      reviews: 1200,
-      link: "#",
-    },
-    {
-      id: 6,
-      image: "https://via.placeholder.com/300",
-      price: 115000,
-      title: "Microsoft Surface Laptop 4",
-      description: "Sleek design with powerful performance.",
-      rating: 4.9,
-      reviews: 800,
-      link: "#",
-    },
-    {
-      id: 7,
-      image: "https://via.placeholder.com/300",
-      price: 130000,
-      title: "Razer Blade 15",
-      description: "Gaming laptop with extreme performance.",
-      rating: 4.8,
-      reviews: 1100,
-      link: "#",
-    },
-    {
-      id: 8,
-      image: "https://via.placeholder.com/300",
-      price: 75000,
-      title: "Acer Aspire 5",
-      description: "Affordable laptop with decent specs.",
-      rating: 4.2,
-      reviews: 2000,
-      link: "#",
-    },
-    {
-      id: 9,
-      image: "https://via.placeholder.com/300",
-      price: 95000,
-      title: "Samsung Galaxy Book Pro",
-      description: "Lightweight laptop with powerful specs.",
-      rating: 4.6,
-      reviews: 950,
-      link: "#",
-    },
-    {
-      id: 10,
-      image: "https://via.placeholder.com/300",
-      price: 120000,
-      title: "MSI GS66 Stealth",
-      description: "High-end laptop with ultra-fast performance.",
-      rating: 4.7,
-      reviews: 1500,
-      link: "#",
-    },
-  ];
 
-  const scrollRef = useRef(null);
-
-  return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Best Laptops for Work & Play</h2>
-
-        {/* Horizontal Scroll Section */}
-        <div
-          ref={scrollRef}
-          className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3"
-        >
-          {products.slice(0, 10).map((product) => (
-            <div key={product.id} className="min-w-[300px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
-              <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
-              <div className="">
-                <h2 className="text-lg font-bold my-1">{product.title}</h2>
-                <p className="text-black-600">{product.description}</p>
-                <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
-                <div className="flex justify-between text-lg py-2">
-                  <p className="text-gray-700">Rating: {product.rating}</p>
-                  <p className="text-gray-700">Reviews: {product.reviews}</p>
-                </div>
-                <button onClick={()=>cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">Add to Cart</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
 
 const NewsletterSection = () => (
   <section className="py-16 bg-gradient-to-r from-blue-50 to-blue-200 text-gray-900 text-center">
@@ -744,19 +414,36 @@ const NewsletterSection = () => (
   </section>
 );
 
-const Home = () => (
-  <>
-    <HeroSection />
-    <NewlyLaunchedProducts />
-    <TabletsProducts />
-    <ShopByCategory />
-    <LaptopProducts />
-    <NewsletterSection />
-    <ShopByBrand />
-    <FAQSection />
-    <ToastContainer />  {/* Add this line */}
-  </>
-);
+const Home = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 2000);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[80vh]">
+      
+      <Loading />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <HeroSection />
+      <NewlyLaunchedProducts />
+      {/* <TabletsProducts /> */}
+      <ShopByCategory />
+      {/* <LaptopProducts /> */}
+      <NewsletterSection />
+      <ShopByBrand />
+      <FAQSection />
+      <ToastContainer />
+    </>
+  );
+};
 
 
 export default Home;

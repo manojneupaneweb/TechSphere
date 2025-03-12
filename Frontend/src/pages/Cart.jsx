@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CartRemove, updateCartItemQuantity } from '../utils/Cart.utils';
+import { CartRemove, updateCartItemQuantity } from '../utils/Cart.utils.js';
 
 function Cart() {
     const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem("cart")) || []);

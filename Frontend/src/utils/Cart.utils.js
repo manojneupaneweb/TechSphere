@@ -1,3 +1,64 @@
+import axios from "axios";
+import { toast } from "react-toastify";
+const accessToken = localStorage.getItem("accessToken");
+
+const Wishlist = async (product) => {
+    try {
+        // Fetch the wishlist products first
+        const response = await axios.get("/api/v1/product/wishlist", {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        const wishlistProducts = response.data;
+
+        // Check if the product already exists in the wishlist
+        const existingProduct = wishlistProducts.some((item) => item.id === product.id);
+
+        if (existingProduct) {
+            // If product already exists in wishlist, remove it
+            await axios.delete(`/api/v1/product/wishlist/${product.id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            toast.success(`${product.title} removed from Wishlist!`);
+        } else {
+            // If product doesn't exist, add it to wishlist
+            await axios.post("/api/v1/product/wishlist", { productId: product.id }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            toast.success(`${product.title} added to Wishlist!`);
+        }
+    } catch (error) {
+        console.error("Error managing wishlist:", error);
+    }
+};
+ 
+const CartList = async (product) => {
+    const accessToken = localStorage.getItem("accessToken"); // Ensure token is available
+
+    // if (!accessToken) {
+    //     return toast.error("Please login to add to cart!");
+    // }
+
+    try {
+        await axios.post("/api/v1/product/cartlist", { productId: product.id }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        toast.success(`${product.title} added to cart!`);
+    } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to add to cart!");
+        console.error("Error adding to cart:", error);
+    }
+};
+
+
 const CartAdd = (product) => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const existingProduct = cart.find(item => item.id === product.id);
@@ -21,14 +82,6 @@ const CartRemove = (item) => {
     console.log("Removed from Cart:", item.title);
 };
 
-// utils/Cart.utils.js
-
-/**
- * Updates the quantity of an item in the cart.
- * @param {string} itemId - The unique ID of the item to update.
- * @param {number} change - The change in quantity (e.g., +1 or -1).
- * @returns {Array} - The updated cart.
- */
 const updateCartItemQuantity = (itemId, change) => {
     // Retrieve the current cart from localStorage
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -49,4 +102,4 @@ const updateCartItemQuantity = (itemId, change) => {
     return cart; // Return the updated cart
 };
 
-export { CartAdd, CartRemove , updateCartItemQuantity};
+export { Wishlist, CartList, CartAdd, CartRemove, updateCartItemQuantity, };
