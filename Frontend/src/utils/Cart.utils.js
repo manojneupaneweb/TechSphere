@@ -2,6 +2,28 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const accessToken = localStorage.getItem("accessToken");
 
+
+const CartList = async (product) => {
+    const accessToken = localStorage.getItem("accessToken"); // Ensure token is available
+
+    if (!accessToken) {
+        return toast.error("Please login to add to cart!");
+    }
+
+    try {
+        await axios.post("/api/v1/product/cartlist", { productId: product.id }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        toast.success(`${product.title} added to cart!`);
+    } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to add to cart!");
+        console.error("Error adding to cart:", error);
+    }
+};
+
+
 const Wishlist = async (product) => {
     try {
         // Fetch the wishlist products first
@@ -38,25 +60,7 @@ const Wishlist = async (product) => {
     }
 };
  
-const CartList = async (product) => {
-    const accessToken = localStorage.getItem("accessToken"); // Ensure token is available
 
-    // if (!accessToken) {
-    //     return toast.error("Please login to add to cart!");
-    // }
-
-    try {
-        await axios.post("/api/v1/product/cartlist", { productId: product.id }, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-        toast.success(`${product.title} added to cart!`);
-    } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to add to cart!");
-        console.error("Error adding to cart:", error);
-    }
-};
 
 
 const CartAdd = (product) => {
