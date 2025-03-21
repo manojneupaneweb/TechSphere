@@ -16,8 +16,10 @@ app.use(
 
 import UserRoute from "./routes/User.route.js";
 import ProductRoute from './routes/Product.route.js'
+import CategoryRoute from './routes/Category.route.js'
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/product", ProductRoute);
+app.use("/api/v1/category", CategoryRoute);
 
 
 

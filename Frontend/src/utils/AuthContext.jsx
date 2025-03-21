@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
+import Loading from "../components/Loading";
 
 const AdminAccess = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
@@ -41,7 +42,9 @@ const AdminAccess = ({ children }) => {
   }, []);
 
   if (isAdmin === null) {
-    return <p>Loading...</p>;
+    return <div className="flex  items-center justify-center h-[80vh]">
+    {<Loading/>}
+    </div>;
   }
 
   return isAdmin ? children : <Navigate to="/login" />;

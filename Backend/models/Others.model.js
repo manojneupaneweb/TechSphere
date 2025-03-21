@@ -5,16 +5,41 @@ import { Product } from './Product.model.js';
 
 const Category = sequelize.define('Category', {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        type: DataTypes.UUID, 
+        defaultValue: DataTypes.UUIDV4, 
+        primaryKey: true
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, { timestamps: true });
+
+const SubCategory = sequelize.define('SubCategory', {
+    id: {
+        type: DataTypes.UUID, 
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
     },
     name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    description: { type: DataTypes.TEXT }
+    categoryId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Category,
+            key: 'id'
+        },
+        onDelete: 'CASCADE'
+    }
 }, { timestamps: true });
+
+// Define One-to-Many Relationship
+Category.hasMany(SubCategory, { foreignKey: 'categoryId', onDelete: 'CASCADE' });
+SubCategory.belongsTo(Category, { foreignKey: 'categoryId' });
+
 
 const Brand = sequelize.define('Brand', {
     id: {
@@ -161,4 +186,4 @@ const Wishlist = sequelize.define('Wishlist', {
     timestamps: true
 });
 
-export { Category, Brand, Order, OrderItem, Payment, Review, Cart, Wishlist };
+export { Category,SubCategory, Brand, Order, OrderItem, Payment, Review, Cart, Wishlist };

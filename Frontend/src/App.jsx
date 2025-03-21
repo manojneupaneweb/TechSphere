@@ -20,13 +20,23 @@ import Login from "./pages/AuthPage/Login";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
 import Orders from "./pages/Admin/Ordres.jsx";
-
-
-import axios from "axios";
+import Reports from "./pages/Admin/Reports.jsx";
 import AddProduct from "./pages/Admin/AddProduct.jsx";
+import Customers from "./pages/Admin/Customers.jsx";
+import Marketing from "./pages/Admin/Marketing.jsx";
+import Settings from "./pages/Admin/Settings.jsx";
+import UserManagement from "./pages/Admin/UserManagement.jsx";
+import HelpSupport from "./pages/Admin/HelpSupport.jsx";
+import AddCategory from "./pages/Admin/AddCategory.jsx";
+
+
+
 import PageNotFound from "./pages/PageNotFound.jsx";
 import Cart from "./pages/Cart.jsx";
+
+
 // Set up Axios globally
+import axios from "axios";
 axios.defaults.baseURL = 'http://localhost:3000';
 
 
@@ -55,9 +65,16 @@ const App = () => {
         <Route path="/login" element={<Login />} />
 
         <Route path="/admin" element={<AdminAccess><AdminLayout /></AdminAccess>}>
-          <Route index path="/admin/Dashboard" element={<Dashboard />} />
+          <Route path="/admin/Dashboard" element={<Dashboard />} />
           <Route path="/admin/add-product" element={<AddProduct />} />
           <Route path="/admin/orders" element={<Orders />} />
+          <Route path="/admin/customers" element={<Customers />} />
+          <Route path="/admin/add-category" element={<AddCategory />} />
+          <Route path="/admin/reports" element={<Reports />} />
+          <Route path="/admin/marketing" element={<Marketing />} />
+          <Route path="/admin/settings" element={<Settings />} />
+          <Route path="/admin/user-management" element={<UserManagement />} />
+          <Route path="/admin/help" element={<HelpSupport />} />
         </Route>
       </Routes>
       {shouldShowHeaderFooter && <Footer />}

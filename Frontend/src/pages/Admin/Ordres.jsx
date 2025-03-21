@@ -1,11 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Orders = () => {
-  const orders = [
-    { id: "#001", customer: "John Doe", status: "Pending", total: "$120.00" },
-    { id: "#002", customer: "Jane Smith", status: "Completed", total: "$200.00" },
-    { id: "#003", customer: "Alice Johnson", status: "Shipped", total: "$95.00" },
-  ];
+  const [orders, setOrders] = useState([
+    {
+      id: "#001",
+      customer: "John Doe",
+      total: "$120.00",
+      product: "Laptop",
+      totalProduct: 1,
+      status: "Pending",
+    },
+    {
+      id: "#002",
+      customer: "Jane Smith",
+      total: "$200.00",
+      product: "Smartphone, Case, Earphone, Charger",
+      totalProduct: 4,
+      status: "Completed",
+    },
+    {
+      id: "#003",
+      customer: "Alice Johnson",
+      total: "$95.00",
+      product: "Headphones",
+      totalProduct: 3,
+      status: "Shipped",
+    },
+  ]);
+
+  const handleStatusChange = (index, newStatus) => {
+    const updatedOrders = [...orders];
+    updatedOrders[index].status = newStatus;
+    setOrders(updatedOrders);
+  };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -14,36 +41,33 @@ const Orders = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-200 text-left">
-              <th className="p-3">Order ID</th>
-              <th className="p-3">Customer</th>
-              <th className="p-3">Status</th>
+              <th className="p-3">Sn</th>
+              <th className="p-3">Customer Name</th>
               <th className="p-3">Total</th>
+              <th className="p-3">Product Name</th>
+              <th className="p-3">Total Product</th>
               <th className="p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order, index) => (
               <tr key={index} className="border-t">
-                <td className="p-3">{order.id}</td>
+                <td className="p-3">{index + 1}</td>
                 <td className="p-3">{order.customer}</td>
-                <td className="p-3">
-                  <span
-                    className={`px-2 py-1 rounded text-sm font-semibold ${
-                      order.status === "Completed"
-                        ? "bg-green-200 text-green-700"
-                        : order.status === "Shipped"
-                        ? "bg-blue-200 text-blue-700"
-                        : "bg-yellow-200 text-yellow-700"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
                 <td className="p-3">{order.total}</td>
+                <td className="p-3">{order.product}</td>
+                <td className="p-3">{order.totalProduct}</td>
                 <td className="p-3">
-                  <button className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                    View
-                  </button>
+                  <select
+                    value={order.status}
+                    onChange={(e) => handleStatusChange(index, e.target.value)}
+                    className="px-2 py-1 border rounded text-sm bg-white"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
                 </td>
               </tr>
             ))}

@@ -7,6 +7,24 @@ import { deleteFromCloudinary, uploadOnCloudinary } from "../Utils/cloudiny.util
 import { cookieOption } from "../Utils/cookieOption.util.js";
 import bcrypt from "bcrypt";
 
+const IsAdmin = async (userId) => {
+  try {
+    console.log("userId : ", userId);
+    
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      console.log("User not found");
+      return false;
+    }
+
+    return user.role === "admin";
+  } catch (error) {
+    console.error("Error checking admin status:", error);
+    return false;
+  }
+};
+
 
 const generateAccessRefreshToken = async (userId) => {
   const user = await User.findByPk(userId);

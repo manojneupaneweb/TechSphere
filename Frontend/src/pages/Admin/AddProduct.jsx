@@ -7,7 +7,9 @@ function AddProduct() {
     price: "",
     highlights: "",
     warranty: "",
-    payment_options: "",
+    stock: "",  // Added stock
+    category: "",  // Added category
+    product: "",  // Added product
     return_policy: "",
     description: "",
     specifications: [],
@@ -18,6 +20,32 @@ function AddProduct() {
   const [product, setProduct] = useState(initialProductState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // For error feedback
+  const [categories, setCategories] = useState([]);  // To store categories
+  const [products, setProducts] = useState([]);  // To store products
+
+  useEffect(() => {
+    // Fetch categories and products from API (example URLs)
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/api/v1/categories");
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/v1/products");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchCategories();
+    fetchProducts();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,20 +77,22 @@ function AddProduct() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     const formData = new FormData();
     formData.append("name", product.name);
     formData.append("price", product.price);
     formData.append("highlights", product.highlights);
     formData.append("warranty", product.warranty);
-    formData.append("payment_options", product.payment_options);
+    formData.append("stock", product.stock);  // Added stock
+    formData.append("category", product.category);  // Added category
+    formData.append("product", product.product);  // Added product
     formData.append("return_policy", product.return_policy);
     formData.append("description", product.description);
     formData.append("specifications", JSON.stringify(product.specifications)); // Ensure this is stringified
     if (product.image) {
       formData.append("image", product.image);
     }
-  
+
     try {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
@@ -112,13 +142,37 @@ function AddProduct() {
         {[{ label: "Product Name", name: "name", type: "text" },
           { label: "Price", name: "price", type: "number", min: "0" },
           { label: "Warranty", name: "warranty", type: "text" },
-          { label: "Payment Options", name: "payment_options", type: "text" },
           { label: "Return Policy", name: "return_policy", type: "text" }].map(({ label, name, type, min }) => (
           <div key={name}>
             <label className="block text-sm font-medium">{label}</label>
             <input type={type} name={name} value={product[name]} onChange={handleChange} className="w-full p-2 border rounded-md" required min={min} />
           </div>
         ))}
+
+        <div>
+          <label className="block text-sm font-medium">Stock</label>
+          <input type="number" name="stock" value={product.stock} onChange={handleChange} className="w-full p-2 border rounded-md" min="0" required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Category</label>
+          <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded-md" required>
+            <option value="">Select a category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Product</label>
+          <select name="product" value={product.product} onChange={handleChange} className="w-full p-2 border rounded-md" required>
+            <option value="">Select a product</option>
+            {products.map((prod) => (
+              <option key={prod.id} value={prod.id}>{prod.name}</option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label className="block text-sm font-medium">Highlights</label>
@@ -151,7 +205,7 @@ function AddProduct() {
         </div>
 
         {error && <div className="text-red-500 text-sm">{error}</div>} {/* Error message */}
-        
+
         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600" disabled={loading}>
           {loading ? "Adding..." : "Add Product"}
         </button>

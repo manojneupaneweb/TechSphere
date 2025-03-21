@@ -59,12 +59,12 @@ const AdminLayout = ({ children }) => {
                         "Add Product",
                         "Orders",
                         "Customers",
-                        "Analytics",
+                        "Add-Category",
                         "Reports",
                         "Marketing",
                         "Settings",
                         "User Management",
-                        "Help & Support",
+                        "Help",
                     ].map((link) => (
                         <Link
                             key={link}
