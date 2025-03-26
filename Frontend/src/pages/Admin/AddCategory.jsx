@@ -15,11 +15,12 @@ const AddCategory = () => {
     fetchCategories();
   }, []);
 
-  // ✅ Fetch All Categories
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("/api/v1/category/getcategory");
-      setCategories(response.data.categories);
+      const response = await axios.get('/api/v1/category/getallcategory');
+      console.log('response',response.data);
+      setCategories(response.data);
+      
     } catch (error) {
       toast.error("Error fetching categories!");
     }

@@ -14,49 +14,60 @@ import axios from "axios";
 import { CartList, Wishlist } from "../utils/Cart.utils";
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
-const handleCartList = async (product) => { // Renamed function
+const handleCartList = async (product) => {
   await CartList(product);
 };
 
 const NewlyLaunchedProducts = () => {
   const [products, setProducts] = useState([]);
 
+  const allproduct = async () => {
+    try {
+      const response = await axios.get('/api/v1/product/getallproducts');
+      console.log(response.data.message);
+    } catch (error) {
+      console.log('error fetching products:', error);
+    }
+  };
+
   useEffect(() => {
-      setProducts(MobileProducts);
+    allproduct();
+    setProducts(MobileProducts);
   }, []);
 
+
   return (
-      <section className="py-16 bg-white">
-          <div className="container mx-auto px-6">
-              <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
 
-              <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
-                  {products.map((product) => (
-                      <div key={product.id} className="min-w-[300px] bg-white shadow-lg rounded-lg p-3 relative">
-                          <button
-                              aria-label="Toggle Wishlist"
-                              className="absolute top-5 right-5 text-xl cursor-pointer"
-                              onClick={() => Wishlist(product)}
-                          >
-                              <FaHeart className="text-red-800" />
-                          </button>
+        <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+          {products.map((product) => (
+            <div key={product.id} className="min-w-[300px] bg-white shadow-lg rounded-lg p-3 relative">
+              <button
+                aria-label="Toggle Wishlist"
+                className="absolute top-5 right-5 text-xl cursor-pointer"
+                onClick={() => Wishlist(product)}
+              >
+                <FaHeart className="text-red-800" />
+              </button>
 
-                          <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
+              <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
 
-                          <div className="p-2">
-                              <h2 className="text-lg font-bold my-1">{product.title}</h2>
-                              <p className="text-gray-600">{product.description}</p>
-                              <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+              <div className="p-2">
+                <h2 className="text-lg font-bold my-1">{product.title}</h2>
+                <p className="text-gray-600">{product.description}</p>
+                <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
 
-                              <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
-                                  Add to Cart
-                              </button>
-                          </div>
-                      </div>
-                  ))}
+                <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                  Add to Cart
+                </button>
               </div>
-          </div>
-      </section>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -110,7 +121,7 @@ const NewlyLaunchedProducts = () => {
 //   const [products, setProducts] = useState([]);
 //   const scrollRef = useRef(null);
 //   setProducts( LaptopProducts)
-  
+
 
 //   return (
 //     <section className="py-16 bg-white">
@@ -424,8 +435,8 @@ const Home = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[80vh]">
-      
-      <Loading />
+
+        <Loading />
       </div>
     );
   }

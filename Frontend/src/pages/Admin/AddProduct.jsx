@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
 
 function AddProduct() {
   const initialProductState = {
@@ -9,7 +10,6 @@ function AddProduct() {
     warranty: "",
     stock: "",  // Added stock
     category: "",  // Added category
-    product: "",  // Added product
     return_policy: "",
     description: "",
     specifications: [],
@@ -21,30 +21,17 @@ function AddProduct() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // For error feedback
   const [categories, setCategories] = useState([]);  // To store categories
-  const [products, setProducts] = useState([]);  // To store products
 
   useEffect(() => {
-    // Fetch categories and products from API (example URLs)
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("/api/v1/categories");
+        const response = await axios.get('/api/v1/category/getallcategory');
         setCategories(response.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        toast.error("Error fetching categories!");
       }
     };
-
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("/api/v1/products");
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
     fetchCategories();
-    fetchProducts();
   }, []);
 
   const handleChange = (e) => {
@@ -84,8 +71,7 @@ function AddProduct() {
     formData.append("highlights", product.highlights);
     formData.append("warranty", product.warranty);
     formData.append("stock", product.stock);  // Added stock
-    formData.append("category", product.category);  // Added category
-    formData.append("product", product.product);  // Added product
+    formData.append("category", product.category);// Added product
     formData.append("return_policy", product.return_policy);
     formData.append("description", product.description);
     formData.append("specifications", JSON.stringify(product.specifications)); // Ensure this is stringified
@@ -106,7 +92,6 @@ function AddProduct() {
         },
       });
       setProduct(initialProductState);
-      console.log("Product added successfully!");
     } catch (error) {
       console.error("Error submitting product:", error);
       setError(error.response?.data?.message || "Failed to add product. Please try again.");
@@ -135,14 +120,33 @@ function AddProduct() {
     setProduct((prev) => ({ ...prev, specifications: updatedSpecifications }));
   };
 
+  //all categoty 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('/api/v1/category/getallcategory');
+      console.log('response', response.data);
+      setCategories(response.data);
+      toast.success("Add Product !");
+
+    } catch (error) {
+      toast.error("Error fetching categories!");
+
+    }
+  };
+
   return (
+    
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Add Product</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {[{ label: "Product Name", name: "name", type: "text" },
-          { label: "Price", name: "price", type: "number", min: "0" },
-          { label: "Warranty", name: "warranty", type: "text" },
-          { label: "Return Policy", name: "return_policy", type: "text" }].map(({ label, name, type, min }) => (
+        { label: "Price", name: "price", type: "number", min: "0" },
+        { label: "Warranty", name: "warranty", type: "text" },
+        { label: "Return Policy", name: "return_policy", type: "text" }].map(({ label, name, type, min }) => (
           <div key={name}>
             <label className="block text-sm font-medium">{label}</label>
             <input type={type} name={name} value={product[name]} onChange={handleChange} className="w-full p-2 border rounded-md" required min={min} />
@@ -163,17 +167,6 @@ function AddProduct() {
             ))}
           </select>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium">Product</label>
-          <select name="product" value={product.product} onChange={handleChange} className="w-full p-2 border rounded-md" required>
-            <option value="">Select a product</option>
-            {products.map((prod) => (
-              <option key={prod.id} value={prod.id}>{prod.name}</option>
-            ))}
-          </select>
-        </div>
-
         <div>
           <label className="block text-sm font-medium">Highlights</label>
           <textarea name="highlights" value={product.highlights} onChange={handleChange} className="w-full p-2 border rounded-md" rows="3" required></textarea>
@@ -210,6 +203,7 @@ function AddProduct() {
           {loading ? "Adding..." : "Add Product"}
         </button>
       </form>
+      <ToastContainer />
     </div>
   );
 }

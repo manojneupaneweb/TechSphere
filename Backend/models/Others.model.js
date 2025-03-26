@@ -3,7 +3,7 @@ import { sequelize } from "../Config/Connect.js";
 import User from './User.model.js';
 import { Product } from './Product.model.js';
 
-const Category = sequelize.define('Category', {
+const Category = sequelize.define('category', {
     id: {
         type: DataTypes.UUID, 
         defaultValue: DataTypes.UUIDV4, 

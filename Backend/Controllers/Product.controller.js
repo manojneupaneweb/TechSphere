@@ -8,10 +8,10 @@ import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
 
 const addProduct = asyncHandler(async (req, res) => {
   console.log("Request Body:", req.body); 
-  const { name, price, highlights, warranty, payment_options, return_policy, description, specifications } = req.body;
+  const { name, price, highlights, warranty, category, stock, return_policy, description, specifications } = req.body;
 
-  if (!name || !price || !description) {
-    throw new ApiError(400, "Name, price, and description are required fields");
+  if (!name || !price || !highlights || !warranty || !category || !stock || !return_policy || !description || !specifications ){
+    throw new ApiError(400, "All required fields");
   }
 
   const localFilePath = req.files?.image?.[0]?.path;
@@ -25,14 +25,7 @@ const addProduct = asyncHandler(async (req, res) => {
   }
   
   const newProduct = await Product.create({
-    name,
-    price,
-    highlights,
-    warranty,
-    payment_options,
-    return_policy,
-    description,
-    specifications,
+    name, price, highlights, warranty, category, stock, return_policy, description, specifications,
     image: imageUrl.url,
   });
 

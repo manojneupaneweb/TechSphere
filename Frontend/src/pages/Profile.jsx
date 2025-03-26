@@ -12,14 +12,20 @@ function Profile() {
     const fetchProfile = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
+        console.log("token not found");
         setRedirect(true);
         return;
+      }else{
+        
       }
       try {
         const response = await axios.get("/api/v1/user/getprofile", {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setUser(response.data.message);
+        console.log(response);
+        
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching user profile:", error);
         setRedirect(true);
@@ -37,7 +43,7 @@ function Profile() {
     <div className="min-h-screen py-12 flex justify-center items-center">
       {loading ? (
         <div className="h-[60vh] flex justify-center items-center">
-          <Loading />
+          Loading 
         </div>
       ) : user ? (
         <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg transition-all duration-300 transform ">

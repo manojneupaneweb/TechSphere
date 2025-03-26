@@ -15,12 +15,13 @@ const addCategory = async (req, res) => {
     }
 };
 
-//Get All Categories (With Optional Subcategories)
 const getCategories = async (req, res) => {
     try {
+        // console.log(".......................................................................................");
         const categories = await Category.findAll({
-            include: [{ model: SubCategory, as: "subCategories" }]
+            // include: [{ model: SubCategory, as: "subCategories" }]
         });
+        
         return res.status(200).json(categories);
     } catch (error) {
         return res.status(500).json({ message: "Error fetching categories", error: error.message });

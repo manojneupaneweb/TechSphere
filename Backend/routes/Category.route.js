@@ -6,7 +6,7 @@ const router = express.Router();
 
 // ✅ Category Routes
 router.route("/addcategory").post(addCategory);
-router.route("/getcategory").get(getCategories);
+router.route("/getallcategory").get(getCategories);
 router.route("/updatecategory/:id").put(updateCategory);
 router.route("/deletecategory/:id").delete(deleteCategory);
 router.route("/getcategory/:id").get(getCategoryById);
