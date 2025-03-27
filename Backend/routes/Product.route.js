@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middleware/multer.middleware.js";
-import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts } from "../Controllers/Product.controller.js";
+import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts, getProductsByCategory, getProductsByBrand } from "../Controllers/Product.controller.js";
 import verifyAdmin from "../middleware/admin.middleware.js";
 import { addToWishlist, cartlist, getCartItems } from "../Controllers/Others.controller.js";
 import verifyJwt from "../middleware/auth.middleware.js";
@@ -14,6 +14,9 @@ router.route('/deleteproduct/:id').delete(deleteProduct);
 router.route('/product/:id').get(getProductById);
 router.route('/getallproducts').get(getAllProducts);
 router.route('/search').get(searchProducts);
+router.route('/:category').get(getProductsByCategory);
+router.route('/:brand').get(getProductsByBrand);
+
 
 
 //wishlist routes

@@ -37,6 +37,7 @@ import Cart from "./pages/Cart.jsx";
 
 // Set up Axios globally
 import axios from "axios";
+import ProductShow from "./pages/ProductShow.jsx";
 axios.defaults.baseURL = 'http://localhost:3000';
 
 
@@ -44,7 +45,6 @@ const App = () => {
   const location = useLocation();
   const noHeaderFooterRoutes = ["/signup", "/login", "/admin"];
 
-  // Check if the current route is in the noHeaderFooterRoutes array
   const shouldShowHeaderFooter = !noHeaderFooterRoutes.includes(location.pathname);
 
   return (
@@ -55,11 +55,13 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:title" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/:catagory/:brandname" element={<ProductShow />} />
         <Route path="*" element={<PageNotFound />} />
 
         <Route element={<UserAccess />}>
           <Route path="/profile" element={<Profile />} />
         </Route>
+
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

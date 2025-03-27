@@ -14,19 +14,33 @@ const addProduct = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All required fields");
   }
 
-  const localFilePath = req.files?.image?.[0]?.path;
+  const localFilePath = req.files?.image?.[0]?.path;   
   if (!localFilePath) {
     throw new ApiError(400, "Product image is required");
   }
 
   const imageUrl = await uploadOnCloudinary(localFilePath);
+  console.log(imageUrl);
+  
   if (!imageUrl) {
     throw new ApiError(500, "Failed to upload image to Cloudinary");
   }
   
+  console.log("name:", name)
+  console.log("price:", price)
+  console.log("highlights:", highlights)
+  console.log("warranty:", warranty)
+  console.log("category:", category)
+  console.log("stock:", stock)
+  console.log("return_policy:", return_policy)
+  console.log("description:", description)
+  console.log("specifications:", specifications)
+  console.log("image:", imageUrl)
+
   const newProduct = await Product.create({
+  
     name, price, highlights, warranty, category, stock, return_policy, description, specifications,
-    image: imageUrl.url,
+    image: imageUrl,
   });
 
   res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));

@@ -66,7 +66,7 @@ const Product = sequelize.define("Product", {
       min: 0 // Ensure stock is not negative
     }
   },
-  category_id: { 
+  category: { 
     type: DataTypes.INTEGER,
     references: { 
       model: 'Categories', // Use the table name as a string
@@ -75,7 +75,7 @@ const Product = sequelize.define("Product", {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE'
   },
-  brand_id: { 
+  brand: { 
     type: DataTypes.INTEGER,
     references: { 
       model: 'Brands',

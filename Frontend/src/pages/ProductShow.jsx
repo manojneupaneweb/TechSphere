@@ -34,7 +34,23 @@ const ProductDetails = [
 function ProductShow() {
     const { catagory, brandname } = useParams();
     const [minPrice, setMinPrice] = useState(1000);
-    const [maxPrice, setMaxPrice] = useState(100000);
+    
+    const [product, setProduct] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    if (catagory & !brandname) {
+        const fatchByCatagory =async () => {
+            const response = await axios.get(`/api/v1/products/${catagory}`);
+            setProduct(response.data);
+            setLoading(false);
+        }
+    }else if (catagory & brandname) {
+        const fatchByBrand =async () => {
+            const response = await axios.get(`/api/v1/products/${catagory}/${brandname}`);
+            setProduct(response.data);
+            setLoading(false);
+        }
+    }
 
     return (
         <div className="px-5 md:px-20 lg:px-44 py-5">

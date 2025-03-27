@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const KeySpecification = {
     Model: "iPad Pro 11-Inch 256GB",
@@ -14,6 +15,24 @@ const KeySpecification = {
 function ProductDetails() {
     const [activeTab, setActiveTab] = useState("Specifications");
     const { catagory,brandname } = useParams();
+    const [product, setProduct] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    if (catagory & !brandname) {
+        const fatchByCatagory =async () => {
+            const response = await axios.get(`/api/v1/products/${catagory}`);
+            setProduct(response.data);
+            setLoading(false);
+        }
+    }else if (catagory & brandname) {
+        const fatchByBrand =async () => {
+            const response = await axios.get(`/api/v1/products/${catagory}/${brandname}`);
+            setProduct(response.data);
+            setLoading(false);
+        }
+    }
+
+
     return (
         <>
         <div className="max-w-screen-xl mx-auto px-6 py-10 sm:px-12 md:px-16">

@@ -8,8 +8,8 @@ function AddProduct() {
     price: "",
     highlights: "",
     warranty: "",
-    stock: "",  // Added stock
-    category: "",  // Added category
+    stock: "",
+    category: "",
     return_policy: "",
     description: "",
     specifications: [],
@@ -91,8 +91,10 @@ function AddProduct() {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+      toast.success("Add Product !");
       setProduct(initialProductState);
     } catch (error) {
+      toast.error("Error! ",error.message);
       console.error("Error submitting product:", error);
       setError(error.response?.data?.message || "Failed to add product. Please try again.");
     } finally {
@@ -130,8 +132,6 @@ function AddProduct() {
       const response = await axios.get('/api/v1/category/getallcategory');
       console.log('response', response.data);
       setCategories(response.data);
-      toast.success("Add Product !");
-
     } catch (error) {
       toast.error("Error fetching categories!");
 
@@ -163,7 +163,7 @@ function AddProduct() {
           <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded-md" required>
             <option value="">Select a category</option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>{category.name}</option>
+              <option key={category.id} value={category.name}>{category.name}</option>
             ))}
           </select>
         </div>

@@ -1,50 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../components/Loading";
 
 const AdminAccess = ({ children }) => {
+  const [isAdmin, setIsAdmin] = useState(null);
   const accessToken = localStorage.getItem("accessToken");
 
   if (!accessToken) {
     return <Navigate to="/login" />;
   }
 
-  // Check if user is an admin
-  const [isAdmin, setIsAdmin] = React.useState(null);
-
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchProfile = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        return null;
-      }
       try {
-        const response = await axios.get("/api/v1/user/getprofile",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${accessToken}`
-            }
-          }
-        );
-        if (response.data.message.role === "admin" || response.data.role === "administrative") {
+        const { data } = await axios.get("/api/v1/user/getprofile", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        // Ensure data.message exists before accessing role
+        if (data?.message?.role === "admin" || data?.message?.role === "administrative") {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching profile:", error);
         setIsAdmin(false);
       }
     };
+
     fetchProfile();
-  }, []);
+  }, [accessToken]);
 
   if (isAdmin === null) {
-    return <div className="flex  items-center justify-center h-[80vh]">
-    {<Loading/>}
-    </div>;
+    return (
+      <div className="flex items-center justify-center h-[80vh]">
+        <Loading />
+      </div>
+    );
   }
 
   return isAdmin ? children : <Navigate to="/login" />;
@@ -52,29 +46,24 @@ const AdminAccess = ({ children }) => {
 
 const UserAccess = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
-
-  if (!accessToken) {
-    return <Navigate to="/login" />;
-  }
-
-  return children;
+  return accessToken ? children : <Navigate to="/login" />;
 };
 
 const Logout = async () => {
   try {
-    const accessToken = localStorage.getItem("accessToken")
-    const response = await axios.get("/api/v1/user/logout", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-
-    window.location.href = "/login";
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      await axios.get("/api/v1/user/logout", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+    }
   } catch (error) {
     console.error("Error during logout:", error);
+  } finally {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    window.location.href = "/login";
   }
-}
+};
+
 export { AdminAccess, UserAccess, Logout };
