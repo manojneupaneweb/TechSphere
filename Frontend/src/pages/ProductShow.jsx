@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import Loading from "../components/Loading";
 
 const ProductDetails = [
     {
@@ -32,9 +34,8 @@ const ProductDetails = [
 ];
 
 function ProductShow() {
-    const { catagory, brandname } = useParams();
-    const [minPrice, setMinPrice] = useState(1000);
-    
+    const [activeTab, setActiveTab] = useState("Specifications");
+    const { catagory,brandname } = useParams();
     const [product, setProduct] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -53,6 +54,10 @@ function ProductShow() {
     }
 
     return (
+        <>
+        if (loading) {
+            <Loading/>
+        }
         <div className="px-5 md:px-20 lg:px-44 py-5">
             <div>
                 <p>
@@ -115,6 +120,8 @@ function ProductShow() {
                 </div>
             </div>
         </div>
+        </>
+
     );
 }
 

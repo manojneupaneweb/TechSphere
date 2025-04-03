@@ -3,11 +3,11 @@ import { sequelize } from "../Config/Connect.js";
 import { DataTypes, Sequelize } from "sequelize"; 
 
 const Product = sequelize.define("Product", {
-  id: { 
-    type: DataTypes.INTEGER, 
-    primaryKey: true, 
-    autoIncrement: true 
-  },
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
+  },  
   name: { 
     type: DataTypes.STRING, 
     allowNull: false 
@@ -20,7 +20,7 @@ const Product = sequelize.define("Product", {
     type: DataTypes.DECIMAL(10, 2), 
     allowNull: false,
     validate: {
-      min: 0.01 // Ensure price is at least 0.01
+      min: 0.01
     }
   },
   highlights: { 
@@ -29,10 +29,6 @@ const Product = sequelize.define("Product", {
   },
   warranty: { 
     type: DataTypes.STRING, 
-    allowNull: true 
-  },
-  payment_options: { 
-    type: DataTypes.JSON, 
     allowNull: true 
   },
   return_policy: { 
@@ -52,7 +48,7 @@ const Product = sequelize.define("Product", {
     defaultValue: 0.0,
     validate: {
       min: 0.0,
-      max: 5.0 // Assuming ratings are out of 5
+      max: 5.0
     }
   },
   reviews: { 
@@ -63,13 +59,13 @@ const Product = sequelize.define("Product", {
     type: DataTypes.INTEGER, 
     defaultValue: 0,
     validate: {
-      min: 0 // Ensure stock is not negative
+      min: 0 
     }
   },
   category: { 
     type: DataTypes.INTEGER,
     references: { 
-      model: 'Categories', // Use the table name as a string
+      model: 'Categories',
       key: 'id' 
     },
     onDelete: 'CASCADE',

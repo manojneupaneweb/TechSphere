@@ -93,14 +93,14 @@ const Header = () => {
               {/* User Account Dropdown */}
               <div className="hidden sm:flex items-center relative user-menu-container">
                 {isLoggedIn ? (
-                  <div 
-                    className="flex items-center space-x-1 cursor-pointer" 
+                  <div
+                    className="flex items-center space-x-1 cursor-pointer"
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
                     {userData?.avatar ? (
-                      <img 
-                        src={userData.avatar} 
-                        alt="User" 
+                      <img
+                        src={userData.avatar}
+                        alt="User"
                         className="h-8 w-8 rounded-full object-cover"
                       />
                     ) : (
@@ -109,11 +109,11 @@ const Header = () => {
                       </div>
                     )}
                     <span className="ml-1 hidden lg:inline">
-                      Hi, 
-                      {/* {userData?.name.split(' ')[0]} */}
+                      Hi, {userData?.fullName.split(' ')[0]}
                     </span>
+
                     <ChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-                    
+
                     {/* User Dropdown Menu */}
                     {isUserMenuOpen && (
                       <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
@@ -149,8 +149,8 @@ const Header = () => {
                       <span className="ml-1 hidden lg:inline">Login</span>
                     </Link>
                     <span className="text-gray-400 hidden lg:inline">|</span>
-                    <Link 
-                      to="/signup" 
+                    <Link
+                      to="/signup"
                       className="hidden lg:inline hover:text-[#8a0106]"
                     >
                       Sign Up
@@ -163,7 +163,7 @@ const Header = () => {
                 <Heart className="h-5 w-5 text-gray-700" />
                 <span className="ml-1 hidden lg:inline">Wishlist</span>
               </Link>
-              
+
               <Link to="/cart" className="flex items-center hover:text-[#8a0106]">
                 <div className="relative">
                   <ShoppingCart className="h-5 w-5 text-gray-700" />
@@ -173,9 +173,9 @@ const Header = () => {
                 </div>
                 <span className="ml-1 hidden lg:inline">Cart</span>
               </Link>
-              
-              <button 
-                className="md:hidden" 
+
+              <button
+                className="md:hidden"
                 onClick={() => setMobileNavOpen(true)}
                 aria-label="Open menu"
               >
@@ -190,9 +190,9 @@ const Header = () => {
       </header>
 
       {/* Mobile Navigation */}
-      <MobileNavigation 
-        isOpen={mobileNavOpen} 
-        onClose={() => setMobileNavOpen(false)} 
+      <MobileNavigation
+        isOpen={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
         isLoggedIn={isLoggedIn}
         isAdmin={isAdmin}
         userData={userData}

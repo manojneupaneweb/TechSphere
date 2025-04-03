@@ -21,13 +21,13 @@ import AdminLayout from "./pages/Admin/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
 import Orders from "./pages/Admin/Ordres.jsx";
 import Reports from "./pages/Admin/Reports.jsx";
-import AddProduct from "./pages/Admin/AddProduct.jsx";
+import AddProduct from "./pages/Admin/Product/AddProduct.jsx";
 import Customers from "./pages/Admin/Customers.jsx";
 import Marketing from "./pages/Admin/Marketing.jsx";
 import Settings from "./pages/Admin/Settings.jsx";
 import UserManagement from "./pages/Admin/UserManagement.jsx";
 import HelpSupport from "./pages/Admin/HelpSupport.jsx";
-import AddCategory from "./pages/Admin/AddCategory.jsx";
+import AddCategory from "./pages/Admin/Product/AddCategory.jsx";
 
 
 
@@ -38,6 +38,7 @@ import Cart from "./pages/Cart.jsx";
 // Set up Axios globally
 import axios from "axios";
 import ProductShow from "./pages/ProductShow.jsx";
+import AllProduct from "./pages/Admin/Product/AllProduct.jsx";
 axios.defaults.baseURL = 'http://localhost:3000';
 
 
@@ -49,13 +50,13 @@ const App = () => {
 
   return (
     <>
-      {shouldShowHeaderFooter && <Header />}
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/product/:title" element={<ProductDetails />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/:catagory/:brandname" element={<ProductShow />} />
+        <Route path="/catagory/:catagory/:brandname" element={<ProductShow />} />
         <Route path="*" element={<PageNotFound />} />
 
         <Route element={<UserAccess />}>
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="/admin" element={<AdminAccess><AdminLayout /></AdminAccess>}>
           <Route path="/admin/Dashboard" element={<Dashboard />} />
           <Route path="/admin/add-product" element={<AddProduct />} />
+          <Route path="/admin/all-product" element={<AllProduct />} />
           <Route path="/admin/orders" element={<Orders />} />
           <Route path="/admin/customers" element={<Customers />} />
           <Route path="/admin/add-category" element={<AddCategory />} />
@@ -79,7 +81,7 @@ const App = () => {
           <Route path="/admin/help" element={<HelpSupport />} />
         </Route>
       </Routes>
-      {shouldShowHeaderFooter && <Footer />}
+       <Footer />
     </>
   );
 };

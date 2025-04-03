@@ -107,24 +107,42 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 const getProductById = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  try {
+    console.log('-------------------------------');
 
-  const product = await Product.findByPk(id);
-  if (!product) {
-    throw new ApiError(404, "Product not found");
+    const id = String(req.params.id).trim();
+    console.log("Type of id:", typeof id);
+    console.log("Raw id value:", id);
+    console.log("Is valid UUID:", /^[0-9a-fA-F-]{36}$/.test(id));
+
+    if (!id) {
+      throw new ApiError(400, "Product ID is required");
+    }
+
+    const product = await Product.findByPk(id);
+    console.log("product:", product);
+
+    if (!product) {
+      throw new ApiError(404, "Product not found");
+    }
+
+    res.status(200).json(new ApiResponse(200, "Product fetched successfully", product));
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    throw new ApiError(500, "Internal server error while fetching product");
   }
-
-  res.status(200).json(new ApiResponse(200, "Product fetched successfully", product));
 });
 
+
+
 const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.findAll();
+  // const products = await Product.findAll({});
 
-  if (!products.length) {
-    throw new ApiError(404, "No products found");
-  }
+  // if (!products.length) {
+  //   throw new ApiError(404, "No products found");
+  // }
 
-  res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
+  // res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
 });
 
 const getProductsByCategory = asyncHandler(async (req, res) => {

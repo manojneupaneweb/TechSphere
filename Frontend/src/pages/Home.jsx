@@ -55,7 +55,9 @@ const NewlyLaunchedProducts = () => {
               <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
 
               <div className="p-2">
-                <h2 className="text-lg font-bold my-1">{product.title}</h2>
+                <a href={`/product/${product.id}`}>
+                  <h2 className="text-lg font-bold my-1">{product.title}</h2>
+                  </a>
                 <p className="text-gray-600">{product.description}</p>
                 <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
 

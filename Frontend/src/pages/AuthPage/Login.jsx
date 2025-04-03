@@ -23,7 +23,7 @@ const Login = () => {
 
       toast.success("Login successful!", { position: "top-right" });
       setTimeout(() => {
-        navigate("/profile");
+        navigate("/");
       }, 2000);
     } catch (error) {
       toast.error(

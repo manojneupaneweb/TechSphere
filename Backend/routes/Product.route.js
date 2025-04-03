@@ -11,6 +11,7 @@ const router = Router();
 router.route('/addproduct').post(verifyAdmin, upload.fields([{ name: "image", maxCount: 1 }]), addProduct);
 router.route('/editproduct/:id').put(upload.fields([{ name: "image", maxCount: 1 }]), editProduct);
 router.route('/deleteproduct/:id').delete(deleteProduct);
+
 router.route('/product/:id').get(getProductById);
 router.route('/getallproducts').get(getAllProducts);
 router.route('/search').get(searchProducts);
