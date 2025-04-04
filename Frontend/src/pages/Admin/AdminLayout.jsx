@@ -136,7 +136,9 @@ const AdminLayout = () => {
         className={`bg-white-900 text-white p-5 w-64 fixed inset-y-0 left-0 transform transition-transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static`}
       >
         <div className="flex justify-center">
+          <a href="/admin/dashboard">
           <img src={Logo} alt="Logo" className="w-40 h-14" />
+          </a>
         </div>
         <nav className="space-y-4 mt-5">
           {navItems.map((item) => (
@@ -195,7 +197,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
+      <main className="flex-1 p-6 bg-gray-100 overflow-y-auto ">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 p-4 flex justify-between items-center shadow-md">
           <button
