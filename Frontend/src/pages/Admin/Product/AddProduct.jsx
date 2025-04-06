@@ -21,6 +21,7 @@ function AddProduct() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // For error feedback
   const [categories, setCategories] = useState([]);  // To store categories
+  const [brands, setBrands] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -31,6 +32,15 @@ function AddProduct() {
         toast.error("Error fetching categories!");
       }
     };
+    const fetchBrands = async () => {
+      try {
+        const response = await axios.get('/api/v1/category/getallbrand');
+        setBrands(response.data);
+      } catch (error) {
+        toast.error("Error fetching brands!");
+      }
+    };
+    fetchBrands();
     fetchCategories();
   }, []);
 
@@ -94,7 +104,7 @@ function AddProduct() {
       toast.success("Add Product !");
       setProduct(initialProductState);
     } catch (error) {
-      toast.error("Error! ",error.message);
+      toast.error("Error! ", error.message);
       console.error("Error submitting product:", error);
       setError(error.response?.data?.message || "Failed to add product. Please try again.");
     } finally {
@@ -139,7 +149,7 @@ function AddProduct() {
   };
 
   return (
-    
+
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Add Product</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -158,15 +168,27 @@ function AddProduct() {
           <input type="number" name="stock" value={product.stock} onChange={handleChange} className="w-full p-2 border rounded-md" min="0" required />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium">Category</label>
-          <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded-md" required>
-            <option value="">Select a category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.name}>{category.name}</option>
-            ))}
-          </select>
+        <div className="flex justify-evenly gap-5">
+          <div className="w-1/2">
+            <label className="block text-sm font-medium">Category</label>
+            <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded-md" required>
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.name}>{category.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="w-1/2">
+            <label className="block text-sm font-medium">Brands</label>
+            <select name="category" value={product.brands} onChange={handleChange} className="w-full p-2 border rounded-md" required>
+              <option value="">Select a Brands</option>
+              {brands.map((brand) => (
+                <option key={brand.id} value={brand.name}>{brand.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
+
         <div>
           <label className="block text-sm font-medium">Highlights</label>
           <textarea name="highlights" value={product.highlights} onChange={handleChange} className="w-full p-2 border rounded-md" rows="3" required></textarea>

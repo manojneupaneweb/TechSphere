@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../components/Loading";
+import { toast } from "react-toastify";
 
 const AdminAccess = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(null);
@@ -46,7 +47,13 @@ const AdminAccess = ({ children }) => {
 
 const UserAccess = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
-  return accessToken ? children : <Navigate to="/login" />;
+
+  if (!accessToken) {
+    toast.error("Please login to access this page");
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
 
 const Logout = async () => {

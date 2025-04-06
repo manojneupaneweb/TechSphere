@@ -3,7 +3,22 @@ import { sequelize } from "../Config/Connect.js";
 import User from './User.model.js';
 import { Product } from './Product.model.js';
 
-const Category = sequelize.define('category', {
+
+// ---------------Category model ---------------
+const Category = sequelize.define('categories', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, { timestamps: true });
+
+// ---------------Brand model ---------------
+const Brand = sequelize.define('brands', {
     id: {
         type: DataTypes.UUID, 
         defaultValue: DataTypes.UUIDV4, 
@@ -13,11 +28,15 @@ const Category = sequelize.define('category', {
         type: DataTypes.STRING,
         allowNull: false
     }
-}, { timestamps: true });
+}, { timestamps: false }); // Disable timestamps
 
+
+
+
+// ---------------SubCategory model ---------------
 const SubCategory = sequelize.define('SubCategory', {
     id: {
-        type: DataTypes.UUID, 
+        type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
@@ -40,17 +59,6 @@ const SubCategory = sequelize.define('SubCategory', {
 Category.hasMany(SubCategory, { foreignKey: 'categoryId', onDelete: 'CASCADE' });
 SubCategory.belongsTo(Category, { foreignKey: 'categoryId' });
 
-
-const Brand = sequelize.define('Brand', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true, autoIncrement: true
-    },
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-}, { timestamps: true });
 
 const Order = sequelize.define('Order', {
     id: {
@@ -186,4 +194,4 @@ const Wishlist = sequelize.define('Wishlist', {
     timestamps: true
 });
 
-export { Category,SubCategory, Brand, Order, OrderItem, Payment, Review, Cart, Wishlist };
+export { Category, SubCategory, Brand, Order, OrderItem, Payment, Review, Cart, Wishlist };

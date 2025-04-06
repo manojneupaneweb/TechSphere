@@ -452,7 +452,7 @@ const Home = () => {
       {/* <LaptopProducts /> */}
       <NewsletterSection />
       <ShopByBrand />
-      <FAQSection />
+      {/* <FAQSection /> */}
       <ToastContainer />
     </>
   );

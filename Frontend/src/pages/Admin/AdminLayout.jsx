@@ -23,7 +23,7 @@ const AdminLayout = () => {
       subItems: [
         { title: "All Products", href: "/admin/all-product" },
         { title: "Add New", href: "/admin/add-product" },
-        { title: "Categories", href: "/admin/products/categories" },
+        { title: "Categories", href: "/admin/add-category" },
         { title: "Delete", href: "/admin/delete-products" },
       ],
     },

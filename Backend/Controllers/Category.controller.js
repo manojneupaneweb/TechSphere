@@ -1,4 +1,4 @@
-import { Category, SubCategory } from "../models/Others.model.js";
+import { Brand, Category, SubCategory } from "../models/Others.model.js";
 
 //Add a New Category
 const addCategory = async (req, res) => {
@@ -65,20 +65,82 @@ const getCategoryById = async (req, res) => {
 // Delete a Category
 const deleteCategory = async (req, res) => {
     try {
-        const { id } = req.params;
+        let { id } = req.params;
+        id = id.replace(/^:/, ""); // remove leading colon if present
+        console.log("Cleaned ID:", id);
+
         const category = await Category.findByPk(id);
 
-        if (!category) return res.status(404).json({ message: "Category not found" });
+        if (!category) {
+            console.log("Category not found");
+            return res.status(404).json({ message: "Category not found" });
+        }
 
         await category.destroy();
         return res.status(200).json({ message: "Category deleted successfully" });
+
     } catch (error) {
         return res.status(500).json({ message: "Error deleting category", error: error.message });
     }
 };
+
 export{addCategory, getCategories, getCategoryById, updateCategory, deleteCategory}
 
-//subcategory
+
+
+//----------------------------Brand ----------------------------------
+// Add a New
+const addBrand = async (req, res) => {
+    try {
+        const { name } = req.body;
+        
+        if (!name) return res.status(400).json({ message: "Brand name is required" });
+
+        const brand = await Brand.create({ name });
+
+        return res.status(201).json({ message: "Brand created successfully", brand });
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ message: "Error creating Brand", error: error.message });
+    }
+};
+
+const getBrand = async (req, res) => {
+    try {
+        const brand = await Brand.findAll({ });
+        
+        return res.status(200).json(brand);
+    } catch (error) {
+        return res.status(500).json({ message: "Error fetching categories", error: error.message });
+    }
+};
+
+// Delete a Brand
+const deleteBrand = async (req, res) => {
+    try {
+        let { id } = req.params;
+        id = id.replace(/^:/, "");
+        console.log("Cleaned ID:", id);
+
+        const brand = await Brand.findByPk(id);
+
+        if (!brand) {
+            console.log("Brand not found");
+            return res.status(404).json({ message: "Brand not found" });
+        }
+
+        await brand.destroy();
+        return res.status(200).json({ message: "Brand deleted successfully" });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Error deleting Brand", error: error.message });
+    }
+};
+
+export {addBrand, getBrand, deleteBrand}
+
+
+//------------------------- subcategory ----------------------------------
 
 //  Add a Sub-Category (Linked to a Category)
 const addSubCategory = async (req, res) => {
@@ -97,7 +159,7 @@ const addSubCategory = async (req, res) => {
         return res.status(500).json({ message: "Error creating sub-category", error: error.message });
     }
 };
-
+ 
 // Get All Sub-Categories
 const getSubCategories = async (req, res) => {
     try {

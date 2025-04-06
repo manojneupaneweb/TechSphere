@@ -14,7 +14,7 @@ import Signup from "./pages/AuthPage/Signup";
 import Login from "./pages/AuthPage/Login";
 import PageNotFound from "./pages/PageNotFound.jsx";
 import Cart from "./pages/Cart.jsx";
-import ProductShow from "./pages/ProductShow.jsx";
+import ProductShow from "./pages/ProductsShow.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -32,6 +32,7 @@ import AllProduct from "./pages/Admin/Product/AllProduct.jsx";
 
 // Set up Axios globally
 import axios from "axios";
+import Aboutus from "./pages/Aboutus.jsx";
 axios.defaults.baseURL = "http://localhost:3000";
 
 const router = createBrowserRouter([
@@ -40,9 +41,11 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/", element: <Home /> },
+      { path: "/about", element: <Aboutus /> },
       { path: "/contact", element: <Contact /> },
       { path: "/product/:id", element: <ProductDetails /> },
-      { path: "/category/:category/:brandname", element: <ProductShow /> }, // Fixed "catagory" typo
+      { path: "/catagory/:category/:brandname", element: <ProductShow /> },
+ 
       {
         path: "/cart", element: (
           <UserAccess>
@@ -74,9 +77,9 @@ const router = createBrowserRouter([
       { path: "dashboard", element: <Dashboard /> }, // Use lowercase paths
       { path: "add-product", element: <AddProduct /> },
       { path: "all-product", element: <AllProduct /> },
+      { path: "add-category", element: <AddCategory /> },
       { path: "orders", element: <Orders /> },
       { path: "customers", element: <Customers /> },
-      { path: "add-category", element: <AddCategory /> },
       { path: "reports", element: <Reports /> },
       { path: "marketing", element: <Marketing /> },
       { path: "settings", element: <Settings /> },
