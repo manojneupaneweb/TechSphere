@@ -10,7 +10,7 @@ const CartList = async (product) => {
         return toast.error("Please login to add to cart!");
     }
 
-    try {
+    try { 
         await axios.post("/api/v1/product/cartlist", { productId: product.id }, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
