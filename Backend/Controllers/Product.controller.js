@@ -8,9 +8,9 @@ import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
 
 const addProduct = asyncHandler(async (req, res) => {
   console.log("Request Body:", req.body); 
-  const { name, price, highlights, warranty, category, stock, return_policy, description, specifications } = req.body;
+  const { name, price, warranty, category, brand, stock, return_policy, description, specifications } = req.body;
 
-  if (!name || !price || !highlights || !warranty || !category || !stock || !return_policy || !description || !specifications ){
+  if (!name || !price || !warranty || !category || !brand|| !stock || !return_policy || !description || !specifications ){
     throw new ApiError(400, "All required fields");
   }
 
@@ -28,9 +28,9 @@ const addProduct = asyncHandler(async (req, res) => {
   
   console.log("name:", name)
   console.log("price:", price)
-  console.log("highlights:", highlights)
   console.log("warranty:", warranty)
   console.log("category:", category)
+  console.log("brand:", brand)
   console.log("stock:", stock)
   console.log("return_policy:", return_policy)
   console.log("description:", description)
@@ -39,7 +39,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
   const newProduct = await Product.create({
   
-    name, price, highlights, warranty, category, stock, return_policy, description, specifications,
+    name, price,  warranty, category, stock, return_policy, description, specifications,
     image: imageUrl,
   });
 
@@ -136,20 +136,24 @@ const getProductById = asyncHandler(async (req, res) => {
 
 
 const getAllProducts = asyncHandler(async (req, res) => {
-  // const products = await Product.findAll({});
 
-  // if (!products.length) {
-  //   throw new ApiError(404, "No products found");
-  // }
+  const products = await Product.findAll({});
 
-  // res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
+  if (!products || products.length === 0) {
+    throw new ApiError(404, "No products found");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, products, "Products fetched successfully")
+  );
 });
+
 
 const getProductsByCategory = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
 
   const products = await Product.findAll({
-    where: { category_id: categoryId },
+    // where: { category: categoryId },
   });
 
   if (!products.length) {

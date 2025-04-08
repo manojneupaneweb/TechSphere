@@ -6,10 +6,10 @@ function AddProduct() {
   const initialProductState = {
     name: "",
     price: "",
-    highlights: "",
     warranty: "",
     stock: "",
     category: "",
+    brand: "",
     return_policy: "",
     description: "",
     specifications: [],
@@ -19,30 +19,32 @@ function AddProduct() {
 
   const [product, setProduct] = useState(initialProductState);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // For error feedback
-  const [categories, setCategories] = useState([]);  // To store categories
+  const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/api/v1/category/getallcategory');
-        setCategories(response.data);
-      } catch (error) {
-        toast.error("Error fetching categories!");
-      }
-    };
-    const fetchBrands = async () => {
-      try {
-        const response = await axios.get('/api/v1/category/getallbrand');
-        setBrands(response.data);
-      } catch (error) {
-        toast.error("Error fetching brands!");
-      }
-    };
-    fetchBrands();
     fetchCategories();
+    fetchBrands();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('/api/v1/category/getallcategory');
+      setCategories(response.data);
+    } catch (error) {
+      toast.error("Error fetching categories!");
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get('/api/v1/category/getallbrand');
+      setBrands(response.data);
+    } catch (error) {
+      toast.error("Error fetching brands!");
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,13 +80,13 @@ function AddProduct() {
     const formData = new FormData();
     formData.append("name", product.name);
     formData.append("price", product.price);
-    formData.append("highlights", product.highlights);
     formData.append("warranty", product.warranty);
-    formData.append("stock", product.stock);  // Added stock
-    formData.append("category", product.category);// Added product
+    formData.append("stock", product.stock);
+    formData.append("category", product.category);
+    formData.append("brand", product.brand);
     formData.append("return_policy", product.return_policy);
     formData.append("description", product.description);
-    formData.append("specifications", JSON.stringify(product.specifications)); // Ensure this is stringified
+    formData.append("specifications", JSON.stringify(product.specifications));
     if (product.image) {
       formData.append("image", product.image);
     }
@@ -95,18 +97,20 @@ function AddProduct() {
         setError("Authorization token is missing.");
         return;
       }
-      const response = await axios.post("/api/v1/product/addproduct", formData, {
+
+      await axios.post("/api/v1/product/addproduct", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      toast.success("Add Product !");
+
+      toast.success("Product Added!");
       setProduct(initialProductState);
     } catch (error) {
-      toast.error("Error! ", error.message);
+      toast.error("Error adding product.");
       console.error("Error submitting product:", error);
-      setError(error.response?.data?.message || "Failed to add product. Please try again.");
+      setError(error.response?.data?.message || "Failed to add product.");
     } finally {
       setLoading(false);
     }
@@ -132,98 +136,59 @@ function AddProduct() {
     setProduct((prev) => ({ ...prev, specifications: updatedSpecifications }));
   };
 
-  //all categoty 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get('/api/v1/category/getallcategory');
-      console.log('response', response.data);
-      setCategories(response.data);
-    } catch (error) {
-      toast.error("Error fetching categories!");
-
-    }
-  };
-
   return (
-
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Add Product</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {[{ label: "Product Name", name: "name", type: "text" },
-        { label: "Price", name: "price", type: "number", min: "0" },
-        { label: "Warranty", name: "warranty", type: "text" },
-        { label: "Return Policy", name: "return_policy", type: "text" }].map(({ label, name, type, min }) => (
-          <div key={name}>
-            <label className="block text-sm font-medium">{label}</label>
-            <input type={type} name={name} value={product[name]} onChange={handleChange} className="w-full p-2 border rounded-md" required min={min} />
-          </div>
-        ))}
+        {/* BASIC INPUT FIELDS */}
+        <input type="text" name="name" value={product.name} onChange={handleChange} placeholder="Product Name" className="w-full p-2 border rounded" required />
+        <input type="number" name="price" value={product.price} onChange={handleChange} placeholder="Price" className="w-full p-2 border rounded" required />
+        <input type="text" name="warranty" value={product.warranty} onChange={handleChange} placeholder="Warranty" className="w-full p-2 border rounded" required />
+        <input type="number" name="stock" value={product.stock} onChange={handleChange} placeholder="Stock" className="w-full p-2 border rounded" required />
+        <input type="text" name="return_policy" value={product.return_policy} onChange={handleChange} placeholder="Return Policy" className="w-full p-2 border rounded" required />
 
+        {/* CATEGORY */}
+        <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded" required>
+          <option value="">Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.name}>{cat.name}</option>
+          ))}
+        </select>
+
+        {/* BRAND */}
+        <select name="brand" value={product.brand} onChange={handleChange} className="w-full p-2 border rounded" required>
+          <option value="">Select Brand</option>
+          {brands.map((brand) => (
+            <option key={brand.id} value={brand.name}>{brand.name}</option>
+          ))}
+        </select>
+
+        {/* DESCRIPTION */}
+        <textarea name="description" value={product.description} onChange={handleChange} placeholder="Description" className="w-full p-2 border rounded" rows="3" required />
+
+        {/* IMAGE UPLOAD */}
+        <input type="file" accept="image/*" onChange={handleImageChange} className="w-full" required />
+        {product.imagePreview && <img src={product.imagePreview} alt="Preview" className="h-40 mt-2 rounded" />}
+
+        {/* SPECIFICATIONS */}
         <div>
-          <label className="block text-sm font-medium">Stock</label>
-          <input type="number" name="stock" value={product.stock} onChange={handleChange} className="w-full p-2 border rounded-md" min="0" required />
-        </div>
-
-        <div className="flex justify-evenly gap-5">
-          <div className="w-1/2">
-            <label className="block text-sm font-medium">Category</label>
-            <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded-md" required>
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.name}>{category.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="w-1/2">
-            <label className="block text-sm font-medium">Brands</label>
-            <select name="category" value={product.brands} onChange={handleChange} className="w-full p-2 border rounded-md" required>
-              <option value="">Select a Brands</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.name}>{brand.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Highlights</label>
-          <textarea name="highlights" value={product.highlights} onChange={handleChange} className="w-full p-2 border rounded-md" rows="3" required></textarea>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Description</label>
-          <textarea name="description" value={product.description} onChange={handleChange} className="w-full p-2 border rounded-md" rows="4" required></textarea>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Specifications</label>
-          <button type="button" onClick={addSpecification} className="border border-black p-1 text-sm rounded-md mt-2">
-            Add Specification
-          </button>
+          <label className="block font-medium mb-1">Specifications</label>
           {product.specifications.map((spec, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-3 mt-2">
-              <input type="text" placeholder="Topic" value={spec.topic} onChange={(e) => handleSpecificationChange(index, "topic", e.target.value)} className="border p-2 rounded-md w-full" />
-              <input type="text" placeholder="Feature" value={spec.feature} onChange={(e) => handleSpecificationChange(index, "feature", e.target.value)} className="border p-2 rounded-md w-full" />
-              <button type="button" onClick={() => removeSpecification(index)} className="bg-red-500 text-white p-1 rounded-md">X</button>
+            <div key={index} className="flex gap-2 mb-2">
+              <input type="text" placeholder="Topic" value={spec.topic} onChange={(e) => handleSpecificationChange(index, "topic", e.target.value)} className="w-1/2 p-2 border rounded" />
+              <input type="text" placeholder="Feature" value={spec.feature} onChange={(e) => handleSpecificationChange(index, "feature", e.target.value)} className="w-1/2 p-2 border rounded" />
+              <button type="button" onClick={() => removeSpecification(index)} className="text-red-500">X</button>
             </div>
           ))}
+          <button type="button" onClick={addSpecification} className="text-blue-600">+ Add Spec</button>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium">Upload Image</label>
-          <input type="file" onChange={handleImageChange} className="w-full p-2 border rounded-md" accept="image/*" />
-          {product.imagePreview && <img src={product.imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-md" />}
-        </div>
-
-        {error && <div className="text-red-500 text-sm">{error}</div>} {/* Error message */}
-
-        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600" disabled={loading}>
+        {/* SUBMIT BUTTON */}
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" disabled={loading}>
           {loading ? "Adding..." : "Add Product"}
         </button>
+
+        {error && <p className="text-red-500">{error}</p>}
       </form>
       <ToastContainer />
     </div>

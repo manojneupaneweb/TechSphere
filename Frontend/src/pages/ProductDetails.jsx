@@ -1,43 +1,71 @@
 import React, { useEffect, useState } from 'react';
 import { FaStar } from 'react-icons/fa';
-import { useParams } from 'react-router-dom';
+import { redirect, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading';
 
-const KeySpecification = {
-    Model: "iPad Pro 11-Inch 256GB",
-    Display: "11-inch Ultra Retina XDR OLED display with a resolution of 2420 x 1668 pixels at 264 ppi, supporting ProMotion technology with adaptive refresh rates from 10Hz to 120Hz",
-    CPU: "Apple M4 chip with a 9-core CPU (3 performance cores and 6 efficiency cores) and a 10-core GPU.",
-    RAM: "8GB",
-    Storage: "256GB",
-    Battery: "Li-Po 8160 mAh",
-};
-
 function ProductDetails() {
-    // const { id } = useParams();
-    // const numericId = Number(id) || 0;
-    const id = "7e7b7d13-d6fd-4a00-9f66-e3411f"; 
-    console.log('id:', id);
+    const [esewa, setEsewa] = useState(null);
 
+
+    const handelpayment = (product) => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+        form.target = '_blank';
+
+        const amount = 100;
+        const tax_amount = 10;
+        const total_amount = amount + tax_amount;
+
+        const data = {
+            "amount": "100",
+            "failure_url": "https://developer.esewa.com.np/failure",
+            "product_delivery_charge": "0",
+            "product_service_charge": "0",
+            "product_code": "EPAYTEST",
+            "signature": "i94zsd3oXF6ZsSr/kGqT4sSzYQzjj1W/waxjWyRwaME=",
+            "signed_field_names": "total_amount,transaction_uuid,product_code",
+            "success_url": "https://developer.esewa.com.np/success",
+            "tax_amount": "10",
+            "total_amount": "110",
+            "transaction_uuid": "241028"
+        };
+
+        for (let key in data) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = data[key];
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+
+
+    const { id } = useParams(); // Get the product id from the URL params
 
     const [activeTab, setActiveTab] = useState("Specifications");
-    const [product, setProduct] = useState([]);
+    const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    const fatchProduct = async () => {
+    // Function to fetch the product details from the server
+    const fetchProduct = async () => {
         try {
-            const response = await axios.get(`api/v1/product/product/${id}`);
-            setProduct(response.message);
-            console.log('message', response.message);
+            const response = await axios.get(`/api/v1/product/product/${id}`);
+            setProduct(response.data.message);
             setLoading(false);
         } catch (error) {
-            console.log('error fetching data', error);
+            console.log('Error fetching data', error);
             setLoading(false);
         }
     };
+
     useEffect(() => {
-        fatchProduct()
-    }, []);
+        fetchProduct(); // Fetch product when the component mounts
+    }, [id]);
 
     if (loading) {
         return (
@@ -46,119 +74,146 @@ function ProductDetails() {
             </div>
         );
     }
+
+    // Check if specifications is a string, then parse it to an object
+    let specifications = [];
+    if (product.specifications) {
+        try {
+            specifications = JSON.parse(product.specifications);
+        } catch (error) {
+            console.error("Error parsing specifications:", error);
+        }
+    }
+
     return (
-        <>
-            <div className="max-w-screen-xl mx-auto px-6 py-10 sm:px-12 md:px-16">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-10">
-                    {/* Image Section */}
-                    <div className="h-full">
-                        <img
-                            src="https://itti.com.np/_next/image?url=https%3A%2F%2Fadmin.itti.com.np%2Fstorage%2Fproduct%2Fapple-ipad-pro-11-inch-256gb-wifi-2024-m4%2Fdfe0399c-83c6-4ce3-9144-94970f4bdc20.webp&w=1920&q=75"
-                            alt="iPad Pro"
-                            className="w-full h-96 object-cover rounded-lg shadow-lg"
-                        />
-                    </div>
-
-                    {/* Product Details Section */}
-                    <div className="w-full md:w-1/2 px-4 md:px-10">
-                        <h1 className="text-3xl font-semibold text-gray-800">Apple | iPad Pro 11-Inch 256GB WiFi 2024 - M4</h1>
-                        <p className="text-yellow-500 flex gap-1 mt-2">
-                            <FaStar /><FaStar /><FaStar />
-                        </p>
-                        <div className="flex justify-between items-center mt-4">
-                            <h2 className="text-2xl font-bold text-gray-800">Price:
-                                <span className="text-red-600 ml-4">रु 1,65,000</span>
-                            </h2>
-                            <h3 className="text-green-600 font-bold">In Stock</h3>
-                        </div>
-
-                        <div className="flex items-center mt-6">
-                            <span className="text-xl font-semibold mr-4">Qty:</span>
-                            <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">-</button>
-                            <span className="text-xl mx-4">1</span>
-                            <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">+</button>
-                        </div>
-
-                        <button className="bg-red-700 text-white font-bold py-3 px-12 rounded-lg mt-8 transition hover:bg-blue-800">
-                            Buy Now
-                        </button>
-
-                        {/* Key Specification Section */}
-                        <div className="mt-8">
-                            <h2 className="text-xl font-semibold text-gray-800">Key Specifications</h2>
-                            <ul className="list-disc pl-6 mt-3 space-y-2">
-                                {Object.entries(KeySpecification).map(([key, value]) => (
-                                    <li key={key} className="text-sm text-gray-700">
-                                        <strong>{key}:</strong> {value}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
+        <div className="max-w-screen-xl mx-auto px-6 py-10 sm:px-12 md:px-16">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+                {/* Image Section */}
+                <div className="h-full">
+                    <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-96 object-cover rounded-lg shadow-lg"
+                    />
                 </div>
 
-                {/* Product Tabs Section */}
-                <div className="mt-12">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Details</h2>
-                    <div className="flex gap-8">
-                        <div
-                            className={`cursor-pointer font-semibold text-lg ${activeTab === 'Specifications' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
-                            onClick={() => setActiveTab("Specifications")}
-                        >
-                            Specifications
-                        </div>
-                        <div
-                            className={`cursor-pointer font-semibold text-lg ${activeTab === 'Description' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
-                            onClick={() => setActiveTab("Description")}
-                        >
-                            Description
-                        </div>
-                        <div
-                            className={`cursor-pointer font-semibold text-lg ${activeTab === 'Reviews' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
-                            onClick={() => setActiveTab("Reviews")}
-                        >
-                            Reviews
-                        </div>
+                {/* Product Details Section */}
+                <div className="w-full md:w-1/2 px-4 md:px-10">
+                    <h1 className="text-3xl font-semibold text-gray-800">{product.name}</h1>
+                    <p className="text-yellow-500 flex gap-1 mt-2">
+                        <FaStar />
+                        <FaStar />
+                        <FaStar />
+                    </p>
+                    <div className="flex justify-between items-center mt-4">
+                        <h2 className="text-2xl font-bold text-gray-800">Price:
+                            <span className="text-red-600 ml-4">रु {product.price}</span>
+                        </h2>
+                        <h3 className="text-green-600 font-bold">In Stock: {product.stock}</h3>
                     </div>
 
-                    {/* Dynamic Content Based on Active Tab */}
-                    <div className="mt-6">
-                        {activeTab === "Specifications" && (
-                            <div>
-                                <h3 className="text-xl font-semibold">Specifications</h3>
-                                <ul className="list-disc pl-6 mt-3 space-y-2">
-                                    {Object.entries(KeySpecification).map(([key, value]) => (
-                                        <li key={key} className="text-lg text-gray-700">
-                                            <strong>{key}:</strong> {value}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                    <div className="flex items-center mt-6">
+                        <span className="text-xl font-semibold mr-4">Qty:</span>
+                        <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">-</button>
+                        <span className="text-xl mx-4">1</span>
+                        <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">+</button>
+                    </div>
 
-                        {activeTab === "Description" && (
-                            <div>
-                                <h3 className="text-xl font-semibold">Product Description</h3>
-                                <p className="text-lg text-gray-700 mt-3">
-                                    The iPad Pro 11-Inch is designed for the ultimate portable experience, featuring the powerful Apple M4 chip, a stunning Ultra Retina XDR OLED display, and the largest storage options.
-                                </p>
-                            </div>
-                        )}
+                    <button
+                        className="bg-red-700 text-white font-bold py-3 px-12 rounded-lg mt-8 transition hover:bg-blue-800"
+                        onClick={handelpayment(product)}
+                    >
+                        Buy Now
+                    </button>
 
-                        {activeTab === "Reviews" && (
-                            <div>
-                                <h3 className="text-xl font-semibold">Customer Reviews</h3>
-                                <div className="mt-3 space-y-3">
-                                    <p className="text-lg text-gray-700"><strong>John Doe:</strong> Amazing tablet, super fast and the display is gorgeous!</p>
-                                    <p className="text-lg text-gray-700"><strong>Jane Smith:</strong> Worth every penny. Great performance for work and entertainment.</p>
-                                </div>
-                            </div>
-                        )}
+
+                    {/* Key Specification Section */}
+                    <div className="mt-8">
+                        <h2 className="text-xl font-semibold text-gray-800">Key Specifications</h2>
+                        <ul className="list-disc pl-6 mt-3 space-y-2">
+                            {Array.isArray(specifications) && specifications.length > 0 ? (
+                                specifications.map((spec, index) => (
+                                    <li key={index} className="text-sm text-gray-700">
+                                        <strong>{spec.topic}:</strong> {spec.feature}
+                                    </li>
+                                ))
+                            ) : (
+                                <p className="text-sm text-gray-700">No specifications available.</p>
+                            )}
+                        </ul>
                     </div>
                 </div>
             </div>
-        </>
 
+            {/* Product Tabs Section */}
+            <div className="mt-12">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Product Details</h2>
+                <div className="flex gap-8">
+                    <div
+                        className={`cursor-pointer font-semibold text-lg ${activeTab === 'Specifications' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
+                        onClick={() => setActiveTab("Specifications")}
+                    >
+                        Specifications
+                    </div>
+                    <div
+                        className={`cursor-pointer font-semibold text-lg ${activeTab === 'Description' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
+                        onClick={() => setActiveTab("Description")}
+                    >
+                        Description
+                    </div>
+                    <div
+                        className={`cursor-pointer font-semibold text-lg ${activeTab === 'Reviews' ? 'text-blue-800' : 'text-blue-600 hover:text-blue-800'}`}
+                        onClick={() => setActiveTab("Reviews")}
+                    >
+                        Reviews
+                    </div>
+                </div>
+
+                {/* Dynamic Content Based on Active Tab */}
+                <div className="mt-6">
+                    {activeTab === "Specifications" && (
+                        <div>
+                            <h3 className="text-xl font-semibold">Specifications</h3>
+                            <ul className="list-disc pl-6 mt-3 space-y-2">
+                                {Array.isArray(specifications) && specifications.length > 0 ? (
+                                    specifications.map((spec, index) => (
+                                        <li key={index} className="text-lg text-gray-700">
+                                            <strong>{spec.topic}:</strong> {spec.feature}
+                                        </li>
+                                    ))
+                                ) : (
+                                    <p className="text-lg text-gray-700">No specifications available.</p>
+                                )}
+                            </ul>
+                        </div>
+                    )}
+
+                    {activeTab === "Description" && (
+                        <div>
+                            <h3 className="text-xl font-semibold">Product Description</h3>
+                            <p className="text-lg text-gray-700 mt-3">{product.description}</p>
+                        </div>
+                    )}
+
+                    {activeTab === "Reviews" && (
+                        <div>
+                            <h3 className="text-xl font-semibold">Customer Reviews</h3>
+                            {product.reviews && product.reviews.length > 0 ? (
+                                <div className="mt-3 space-y-3">
+                                    {product.reviews.map((review, index) => (
+                                        <p key={index} className="text-lg text-gray-700">
+                                            <strong>{review.name}:</strong> {review.comment}
+                                        </p>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-lg text-gray-700">No reviews yet.</p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
 

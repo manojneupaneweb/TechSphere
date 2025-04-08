@@ -17,6 +17,7 @@ const Category = sequelize.define('categories', {
     }
 }, { timestamps: true });
 
+
 // ---------------Brand model ---------------
 const Brand = sequelize.define('brands', {
     id: {
@@ -28,9 +29,7 @@ const Brand = sequelize.define('brands', {
         type: DataTypes.STRING,
         allowNull: false
     }
-}, { timestamps: false }); // Disable timestamps
-
-
+}, { timestamps: false });
 
 
 // ---------------SubCategory model ---------------
@@ -62,33 +61,22 @@ SubCategory.belongsTo(Category, { foreignKey: 'categoryId' });
 
 const Order = sequelize.define('Order', {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.UUID, // UUID
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
     user_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'User',
-            key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
+      type: DataTypes.UUID, // UUID
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
-    total_price: {
-        type: DataTypes.FLOAT,
-        allowNull: false
-    },
-    payment_status: {
-        type: DataTypes.ENUM('Pending', 'Paid'),
-        defaultValue: 'Pending'
-    },
-    order_status: {
-        type: DataTypes.ENUM('Processing', 'Shipped', 'Delivered'),
-        defaultValue: 'Processing'
-    }
-}, { timestamps: true });
-
+    // other fields...
+  }, { timestamps: true });
+  
 const OrderItem = sequelize.define('OrderItem', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     order_id: { type: DataTypes.INTEGER, references: { model: Order, key: 'id' }, onDelete: 'CASCADE' },
@@ -136,7 +124,6 @@ const Review = sequelize.define('Review', {
     rating: { type: DataTypes.INTEGER, allowNull: false },
     comment: { type: DataTypes.TEXT }
 }, { timestamps: true });
-
 
 const Cart = sequelize.define('Cart', {
     id: {

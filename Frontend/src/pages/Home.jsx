@@ -12,6 +12,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { MobileProducts } from "../data";
 import axios from "axios";
 import { CartList, Wishlist } from "../utils/Cart.utils";
+import fatchByCategory from "../utils/Fatch";
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
 const handleCartList = async (product) => {
@@ -23,8 +24,9 @@ const NewlyLaunchedProducts = () => {
 
   const allproduct = async () => {
     try {
-      const response = await axios.get('/api/v1/product/getallproducts');
-      console.log(response.data.message);
+      const response = await fatchByCategory('Smartphone');
+      console.log(response.data);
+      setProducts(response.data);
     } catch (error) {
       console.log('error fetching products:', error);
     }
@@ -32,9 +34,7 @@ const NewlyLaunchedProducts = () => {
 
   useEffect(() => {
     allproduct();
-    setProducts(MobileProducts);
   }, []);
-
 
   return (
     <section className="py-16 bg-white">
@@ -42,36 +42,107 @@ const NewlyLaunchedProducts = () => {
         <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
 
         <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
-          {products.map((product) => (
-            <div key={product.id} className="min-w-[300px] bg-white shadow-lg rounded-lg p-3 relative">
-              <button
-                aria-label="Toggle Wishlist"
-                className="absolute top-5 right-5 text-xl cursor-pointer"
-                onClick={() => Wishlist(product)}
-              >
-                <FaHeart className="text-red-800" />
-              </button>
+          {products && products.length === 0 ? (
+            <div>No Product available in Newly Launched.</div>
+          ) : (
+            products?.map((product) => (
+              <div key={product.id} className=" w-72 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
+                <div className="w-full flex justify-center items-center">
 
-              <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
+                  <button
+                    aria-label="Toggle Wishlist"
+                    className="absolute top-1 right-9 text-xl cursor-pointer"
+                    onClick={() => Wishlist(product)}
+                  >
+                    <FaHeart className="text-red-800" />
+                  </button>
 
-              <div className="p-2">
-                <a href={`/product/${product.id}`}>
-                  <h2 className="text-lg font-bold my-1">{product.title}</h2>
+                  <img src={product.image} alt={product.name} className=" border  h-56 object-cover" />
+                </div>
+
+                <div className="p-2">
+                  <a href={`/product/${product.id}`}>
+                    <h2 className="text-lg font-bold my-1">{product.name}</h2>
                   </a>
-                <p className="text-gray-600">{product.description}</p>
-                <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+                  <p className="text-gray-600">{product.description}</p>
+                  <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
 
-                <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
-                  Add to Cart
-                </button>
+                  <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                    Add to Cart
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
+
       </div>
     </section>
   );
 };
+const LaptopProducts = () => {
+  const [products, setProducts] = useState([]);
+
+  const allproduct = async () => {
+    try {
+      const response = await fatchByCategory('Smartphone');
+      console.log(response.data);
+      setProducts(response.data);
+    } catch (error) {
+      console.log('error fetching products:', error);
+    }
+  };
+
+  useEffect(() => {
+    allproduct();
+  }, []);
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Laptops</h2>
+
+        <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+          {products && products.length === 0 ? (
+            <div>No Product available in Newly Launched.</div>
+          ) : (
+            products?.map((product) => (
+              <div key={product.id} className=" w-72 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
+                <div className="w-full flex justify-center items-center">
+
+                  <button
+                    aria-label="Toggle Wishlist"
+                    className="absolute top-1 right-9 text-xl cursor-pointer"
+                    onClick={() => Wishlist(product)}
+                  >
+                    <FaHeart className="text-red-800" />
+                  </button>
+
+                  <img src={product.image} alt={product.name} className=" border  h-56 object-cover" />
+                </div>
+
+                <div className="p-2">
+                  <a href={`/product/${product.id}`}>
+                    <h2 className="text-lg font-bold my-1">{product.name}</h2>
+                  </a>
+                  <p className="text-gray-600">{product.description}</p>
+                  <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+
+                  <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+
 
 // const TabletsProducts = () => {
 //   const [products, setProducts] = useState([]);
@@ -154,7 +225,6 @@ const NewlyLaunchedProducts = () => {
 //   );
 // };
 
-
 const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -223,6 +293,7 @@ const HeroSection = () => {
     </section>
   );
 };
+
 
 const ShopByCategory = () => {
   const scrollContainerRef = useRef();
@@ -447,9 +518,8 @@ const Home = () => {
     <>
       <HeroSection />
       <NewlyLaunchedProducts />
-      {/* <TabletsProducts /> */}
+      <LaptopProducts />
       <ShopByCategory />
-      {/* <LaptopProducts /> */}
       <NewsletterSection />
       <ShopByBrand />
       {/* <FAQSection /> */}

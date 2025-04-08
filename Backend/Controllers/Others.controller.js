@@ -55,24 +55,26 @@ const cartlist = asyncHandler(async (req, res) => {
 
 const getCartItems = asyncHandler(async (req, res) => {
   try {
-    const userId = req.user.id;
-    console.log("User ID:", userId);
+    console.log('------------------------');
+    
+    // const userId = req.user.id;
+    // console.log("User ID:", userId);
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required." });
-    }
+    // if (!userId) {
+    //   return res.status(400).json({ message: "User ID is required." });
+    // }
 
-    const cartItem = await Cart.findOne({  user_id: userId  });
-    console.log("Cart Item:", cartItem);
-    if (!cartItem) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
+    // const cartItem = await Cart.findAll({  user_id: userId  });
+    // console.log("Cart Item:", cartItem);
+    // if (!cartItem) {
+    //   return res.status(404).json({ message: "Cart not found" });
+    // }
 
-    console.log("Product IDs from cart item:", cartItem.product_id);
-    const productIds = cartItem.product_id.split(",").map(Number);
-    console.log("Parsed Product IDs:", productIds);
+    // console.log("Product IDs from cart item:", cartItem.product_id);
+    // const productIds = cartItem.product_id.split(",").map(Number);
+    // console.log("Parsed Product IDs:", productIds);
 
-    return res.status(200).json({ cartItem, productIds });
+    // return res.status(200).json({ cartItem, productIds });
 
   } catch (error) {
     console.error("Error fetching cart items:", error);

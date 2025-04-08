@@ -23,7 +23,9 @@ function Cart() {
             const response = await axios.get("/api/v1/product/getcartitems", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            setCart(response.data.cartItem);
+            console.log(response.data.message);
+            
+            setCart(response.data.message);
         } catch (error) {
             console.error("Error getting cart items:", error);
             toast.error("Failed to fetch cart items.");

@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: "/profile",
+        path: "/account",
         element: (
           <UserAccess>
             <Profile />

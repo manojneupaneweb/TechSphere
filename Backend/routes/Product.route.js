@@ -25,7 +25,7 @@ router.route('/wishlist').post(verifyJwt, addToWishlist);
 
 //cartlist routes
 router.route('/cartlist').post(verifyJwt, cartlist);
-router.route('/getcartitems').get(verifyJwt, getCartItems);
+router.route('/getCartItems').get(verifyJwt, getCartItems);
 
 
 export default router;

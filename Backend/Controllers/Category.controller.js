@@ -1,10 +1,10 @@
 import { Brand, Category, SubCategory } from "../models/Others.model.js";
+import { Product } from "../models/Product.model.js";
 
 //Add a New Category
 const addCategory = async (req, res) => {
     try {
         const { name } = req.body;
-        console.log("category name :", name );
         
         if (!name) return res.status(400).json({ message: "Category name is required" });
 
@@ -27,6 +27,24 @@ const getCategories = async (req, res) => {
         return res.status(500).json({ message: "Error fetching categories", error: error.message });
     }
 };
+
+
+const getProductByCategories = async (req, res) => {
+    try {
+        const category = req.params.category;
+        
+        const products = await Product.findAll({
+            where: { stock : 500 },              
+            limit: 10,
+        });
+        
+
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json({ message: "Error fetching products by category", error: error.message });
+    }
+};
+
 
 //Get a Single Category by ID
 const getCategoryById = async (req, res) => {
@@ -66,13 +84,11 @@ const getCategoryById = async (req, res) => {
 const deleteCategory = async (req, res) => {
     try {
         let { id } = req.params;
-        id = id.replace(/^:/, ""); // remove leading colon if present
-        console.log("Cleaned ID:", id);
+        id = id.replace(/^:/, "");
 
         const category = await Category.findByPk(id);
 
         if (!category) {
-            console.log("Category not found");
             return res.status(404).json({ message: "Category not found" });
         }
 
@@ -84,7 +100,7 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-export{addCategory, getCategories, getCategoryById, updateCategory, deleteCategory}
+export{addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, getProductByCategories}
 
 
 
@@ -120,7 +136,6 @@ const deleteBrand = async (req, res) => {
     try {
         let { id } = req.params;
         id = id.replace(/^:/, "");
-        console.log("Cleaned ID:", id);
 
         const brand = await Brand.findByPk(id);
 
