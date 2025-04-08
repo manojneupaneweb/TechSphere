@@ -7,38 +7,26 @@ import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
 
 
 const addProduct = asyncHandler(async (req, res) => {
-  console.log("Request Body:", req.body); 
   const { name, price, warranty, category, brand, stock, return_policy, description, specifications } = req.body;
 
   if (!name || !price || !warranty || !category || !brand|| !stock || !return_policy || !description || !specifications ){
     throw new ApiError(400, "All required fields");
   }
 
+  console.log('brand', brand);
+  
   const localFilePath = req.files?.image?.[0]?.path;   
   if (!localFilePath) {
     throw new ApiError(400, "Product image is required");
   }
 
   const imageUrl = await uploadOnCloudinary(localFilePath);
-  console.log(imageUrl);
   
   if (!imageUrl) {
     throw new ApiError(500, "Failed to upload image to Cloudinary");
   }
-  
-  console.log("name:", name)
-  console.log("price:", price)
-  console.log("warranty:", warranty)
-  console.log("category:", category)
-  console.log("brand:", brand)
-  console.log("stock:", stock)
-  console.log("return_policy:", return_policy)
-  console.log("description:", description)
-  console.log("specifications:", specifications)
-  console.log("image:", imageUrl)
 
   const newProduct = await Product.create({
-  
     name, price,  warranty, category, stock, return_policy, description, specifications,
     image: imageUrl,
   });
@@ -108,19 +96,14 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 const getProductById = asyncHandler(async (req, res) => {
   try {
-    console.log('-------------------------------');
 
     const id = String(req.params.id).trim();
-    console.log("Type of id:", typeof id);
-    console.log("Raw id value:", id);
-    console.log("Is valid UUID:", /^[0-9a-fA-F-]{36}$/.test(id));
 
     if (!id) {
       throw new ApiError(400, "Product ID is required");
     }
 
     const product = await Product.findByPk(id);
-    console.log("product:", product);
 
     if (!product) {
       throw new ApiError(404, "Product not found");
@@ -136,6 +119,7 @@ const getProductById = asyncHandler(async (req, res) => {
 
 
 const getAllProducts = asyncHandler(async (req, res) => {
+console.log("Fetching all products...................................");
 
   const products = await Product.findAll({});
 

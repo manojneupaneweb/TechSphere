@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   User,
   Package,
@@ -15,123 +15,145 @@ import {
   Calendar,
   Clock,
 } from 'lucide-react';
+import axios from 'axios';
 
 // Mock data
-const userData = {
-  name: "John Smith",
-  email: "john.smith@example.com",
-  phone: "+1 (555) 123-4567",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
-  memberSince: "June 2022",
-  orders: [
-    {
-      id: "ORD-12345",
-      date: "2023-05-15",
-      status: "Delivered",
-      total: 1299.99,
-      items: [{ name: "Premium Ultrabook Pro", quantity: 1, price: 1299.99 }],
-    },
-    {
-      id: "ORD-12346",
-      date: "2023-04-02",
-      status: "Delivered",
-      total: 428.98,
-      items: [
-        { name: "Wireless Noise-Cancelling Headphones", quantity: 1, price: 249.99 },
-        { name: "Smart Fitness Watch", quantity: 1, price: 178.99 },
-      ],
-    },
-    {
-      id: "ORD-12347",
-      date: "2023-06-10",
-      status: "Processing",
-      total: 899.99,
-      items: [{ name: "Smartphone Pro Max", quantity: 1, price: 899.99 }],
-    },
-  ],
-  addresses: [
-    {
-      id: 1,
-      default: true,
-      name: "John Smith",
-      line1: "123 Main Street",
-      line2: "Apt 4B",
-      city: "New York",
-      state: "NY",
-      zip: "10001",
-      country: "United States",
-      phone: "+1 (555) 123-4567",
-    },
-    {
-      id: 2,
-      default: false,
-      name: "John Smith",
-      line1: "456 Work Avenue",
-      line2: "Suite 700",
-      city: "New York",
-      state: "NY",
-      zip: "10022",
-      country: "United States",
-      phone: "+1 (555) 987-6543",
-    },
-  ],
-  paymentMethods: [
-    {
-      id: 1,
-      default: true,
-      type: "Visa",
-      last4: "4242",
-      expiry: "05/25",
-      name: "John Smith",
-    },
-    {
-      id: 2,
-      default: false,
-      type: "Mastercard",
-      last4: "5555",
-      expiry: "08/24",
-      name: "John Smith",
-    },
-  ],
-  wishlist: [
-    {
-      id: 1,
-      name: "Gaming Laptop Pro",
-      price: 1899.99,
-      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=80&h=80&fit=crop",
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Wireless Earbuds",
-      price: 149.99,
-      image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=80&h=80&fit=crop",
-      inStock: true,
-    },
-    {
-      id: 3,
-      name: "4K Smart TV",
-      price: 799.99,
-      image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=80&h=80&fit=crop",
-      inStock: false,
-    },
-  ],
-  notifications: {
-    orderUpdates: true,
-    promotions: true,
-    newProducts: false,
-    newsletter: true,
-  },
-};
+// const userData = {
+//   name: "John Smith",
+//   email: "john.smith@example.com",
+//   phone: "+1 (555) 123-4567",
+//   avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
+//   memberSince: "June 2022",
+//   orders: [
+//     {
+//       id: "ORD-12345",
+//       date: "2023-05-15",
+//       status: "Delivered",
+//       total: 1299.99,
+//       items: [{ name: "Premium Ultrabook Pro", quantity: 1, price: 1299.99 }],
+//     },
+//     {
+//       id: "ORD-12346",
+//       date: "2023-04-02",
+//       status: "Delivered",
+//       total: 428.98,
+//       items: [
+//         { name: "Wireless Noise-Cancelling Headphones", quantity: 1, price: 249.99 },
+//         { name: "Smart Fitness Watch", quantity: 1, price: 178.99 },
+//       ],
+//     },
+//     {
+//       id: "ORD-12347",
+//       date: "2023-06-10",
+//       status: "Processing",
+//       total: 899.99,
+//       items: [{ name: "Smartphone Pro Max", quantity: 1, price: 899.99 }],
+//     },
+//   ],
+//   addresses: [
+//     {
+//       id: 1,
+//       default: true,
+//       name: "John Smith",
+//       line1: "123 Main Street",
+//       line2: "Apt 4B",
+//       city: "New York",
+//       state: "NY",
+//       zip: "10001",
+//       country: "United States",
+//       phone: "+1 (555) 123-4567",
+//     },
+//     {
+//       id: 2,
+//       default: false,
+//       name: "John Smith",
+//       line1: "456 Work Avenue",
+//       line2: "Suite 700",
+//       city: "New York",
+//       state: "NY",
+//       zip: "10022",
+//       country: "United States",
+//       phone: "+1 (555) 987-6543",
+//     },
+//   ],
+//   paymentMethods: [
+//     {
+//       id: 1,
+//       default: true,
+//       type: "Visa",
+//       last4: "4242",
+//       expiry: "05/25",
+//       name: "John Smith",
+//     },
+//     {
+//       id: 2,
+//       default: false,
+//       type: "Mastercard",
+//       last4: "5555",
+//       expiry: "08/24",
+//       name: "John Smith",
+//     },
+//   ],
+//   wishlist: [
+//     {
+//       id: 1,
+//       name: "Gaming Laptop Pro",
+//       price: 1899.99,
+//       image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=80&h=80&fit=crop",
+//       inStock: true,
+//     },
+//     {
+//       id: 2,
+//       name: "Wireless Earbuds",
+//       price: 149.99,
+//       image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=80&h=80&fit=crop",
+//       inStock: true,
+//     },
+//     {
+//       id: 3,
+//       name: "4K Smart TV",
+//       price: 799.99,
+//       image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=80&h=80&fit=crop",
+//       inStock: false,
+//     },
+//   ],
+//   notifications: {
+//     orderUpdates: true,
+//     promotions: true,
+//     newProducts: false,
+//     newsletter: true,
+//   },
+// };
 
 function Profile() {
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
+      try {
+        const { data } = await axios.get("/api/v1/user/getprofile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(data.message);
+        console.log("Profile data:", data.message.id);
+        
+        
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+      }
+    };
+    fetchUserProfile();
+  }, []);
+
+
+
+
+
   const [activeTab, setActiveTab] = useState("profile");
   const [editingProfile, setEditingProfile] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: userData.name,
-    email: userData.email,
-    phone: userData.phone,
-  });
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -140,7 +162,7 @@ function Profile() {
       [name]: value,
     });
   };
-  
+
 
   const saveProfileChanges = () => {
     console.log("Saving profile changes:", profileData);
@@ -179,11 +201,11 @@ function Profile() {
           <div className="hidden lg:block">
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
               <div className="flex items-center space-x-4 mb-6">
-                <div className="h-12 w-12 rounded-full overflow-hidden">
-                  <img src={userData.avatar} alt={userData.name} className="h-full w-full object-cover" />
+                <div className="h-12 w-12 rounded-full overflow-hidden cursor-pointer">
+                  <img src={user.profilePicture}  className="h-full w-full object-cover" />
                 </div>
                 <div>
-                  <h2 className="font-bold">{userData.name}</h2>
+                  <h2 className="font-bold">{user.fullName}</h2>
                   <p className="text-sm text-gray-500">Member since {userData.memberSince}</p>
                 </div>
               </div>
@@ -192,66 +214,60 @@ function Profile() {
 
               <nav className="space-y-1">
                 <button
-                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "profile"
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${activeTab === "profile"
                       ? "bg-[#8a0106] text-white"
                       : "text-gray-900 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("profile")}
                 >
                   <User className="mr-2 h-4 w-4" />
                   Profile
                 </button>
                 <button
-                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "orders"
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${activeTab === "orders"
                       ? "bg-[#8a0106] text-white"
                       : "text-gray-900 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("orders")}
                 >
                   <Package className="mr-2 h-4 w-4" />
                   Orders
                 </button>
                 <button
-                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "addresses"
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${activeTab === "addresses"
                       ? "bg-[#8a0106] text-white"
                       : "text-gray-900 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("addresses")}
                 >
                   <MapPin className="mr-2 h-4 w-4" />
                   Addresses
                 </button>
                 <button
-                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "payment"
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${activeTab === "payment"
                       ? "bg-[#8a0106] text-white"
                       : "text-gray-900 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("payment")}
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
                   Payment Methods
                 </button>
                 <button
-                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "wishlist"
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${activeTab === "wishlist"
                       ? "bg-[#8a0106] text-white"
                       : "text-gray-900 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("wishlist")}
                 >
                   <Heart className="mr-2 h-4 w-4" />
                   Wishlist
                 </button>
                 <button
-                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "settings"
+                  className={`w-full flex items-center px-4 py-2 text-sm font-medium rounded-md ${activeTab === "settings"
                       ? "bg-[#8a0106] text-white"
                       : "text-gray-900 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("settings")}
                 >
                   <Settings className="mr-2 h-4 w-4" />
@@ -273,31 +289,28 @@ function Profile() {
             <div className="bg-white rounded-lg shadow-sm p-4">
               <div className="grid grid-cols-3 gap-2">
                 <button
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "profile"
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${activeTab === "profile"
                       ? "bg-[#8a0106] text-white"
                       : "bg-gray-100 text-gray-900"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("profile")}
                 >
                   Profile
                 </button>
                 <button
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "orders"
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${activeTab === "orders"
                       ? "bg-[#8a0106] text-white"
                       : "bg-gray-100 text-gray-900"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("orders")}
                 >
                   Orders
                 </button>
                 <button
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
-                    activeTab === "more"
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${activeTab === "more"
                       ? "bg-[#8a0106] text-white"
                       : "bg-gray-100 text-gray-900"
-                  }`}
+                    }`}
                   onClick={() => setActiveTab("more")}
                 >
                   More
@@ -416,13 +429,13 @@ function Profile() {
                       <div className="flex items-center">
                         <div className="h-24 w-24 rounded-full overflow-hidden mr-6">
                           <img
-                            src={userData.avatar}
-                            alt={userData.name}
+                            src={user.profilePicture}
+                            alt={user.fullName}
                             className="h-full w-full object-cover"
                           />
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold mb-1">{userData.name}</h3>
+                          <h3 className="text-xl font-bold mb-1">{user.fullName}</h3>
                           <p className="text-gray-500">Member since {userData.memberSince}</p>
                           <button className="text-[#8a0106] hover:text-[#6d0105] mt-2">
                             Change profile picture
@@ -435,11 +448,11 @@ function Profile() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4">
                         <div>
                           <p className="text-sm text-gray-500">Email Address</p>
-                          <p>{userData.email}</p>
+                          <p>{user.email}</p>
                         </div>
                         <div>
                           <p className="text-sm text-gray-500">Phone Number</p>
-                          <p>{userData.phone}</p>
+                          <p>{user.phone}</p>
                         </div>
                       </div>
 
@@ -575,9 +588,8 @@ function Profile() {
                     {userData.addresses.map((address) => (
                       <div
                         key={address.id}
-                        className={`border rounded-lg p-4 ${
-                          address.default ? "border-[#8a0106]" : ""
-                        }`}
+                        className={`border rounded-lg p-4 ${address.default ? "border-[#8a0106]" : ""
+                          }`}
                       >
                         <div className="flex justify-between items-start mb-2">
                           <h3 className="font-medium">{address.name}</h3>
@@ -639,9 +651,8 @@ function Profile() {
                     {userData.paymentMethods.map((method) => (
                       <div
                         key={method.id}
-                        className={`border rounded-lg p-4 ${
-                          method.default ? "border-[#8a0106]" : ""
-                        }`}
+                        className={`border rounded-lg p-4 ${method.default ? "border-[#8a0106]" : ""
+                          }`}
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex items-center">
@@ -732,11 +743,10 @@ ink-0 mr-4 relative">
                           </div>
                           <div className="flex flex-col space-y-2">
                             <button
-                              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                                item.inStock
+                              className={`px-4 py-2 text-sm font-medium rounded-md ${item.inStock
                                   ? "bg-[#8a0106] text-white hover:bg-[#6d0105]"
                                   : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              }`}
+                                }`}
                               disabled={!item.inStock}
                             >
                               Add to Cart

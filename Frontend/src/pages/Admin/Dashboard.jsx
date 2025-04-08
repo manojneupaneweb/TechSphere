@@ -1,13 +1,10 @@
 import React from "react";
-import { Line } from "react-chartjs-2"; // Chart.js for charts
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
-// import { ChevronRightIcon, PencilIcon, ClipboardListIcon } from "@heroicons/react/24/solid";
+import { Line, Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from "chart.js";
 
-// Registering the necessary chart components
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 const Dashboard = () => {
-  // Sample chart data
   const chartData = {
     labels: ["January", "February", "March", "April", "May", "June"],
     datasets: [
@@ -21,103 +18,90 @@ const Dashboard = () => {
     ],
   };
 
+  const barChartData = {
+    labels: ["Product A", "Product B", "Product C", "Product D"],
+    datasets: [
+      {
+        label: "Units Sold",
+        data: [500, 700, 400, 600],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.6)",
+          "rgba(54, 162, 235, 0.6)",
+          "rgba(255, 206, 86, 0.6)",
+          "rgba(75, 192, 192, 0.6)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
   return (
     <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Section 1: Total Visitors */}
+        {/* Section 1 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-blue-600 mb-4">Total Visitors</h3>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Total Sales</h3>
           <Line data={chartData} />
         </div>
 
-        {/* Section 2: Sales Overview */}
+        {/* Section 2 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-green-600 mb-4">Sales Overview</h3>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Product Performance</h3>
+          <Bar data={barChartData} />
+        </div>
+
+        {/* Section 3 */}
+        <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Customer Growth</h3>
           <Line data={chartData} />
         </div>
 
-        {/* Section 3: Orders Summary */}
+        {/* Section 4 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-orange-600 mb-4">Orders Summary</h3>
-          <ul className="space-y-2">
-            <li className="flex justify-between">
-              <span>New Orders:</span> <span className="font-bold">120</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Completed Orders:</span> <span className="font-bold">98</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Abandoned Carts:</span> <span className="font-bold">22</span>
-            </li>
-          </ul>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Revenue Breakdown</h3>
+          <Bar data={barChartData} />
         </div>
 
-        {/* Section 4: Marketing Stats */}
+        {/* Section 5 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-purple-600 mb-4">Marketing Stats</h3>
-          <ul className="space-y-2">
-            <li className="flex justify-between">
-              <span>Email Campaigns Sent:</span> <span className="font-bold">300</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Click-Through Rate:</span> <span className="font-bold">5%</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Conversion Rate:</span> <span className="font-bold">1.5%</span>
-            </li>
-          </ul>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Monthly Expenses</h3>
+          <Line data={chartData} />
         </div>
 
-        {/* Section 5: Quick Actions */}
+        {/* Section 6 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-blue-500 mb-4">Quick Actions</h3>
-          <div className="space-y-4">
-            <button className="flex items-center w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
-              {/* <PencilIcon className="h-5 w-5 mr-2" /> Add Product */}
-            </button>
-            <button className="flex items-center w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
-              {/* <ClipboardListIcon className="h-5 w-5 mr-2" /> View Orders */}
-            </button>
-          </div>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Top Products</h3>
+          <Bar data={barChartData} />
         </div>
 
-        {/* Section 6: User Engagement */}
+        {/* Section 7 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-indigo-600 mb-4">User Engagement</h3>
-          <ul className="space-y-2">
-            <li className="flex justify-between">
-              <span>Active Users:</span> <span className="font-bold">4500</span>
-            </li>
-            <li className="flex justify-between">
-              <span>New Comments:</span> <span className="font-bold">120</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Likes:</span> <span className="font-bold">350</span>
-            </li>
-          </ul>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Market Trends</h3>
+          <Line data={chartData} />
         </div>
 
-        {/* Section 7: Revenue Overview */}
+        {/* Section 8 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-yellow-500 mb-4">Revenue Overview</h3>
-          <p>Total Revenue: <span className="font-bold text-lg">$150,000</span></p>
-          <p>Revenue this Month: <span className="font-bold text-lg">$12,500</span></p>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Profit Margins</h3>
+          <Bar data={barChartData} />
         </div>
 
-        {/* Section 8: Notification Stats */}
+        {/* Section 9 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h3 className="text-2xl font-semibold text-red-600 mb-4">Notification Stats</h3>
-          <ul className="space-y-2">
-            <li className="flex justify-between">
-              <span>Unread Notifications:</span> <span className="font-bold">25</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Sent Notifications:</span> <span className="font-bold">150</span>
-            </li>
-            <li className="flex justify-between">
-              <span>Important Notifications:</span> <span className="font-bold">5</span>
-            </li>
-          </ul>
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">User Engagement</h3>
+          <Line data={chartData} />
+        </div>
+
+        {/* Section 10 */}
+        <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <h3 className="text-2xl font-semibold text-teal-600 mb-4">Sales by Region</h3>
+          <Bar data={barChartData} />
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const handleCartList = async (product) => {
   await CartList(product);
 };
 
-const NewlyLaunchedProducts = () => {
+const SmartphoneProducts = () => {
   const [products, setProducts] = useState([]);
 
   const allproduct = async () => {
@@ -39,7 +39,7 @@ const NewlyLaunchedProducts = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Products</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">Best Smartphone for you</h2>
 
         <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
           {products && products.length === 0 ? (
@@ -61,10 +61,12 @@ const NewlyLaunchedProducts = () => {
                 </div>
 
                 <div className="p-2">
-                  <a href={`/product/${product.id}`}>
-                    <h2 className="text-lg font-bold my-1">{product.name}</h2>
+                <a href={`/product/${product.id}`}>
+                    <h2 className="text-lg font-bold my-1">{product.name ?.slice(0, 50)}...</h2>
                   </a>
-                  <p className="text-gray-600">{product.description}</p>
+                  <p className="text-gray-600">
+                    {product.description?.slice(0, 50)}...
+                  </p>
                   <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
 
                   <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
@@ -80,12 +82,14 @@ const NewlyLaunchedProducts = () => {
     </section>
   );
 };
+
+
 const LaptopProducts = () => {
   const [products, setProducts] = useState([]);
 
   const allproduct = async () => {
     try {
-      const response = await fatchByCategory('Smartphone');
+      const response = await fatchByCategory('Laptop');
       console.log(response.data);
       setProducts(response.data);
     } catch (error) {
@@ -123,9 +127,12 @@ const LaptopProducts = () => {
 
                 <div className="p-2">
                   <a href={`/product/${product.id}`}>
-                    <h2 className="text-lg font-bold my-1">{product.name}</h2>
+                    <h2 className="text-lg font-bold my-1">{product.name ?.slice(0, 50)}...</h2>
                   </a>
-                  <p className="text-gray-600">{product.description}</p>
+                  <p className="text-gray-600">
+                    {product.description?.slice(0, 50)}...
+                  </p>
+
                   <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
 
                   <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
@@ -142,88 +149,71 @@ const LaptopProducts = () => {
   );
 };
 
+const Accessories = () => {
+  const [products, setProducts] = useState([]);
 
+  const allproduct = async () => {
+    try {
+      const response = await fatchByCategory('Accessories');
+      console.log(response.data);
+      setProducts(response.data);
+    } catch (error) {
+      console.log('error fetching products:', error);
+    }
+  };
 
-// const TabletsProducts = () => {
-//   const [products, setProducts] = useState([]);
-//   const scrollRef = useRef(null);
-//   setProducts( TabletsProducts)
-//   useEffect(() => {
-//     // Fetch products from an API or data source
-//     // setProducts(data);
-//   }, []);
+  useEffect(() => {
+    allproduct();
+  }, []);
 
-//   const cartButton = (product) => {
-//     // Handle adding to cart
-//   };
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center mb-8"> Accessories  </h2>
 
-//   return (
-//     <section className="py-16 bg-white">
-//       <div className="container mx-auto px-6">
-//         <h2 className="text-3xl font-bold text-center mb-8">Best Tablets for Every Need</h2>
+        <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+          {products && products.length === 0 ? (
+            <div>No Product available in Accessories.</div>
+          ) : (
+            products?.map((product) => (
+              <div key={product.id} className=" w-72 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
+                <div className="w-full flex justify-center items-center">
 
-//         <div ref={scrollRef} className="flex space-x-6 overflow-x-scroll no-scrollbar scroll-smooth p-3">
-//           {products.slice(0, 10).map((product) => (
-//             <div key={product.id} className="min-w-[220px] sm:min-w-[280px] md:min-w-[320px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
-//               <img
-//                 src={product.image}
-//                 alt={product.title}
-//                 className="w-full border border-black h-56 object-cover"
-//               />
-//               <div>
-//                 <h2 className="text-lg font-bold my-1">{product.title}</h2>
-//                 <p className="text-gray-600">{product.description}</p>
-//                 <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
-//                 <div className="flex justify-between text-lg py-2">
-//                   <p className="text-gray-700">Rating: {product.rating}</p>
-//                   <p className="text-gray-700">Reviews: {product.reviews}</p>
-//                 </div>
-//                 <button onClick={() => cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
-//                   Add to Cart
-//                 </button>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
+                  <button
+                    aria-label="Toggle Wishlist"
+                    className="absolute top-1 right-9 text-xl cursor-pointer"
+                    onClick={() => Wishlist(product)}
+                  >
+                    <FaHeart className="text-red-800" />
+                  </button>
 
-// const LaptopProducts = () => {
-//   const [products, setProducts] = useState([]);
-//   const scrollRef = useRef(null);
-//   setProducts( LaptopProducts)
+                  <img src={product.image} alt={product.name} className=" border  h-56 object-cover" />
+                </div>
 
+                <div className="p-2">
+                  <a href={`/product/${product.id}`}>
+                    <h2 className="text-lg font-bold my-1">{product.name ?.slice(0, 50)}...</h2>
+                  </a>
+                  <p className="text-gray-600">
+                    {product.description?.slice(0, 50)}...
+                  </p>
 
-//   return (
-//     <section className="py-16 bg-white">
-//       <div className="container mx-auto px-6">
-//         <h2 className="text-3xl font-bold text-center mb-8">Best Laptops for Work & Play</h2>
+                  <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
 
-//         <div ref={scrollRef} className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
-//           {products.slice(0, 10).map((product) => (
-//             <div key={product.id} className="min-w-[300px] snap-start bg-white shadow-lg rounded-lg overflow-hidden p-3">
-//               <img src={product.image} alt={product.title} className="w-full border border-black h-56 object-cover" />
-//               <div className="">
-//                 <h2 className="text-lg font-bold my-1">{product.title}</h2>
-//                 <p className="text-black-600">{product.description}</p>
-//                 <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
-//                 <div className="flex justify-between text-lg py-2">
-//                   <p className="text-gray-700">Rating: {product.rating}</p>
-//                   <p className="text-gray-700">Reviews: {product.reviews}</p>
-//                 </div>
-//                 <button onClick={() => cartButton(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
-//                   Add to Cart
-//                 </button>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
+                  <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
 
 const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -517,8 +507,9 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <NewlyLaunchedProducts />
+      <SmartphoneProducts />
       <LaptopProducts />
+      <Accessories />
       <ShopByCategory />
       <NewsletterSection />
       <ShopByBrand />

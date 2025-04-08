@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Loading from "../components/Loading";
-import { LaptopProducts } from "../data";
+import axios from "axios";
 
 const ProductShow = () => {
     const { category, brandname } = useParams();
@@ -16,7 +16,9 @@ const ProductShow = () => {
     useEffect(() => {
         const getProducts = async () => {
             try {
-                setProducts(LaptopProducts);
+                const response = await axios.get(`/api/v1/category/${category}/${brandname}`);
+                console.log('Product data:', response.data);
+                setProducts(response.data);
             } catch (err) {
                 console.error("Failed to load products:", err);
             } finally {
@@ -77,7 +79,11 @@ const ProductShow = () => {
 
                 {/* Products Section */}
                 <section className="md:w-3/4 w-full">
-                    <h1 className="text-2xl font-bold capitalize mb-4">{brandname || category}</h1>
+                    <h1 className="text-2xl font-bold capitalize mb-4">{brandname || category}
+                        <span className="font-normal text-sm text-gray-500 ml-2">
+                            Total - {products.length} Products
+                        </span>
+                    </h1>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {currentProducts.map((product) => (
                             <div
@@ -89,8 +95,10 @@ const ProductShow = () => {
                                     alt={product.name}
                                     className="w-full h-56 object-cover rounded-md"
                                 />
-                                <h2 className="mt-3 text-lg font-semibold">{product.name}</h2>
-                                <p className="text-gray-500 text-sm">{product.description}</p>
+                                <h2 className="mt-3 text-lg font-semibold">{product.id}</h2>
+                                <p className="text-gray-500 text-sm">
+                                    {product.description?.slice(0, 100)}...
+                                </p>
                                 <p className="text-red-700 text-xl font-bold mt-2">रु {product.price}</p>
                                 <div className="flex justify-between text-sm text-gray-600 mt-2">
                                     <span>⭐ {product.rating}</span>

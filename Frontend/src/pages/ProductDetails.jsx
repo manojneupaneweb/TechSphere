@@ -3,12 +3,18 @@ import { FaStar } from 'react-icons/fa';
 import { redirect, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading';
+import { toast, ToastContainer } from 'react-toastify';
 
 function ProductDetails() {
     const [esewa, setEsewa] = useState(null);
 
 
     const handelpayment = (product) => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            toast.error('Please login to continue');
+            return;
+        }
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
@@ -88,6 +94,7 @@ function ProductDetails() {
     return (
         <div className="max-w-screen-xl mx-auto px-6 py-10 sm:px-12 md:px-16">
             <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+            <ToastContainer />
                 {/* Image Section */}
                 <div className="h-full">
                     <img
@@ -213,6 +220,7 @@ function ProductDetails() {
                     )}
                 </div>
             </div>
+            
         </div>
     );
 }

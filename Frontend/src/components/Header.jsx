@@ -105,7 +105,16 @@ const Header = () => {
                       />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-700" />
+                        {userData?.profilePicture?(
+                          <img
+                            src={userData.profilePicture}
+                            alt="User"
+                            className="h-8 w-8 rounded-full object-cover"
+                          />
+                        ):(
+
+                          <User className="h-5 w-5 text-gray-700" />
+                        )}
                       </div>
                     )}
                     <span className="ml-1 hidden lg:inline">

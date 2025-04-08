@@ -23,12 +23,12 @@ const DesktopNavigation = () => {
     {
       name: "Smartphones",
       subcategories: [
-        { name: "Apple iPhones", description: "Latest iPhones with cutting-edge features", link: "/catagory/smartphones/apple" },
-        { name: "Samsung Galaxy", description: "Innovative Android smartphones", link: "/catagory/smartphones/samsung" },
-        { name: "Google Pixel", description: "Pure Android with great cameras", link: "/catagory/smartphones/google" },
-        { name: "Xiaomi", description: "Feature-rich at competitive prices", link: "/catagory/smartphones/xiaomi" },
-        { name: "OnePlus", description: "Performance-focused devices", link: "/catagory/smartphones/oneplus" },
-        { name: "Budget Phones", description: "Affordable smartphones", link: "/catagory/smartphones/budget" },
+        { name: "Apple iPhones", description: "Latest iPhones with cutting-edge features", link: "/catagory/Smartphone/apple" },
+        { name: "Samsung Galaxy", description: "Innovative Android Smartphone", link: "/catagory/Smartphone/samsung" },
+        { name: "Google Pixel", description: "Pure Android with great cameras", link: "/catagory/Smartphone/google" },
+        { name: "Xiaomi", description: "Feature-rich at competitive prices", link: "/catagory/Smartphone/xiaomi" },
+        { name: "OnePlus", description: "Performance-focused devices", link: "/catagory/Smartphone/oneplus" },
+        { name: "Budget Phones", description: "Affordable Smartphone", link: "/catagory/Smartphone/budget" },
       ],
     },
     {

@@ -5,7 +5,7 @@ import { Product } from "../models/Product.model.js";
 const addCategory = async (req, res) => {
     try {
         const { name } = req.body;
-        
+
         if (!name) return res.status(400).json({ message: "Category name is required" });
 
         const category = await Category.create({ name });
@@ -21,7 +21,7 @@ const getCategories = async (req, res) => {
         const categories = await Category.findAll({
             // include: [{ model: SubCategory, as: "subCategories" }]
         });
-        
+
         return res.status(200).json(categories);
     } catch (error) {
         return res.status(500).json({ message: "Error fetching categories", error: error.message });
@@ -32,12 +32,19 @@ const getCategories = async (req, res) => {
 const getProductByCategories = async (req, res) => {
     try {
         const category = req.params.category;
-        
+
+        if (!category) {
+            const products = await Product.findAll({
+                limit: 15,
+            });
+            return res.status(200).json(products);
+        }
+
         const products = await Product.findAll({
-            where: { stock : 500 },              
+            where: { category: category },
             limit: 10,
         });
-        
+
 
         return res.status(200).json(products);
     } catch (error) {
@@ -63,7 +70,7 @@ const getCategoryById = async (req, res) => {
 };
 
 // Update a Category
- const updateCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
         const { name } = req.body;
@@ -100,16 +107,44 @@ const deleteCategory = async (req, res) => {
     }
 };
 
-export{addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, getProductByCategories}
+export { addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, getProductByCategories }
+
+//----------------------------Brand     and category ----------------------------------
+
+const getProductByCategoriesAndBrand = async (req, res) => {
+    try {
+        const { category, brand } = req.params;
+        console.log('------------------------------------------');
+
+        console.log("category:", category, "brand:", brand);
+
+        if (!category || !brand) {
+            return res.status(400).json({ message: "Categories and brand are required" });
+        }
 
 
+        const products = await Product.findAll({
+            where: {
+                category: category,
+                // brand: brand,
+            },
+            limit: 10,
+        });
 
+        console.log('products.length', products.length);
+
+
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json({ message: "Error fetching products by category and brand", error: error.message });
+    }
+}
 //----------------------------Brand ----------------------------------
 // Add a New
 const addBrand = async (req, res) => {
     try {
         const { name } = req.body;
-        
+
         if (!name) return res.status(400).json({ message: "Brand name is required" });
 
         const brand = await Brand.create({ name });
@@ -123,8 +158,8 @@ const addBrand = async (req, res) => {
 
 const getBrand = async (req, res) => {
     try {
-        const brand = await Brand.findAll({ });
-        
+        const brand = await Brand.findAll({});
+
         return res.status(200).json(brand);
     } catch (error) {
         return res.status(500).json({ message: "Error fetching categories", error: error.message });
@@ -152,7 +187,7 @@ const deleteBrand = async (req, res) => {
     }
 };
 
-export {addBrand, getBrand, deleteBrand}
+export { addBrand, getBrand, deleteBrand }
 
 
 //------------------------- subcategory ----------------------------------
@@ -174,7 +209,7 @@ const addSubCategory = async (req, res) => {
         return res.status(500).json({ message: "Error creating sub-category", error: error.message });
     }
 };
- 
+
 // Get All Sub-Categories
 const getSubCategories = async (req, res) => {
     try {
@@ -241,4 +276,4 @@ const deleteSubCategory = async (req, res) => {
         return res.status(500).json({ message: "Error deleting sub-category", error: error.message });
     }
 };
-export{   addSubCategory, getSubCategories, getSubCategoryById, updateSubCategory, deleteSubCategory}
+export { addSubCategory, getSubCategories, getSubCategoryById, updateSubCategory, deleteSubCategory, getProductByCategoriesAndBrand }

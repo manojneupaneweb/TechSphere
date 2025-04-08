@@ -1,5 +1,5 @@
 import express from "express";
-import {addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, addBrand, getBrand, deleteBrand, getProductByCategories,} from "../Controllers/Category.controller.js";
+import {addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, addBrand, getBrand, deleteBrand, getProductByCategories, getProductByCategoriesAndBrand,} from "../Controllers/Category.controller.js";
 import { addSubCategory, getSubCategories, getSubCategoryById, updateSubCategory, deleteSubCategory} from "../Controllers/Category.controller.js";
 
 const router = express.Router();
@@ -14,6 +14,10 @@ router.route("/getproductbycategories/:category").get(getProductByCategories);
 router.route("/addbrand").post(addBrand);
 router.route("/getallbrand").get(getBrand);
 router.route("/deletebrand/:id").delete(deleteBrand);
+
+
+router.route("/:category/:brand").get(getProductByCategoriesAndBrand);
+
 
 // ✅ Subcategory Routes
 router.route("/addsubcategory").post(addSubCategory);
