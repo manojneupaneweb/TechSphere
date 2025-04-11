@@ -27,7 +27,7 @@ const addProduct = asyncHandler(async (req, res) => {
   }
 
   const newProduct = await Product.create({
-    name, price,  warranty, category, stock, return_policy, description, specifications,
+    name, price,brand,  warranty, category, stock, return_policy, description, specifications,
     image: imageUrl,
   });
 
