@@ -8,13 +8,14 @@ import { AdminAccess, UserAccess } from "./utils/AuthContext.jsx";
 // Pages
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
-import ProductDetails from "./pages/ProductDetails";
+import ProductDetails from "./pages/ProductShow/ProductDetails.jsx";
 import Profile from "./pages/Profile";
 import Signup from "./pages/AuthPage/Signup";
 import Login from "./pages/AuthPage/Login";
 import PageNotFound from "./pages/PageNotFound.jsx";
 import Cart from "./pages/Cart.jsx";
-import ProductShow from "./pages/ProductsShow.jsx";
+import ProductShow from "./pages/ProductShow/ProductsShow.jsx";
+import ProductbrandShow from "./pages/ProductShow/ProductbrandShow.jsx";
 
 // Admin Pages
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -33,6 +34,7 @@ import AllProduct from "./pages/Admin/Product/AllProduct.jsx";
 // Set up Axios globally
 import axios from "axios";
 import Aboutus from "./pages/Aboutus.jsx";
+import Wishlist from "./pages/Wishlist.jsx";
 axios.defaults.baseURL = "http://localhost:3000";
 
 const router = createBrowserRouter([
@@ -45,6 +47,8 @@ const router = createBrowserRouter([
       { path: "/contact", element: <Contact /> },
       { path: "/product/:id", element: <ProductDetails /> },
       { path: "/catagory/:category/:brandname", element: <ProductShow /> },
+      { path: "/wishlist", element: <Wishlist /> },
+      { path: "/brand/:brand", element: <ProductbrandShow /> },
  
       {
         path: "/cart", element: (

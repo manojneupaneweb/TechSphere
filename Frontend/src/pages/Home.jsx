@@ -14,6 +14,8 @@ import axios from "axios";
 import { CartList, Wishlist } from "../utils/Cart.utils";
 import fatchByCategory from "../utils/Fatch";
 import CustomerReviews from "../components/CustomerReviews";
+import { NewsletterSection } from "../components/Newsletter";
+import { FAQSection } from "../components/FAQ";
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
 const handleCartList = async (product) => {
@@ -26,7 +28,6 @@ const SmartphoneProducts = () => {
   const allproduct = async () => {
     try {
       const response = await fatchByCategory('Smartphone');
-      console.log(response.data);
       setProducts(response.data);
     } catch (error) {
       console.log('error fetching products:', error);
@@ -64,7 +65,7 @@ const SmartphoneProducts = () => {
                 <div className="p-2">
                   <a href={`/product/${product.id}`}>
                     <h3 className="font-medium mb-1">
-                    {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
+                      {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
                     </h3>
                   </a>
                   <p className="text-sm text-gray-600 mb-2">
@@ -91,7 +92,76 @@ const SmartphoneProducts = () => {
     </section>
   );
 };
+const NewProducts = () => {
+  const [products, setProducts] = useState([]);
 
+  const allproduct = async () => {
+    try {
+      const response = await fatchByCategory('Smartphone');
+      setProducts(response.data);
+    } catch (error) {
+      console.log('error fetching products:', error);
+    }
+  };
+
+  useEffect(() => {
+    allproduct();
+  }, []);
+
+  return (
+    <section className="py-10 px-20 bg-white">
+      <div className="container mx-auto px-6">
+        <h2 className="text-2xl md:text-3xl mb-3 font-bold">New Arrivals</h2>
+
+        <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
+          {products && products.length === 0 ? (
+            <div>No Product available in Smartphones.</div>
+          ) : (
+            products?.map((product) => (
+              <div key={product.id} className=" w-72 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
+                <div className="w-full flex justify-center items-center">
+
+                  {/* <button
+                    aria-label="Toggle Wishlist"
+                    className="absolute top-1 right-9 text-xl cursor-pointer"
+                    onClick={() => Wishlist(product)}
+                  >
+                    <FaHeart className="text-red-800" />
+                  </button> */}
+
+                  <img src={product.image} alt={product.name} className=" border  h-56 object-cover" />
+                </div>
+
+                <div className="p-2">
+                  <a href={`/product/${product.id}`}>
+                    <h3 className="font-medium mb-1">
+                      {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
+                    </h3>
+                  </a>
+                  <p className="text-sm text-gray-600 ">
+                    {product.description.length > 30 ? product.description?.slice(0, 30) + '...' : product.description}
+                  </p>
+                  <div className=" flex justify-between items-center">
+
+                    <p className=" text-lg text-red-700 py-3">रु {product.price}</p>
+                    <p className="text-lg text-red-700 py-3">
+                      ⭐{"⭐".repeat(Math.round(product.ratings))} ({product.ratings})
+                    </p>
+
+                  </div>
+
+                  <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const LaptopProducts = () => {
   const [products, setProducts] = useState([]);
@@ -99,7 +169,6 @@ const LaptopProducts = () => {
   const allproduct = async () => {
     try {
       const response = await fatchByCategory('Laptop');
-      console.log(response.data);
       setProducts(response.data);
     } catch (error) {
       console.log('error fetching products:', error);
@@ -137,7 +206,7 @@ const LaptopProducts = () => {
                 <div className="p-2">
                   <a href={`/product/${product.id}`}>
                     <h3 className="font-medium mb-1">
-                    {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
+                      {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
                     </h3>
                   </a>
                   <p className="text-sm text-gray-600 mb-2">
@@ -172,7 +241,6 @@ const Accessories = () => {
   const allproduct = async () => {
     try {
       const response = await fatchByCategory('Accessories');
-      console.log(response.data);
       setProducts(response.data);
     } catch (error) {
       console.log('error fetching products:', error);
@@ -313,7 +381,7 @@ const ShopByCategory = () => {
   };
 
   return (
-    <section className="py-12 bg-gradient-to-r from-gray-100 to-gray-300">
+    <section className="py-12 bg-gradient-to-r from-gray-50 to-gray-300">
       <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
           Shop by Category
@@ -346,7 +414,7 @@ const ShopByCategory = () => {
                 key={index}
                 className="bg-white p-6 shadow-xl rounded-xl text-center min-w-[220px] hover:scale-105 transition-transform duration-300"
               >
-                <div className={`text-4xl ${color} mb-4`}>{icon}</div>
+                <p className={`text-4xl ${color} mb-4 text-center`}>{icon}</p>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
                 <p className="text-gray-600 mb-4">{desc}</p>
                 <a href={link} className="text-red-700 font-bold hover:underline">
@@ -392,14 +460,14 @@ const ShopByBrand = () => {
         <div className="flex overflow-x-auto no-scrollbar scroll-smooth justify-between items-center gap-6">
           {Object.entries(BrandImages).map(([brand, image], index) => (
             <div key={index} className="flex flex-col items-center">
-              <a href={`/${brand}`}>
+              <a href={`/brand/${brand}`}>
 
-              <img
-                src={image}
-                alt={brand}
-                className="w-10 md:w-10 lg:w-16 h-auto object-contain cursor-pointer rounded-lg"
+                <img
+                  src={image}
+                  alt={brand}
+                  className="w-10 md:w-10 lg:w-16 h-auto object-contain cursor-pointer rounded-lg"
                 />
-                </a>
+              </a>
               {/* <span className="mt-2 text-gray-700 capitalize">{brand}</span> */}
             </div>
           ))}
@@ -411,101 +479,8 @@ const ShopByBrand = () => {
 
 
 
-const FAQSection = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const faqs = [
-    {
-      question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards, PayPal, and bank transfers.",
-    },
-    {
-      question: "How long does shipping take?",
-      answer: "Shipping typically takes 3-5 business days within the US.",
-    },
-    {
-      question: "Do you offer international shipping?",
-      answer: "Yes, we ship to most countries worldwide. Shipping times vary by location.",
-    },
-    {
-      question: "What is your return policy?",
-      answer: "You can return products within 30 days of purchase for a full refund.",
-    },
-    {
-      question: "How can I track my order?",
-      answer: "Once your order is shipped, you will receive a tracking number via email.",
-    },
-  ];
-
-  const toggleFAQ = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
-
-  return (
-    <section className="py-10 bg-gradient-to-br ">
-      <div className="container mx-auto px-6">
-        <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-8">
-          Frequently Asked Questions
-        </h2>
-        <div className="max-w-2xl mx-auto space-y-4">
-          {faqs.map((faq, index) => (
-            <div key={index} className="bg-slate-100 rounded-xl shadow-lg overflow-hidden">
-              <button
-                className="w-full text-left px-6 py-3 flex justify-between items-center focus:outline-none hover:bg-gray-100 transition-all"
-                onClick={() => toggleFAQ(index)}
-                aria-expanded={activeIndex === index}
-                aria-controls={`faq-${index}`}
-              >
-                <span className="text-lg font-semibold text-gray-900">{faq.question}</span>
-                <span className="text-blue-600">
-                  {activeIndex === index ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                </span>
-              </button>
-              <div
-                id={`faq-${index}`}
-                className={`px-6 pb-4 text-gray-700 overflow-hidden transition-all ${activeIndex === index ? "max-h-40 opacity-100 py-2" : "max-h-0 opacity-0"
-                  }`}
-                aria-hidden={activeIndex !== index}
-              >
-                {faq.answer}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
 
 
-const NewsletterSection = () => (
-  <section className="py-16 bg-gradient-to-r from-blue-50 to-blue-200 text-gray-900 text-center">
-    <div className="container mx-auto px-6">
-      <h2 className="text-4xl font-extrabold mb-4">
-        Stay Updated with <span className="text-red-800">TechSphere</span>
-      </h2>
-      <p className="text-lg md:text-xl mb-8 text-gray-700">
-        Subscribe to our newsletter for the latest tech news, gadgets, and exclusive offers.
-      </p>
-      <div className="max-w-lg mx-auto bg-white/90 backdrop-blur-lg p-3 rounded-xl shadow-lg border border-gray-200">
-        <form className="flex flex-col md:flex-row gap-4">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            aria-label="Enter your email to subscribe"
-            className="w-full p-2 text-lg rounded-lg border-2 border-gray-300 bg-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all"
-          />
-          <button
-            type="submit"
-            className="px-6 py-2 bg-red-800 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-red-900 transition-all"
-          >
-            Subscribe
-          </button>
-        </form>
-      </div>
-    </div>
-  </section>
-);
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -526,14 +501,14 @@ const Home = () => {
   return (
     <>
       <HeroSection />
+      <NewProducts />
       <ShopByBrand />
       <SmartphoneProducts />
       <LaptopProducts />
       <ShopByCategory />
       <Accessories />
       <NewsletterSection />
-      <CustomerReviews/>
-      {/* <FAQSection /> */}
+      <CustomerReviews />
       <ToastContainer />
     </>
   );

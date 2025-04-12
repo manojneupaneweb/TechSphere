@@ -6,6 +6,7 @@ import { Search, ShoppingCart, User, Heart, Menu, X, ChevronDown } from "lucide-
 import { Logout } from "../utils/AuthContext";
 import DesktopNavigation from "./DesktopNavigation";
 import MobileNavigation from "./MobileNavigation";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -70,7 +71,7 @@ const Header = () => {
       console.error("Error getting cart items:", error);
       toast.error("Failed to fetch cart items.");
     } finally {
-      setLoading(false);
+      setIsLoggedIn(false);
     }
   };
   useEffect(() => {

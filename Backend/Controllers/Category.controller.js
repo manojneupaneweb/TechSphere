@@ -163,6 +163,30 @@ const getBrand = async (req, res) => {
     }
 };
 
+const getProductByBrand = async (req, res) => {
+    try {
+        const { brand } = req.params;
+
+        console.log("brand:", brand);
+
+        if (!brand) {
+            return res.status(400).json({ message: "Brand are required" });
+        }
+
+
+        const products = await Product.findAll({
+            where: {
+                brand: brand,
+            },
+            limit: 10,
+        });
+        console.log("products:", products);
+        
+        return res.status(200).json(products);
+    } catch (error) {
+        return res.status(500).json({ message: "Error fetching products by category and brand", error: error.message });
+    }
+}
 // Delete a Brand
 const deleteBrand = async (req, res) => {
     try {
@@ -184,7 +208,7 @@ const deleteBrand = async (req, res) => {
     }
 };
 
-export { addBrand, getBrand, deleteBrand }
+export { addBrand, getBrand, deleteBrand, getProductByBrand }
 
 
 //------------------------- subcategory ----------------------------------
