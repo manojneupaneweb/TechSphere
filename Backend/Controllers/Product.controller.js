@@ -2,32 +2,30 @@ import { Product } from '../models/Product.model.js'
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
-import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';; 
+import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
 
 
 
 const addProduct = asyncHandler(async (req, res) => {
   const { name, price, warranty, category, brand, stock, return_policy, description, specifications } = req.body;
 
-  if (!name || !price || !warranty || !category || !brand|| !stock || !return_policy || !description || !specifications ){
+  if (!name || !price || !warranty || !category || !brand || !stock || !return_policy || !description || !specifications) {
     throw new ApiError(400, "All required fields");
   }
 
-  console.log('brand', brand);
-  
-  const localFilePath = req.files?.image?.[0]?.path;   
+  const localFilePath = req.files?.image?.[0]?.path;
   if (!localFilePath) {
     throw new ApiError(400, "Product image is required");
   }
 
   const imageUrl = await uploadOnCloudinary(localFilePath);
-  
+
   if (!imageUrl) {
     throw new ApiError(500, "Failed to upload image to Cloudinary");
   }
 
   const newProduct = await Product.create({
-    name, price,brand,  warranty, category, stock, return_policy, description, specifications,
+    name, price, brand, warranty, category, stock, return_policy, description, specifications,
     image: imageUrl,
   });
 
@@ -119,7 +117,7 @@ const getProductById = asyncHandler(async (req, res) => {
 
 
 const getAllProducts = asyncHandler(async (req, res) => {
-console.log("Fetching all products...................................");
+  console.log("Fetching all products...................................");
 
   const products = await Product.findAll({});
 

@@ -17,7 +17,11 @@ const ProductShow = () => {
         const getProducts = async () => {
             try {
                 const response = await axios.get(`/api/v1/category/${category}/${brandname}`);
-                console.log('Product data:', response.data);
+                console.log('Product data:', response.data.message);
+                // const obj = JSON.parse(response.data.message);  
+
+
+
                 setProducts(response.data);
             } catch (err) {
                 console.error("Failed to load products:", err);
@@ -72,6 +76,15 @@ const ProductShow = () => {
                             step={500}
                             value={minPrice}
                             onChange={(e) => setMinPrice(Number(e.target.value))}
+                            className="w-full mb-2"
+                        />
+                        <input
+                            type="range"
+                            min={1000}
+                            max={100000}
+                            step={500}
+                            value={maxPrice}
+                            onChange={(e) => setMaxPrice(Number(e.target.value))}
                             className="w-full"
                         />
                     </div>
@@ -85,31 +98,40 @@ const ProductShow = () => {
                         </span>
                     </h1>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {currentProducts.map((product) => (
-                            <div
-                                key={product.id}
-                                className="border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col"
-                            >
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-full h-56 object-cover rounded-md"
-                                />
-                                <h2 className="mt-3 text-lg font-semibold">{product.id}</h2>
-                                <p className="text-gray-500 text-sm">
-                                    {product.description?.slice(0, 100)}...
-                                </p>
-                                <p className="text-red-700 text-xl font-bold mt-2">रु {product.price}</p>
-                                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                                    <span>⭐ {product.rating}</span>
-                                    <span>{product.reviewCount} reviews</span>
-                                </div>
-                                <button className="mt-auto bg-red-700 text-white py-2 rounded-md hover:bg-red-800 transition">
-                                    Add to Cart
-                                </button>
-                            </div>
-                        ))}
+  {products.length === 0 ? (
+    <div className="text-center text-gray-500">No products found.</div>
+  ) : (
+    products.map((product) => (
+      <div
+        key={product.id}
+        className="border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col"
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-56 object-cover rounded-md"
+        />
+        <h2 className="mt-3 text-lg font-semibold">{product.name}</h2>
+        <p className="text-gray-500 text-sm">
+          {product.description?.slice(0, 100)}...
+        </p>
+        <p className="text-red-700 text-xl font-bold mt-2">रु {product.price}</p>
+        <div className="flex justify-between text-sm text-gray-600 mt-2">
+          <span>⭐ {product.rating}</span>
+          <span>{product.reviewCount} reviews</span>
+        </div>
+        <button className="mt-auto bg-red-700 text-white py-2 rounded-md hover:bg-red-800 transition">
+          Add to Cart
+        </button>
+      </div>
+    ))
+  )}
+</div>
+
+                    <div>
+
                     </div>
+                    <div>{products.id}</div>
 
                     {/* Pagination */}
                     {filtered.length > productsPerPage && (

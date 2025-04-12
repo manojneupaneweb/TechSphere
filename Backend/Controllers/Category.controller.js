@@ -1,5 +1,6 @@
 import { Brand, Category, SubCategory } from "../models/Others.model.js";
 import { Product } from "../models/Product.model.js";
+import { ApiResponse } from "../Utils/apiResponse.util.js";
 
 //Add a New Category
 const addCategory = async (req, res) => {
@@ -114,7 +115,6 @@ export { addCategory, getCategories, getCategoryById, updateCategory, deleteCate
 const getProductByCategoriesAndBrand = async (req, res) => {
     try {
         const { category, brand } = req.params;
-        console.log('------------------------------------------');
 
         console.log("category:", category, "brand:", brand);
 
@@ -126,13 +126,10 @@ const getProductByCategoriesAndBrand = async (req, res) => {
         const products = await Product.findAll({
             where: {
                 category: category,
-                // brand: brand,
+                brand: brand,
             },
             limit: 10,
         });
-
-        console.log('products.length', products.length);
-
 
         return res.status(200).json(products);
     } catch (error) {

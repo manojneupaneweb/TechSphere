@@ -90,6 +90,7 @@ function AddProduct() {
     if (product.image) {
       formData.append("image", product.image);
     }
+    
 
     try {
       const accessToken = localStorage.getItem("accessToken");

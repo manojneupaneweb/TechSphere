@@ -13,6 +13,7 @@ import { MobileProducts } from "../data";
 import axios from "axios";
 import { CartList, Wishlist } from "../utils/Cart.utils";
 import fatchByCategory from "../utils/Fatch";
+import CustomerReviews from "../components/CustomerReviews";
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
 const handleCartList = async (product) => {
@@ -37,37 +38,46 @@ const SmartphoneProducts = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 px-20 bg-white">
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Best Smartphone for you</h2>
+        <h2 className="text-2xl md:text-3xl mb-6 font-bold">Best Selling Smartphones</h2>
 
         <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
           {products && products.length === 0 ? (
-            <div>No Product available in Newly Launched.</div>
+            <div>No Product available in Smartphones.</div>
           ) : (
             products?.map((product) => (
-              <div key={product.id} className=" w-72 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
+              <div key={product.id} className=" w-80 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
                 <div className="w-full flex justify-center items-center">
 
-                  <button
+                  {/* <button
                     aria-label="Toggle Wishlist"
                     className="absolute top-1 right-9 text-xl cursor-pointer"
                     onClick={() => Wishlist(product)}
                   >
                     <FaHeart className="text-red-800" />
-                  </button>
+                  </button> */}
 
                   <img src={product.image} alt={product.name} className=" border  h-56 object-cover" />
                 </div>
 
                 <div className="p-2">
-                <a href={`/product/${product.id}`}>
-                    <h2 className="text-lg font-bold my-1">{product.name ?.slice(0, 50)}...</h2>
+                  <a href={`/product/${product.id}`}>
+                    <h3 className="font-medium mb-1">
+                    {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
+                    </h3>
                   </a>
-                  <p className="text-gray-600">
-                    {product.description?.slice(0, 50)}...
+                  <p className="text-sm text-gray-600 mb-2">
+                    {product.description.length > 30 ? product.description?.slice(0, 30) + '...' : product.description}
                   </p>
-                  <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+                  <div className=" flex justify-between items-center">
+
+                    <p className=" text-lg text-red-700 py-3">रु {product.price}</p>
+                    <p className="text-lg text-red-700 py-3">
+                      ⭐{"⭐".repeat(Math.round(product.ratings))} ({product.ratings})
+                    </p>
+
+                  </div>
 
                   <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
                     Add to Cart
@@ -77,7 +87,6 @@ const SmartphoneProducts = () => {
             ))
           )}
         </div>
-
       </div>
     </section>
   );
@@ -102,38 +111,46 @@ const LaptopProducts = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white px-20">
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl font-bold text-center mb-8">Newly Launched Laptops</h2>
+        <h2 className="text-3xl font-bold   mb-8">Best Selling Laptops</h2>
 
         <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
           {products && products.length === 0 ? (
-            <div>No Product available in Newly Launched.</div>
+            <div>No Product available in Laptops.</div>
           ) : (
             products?.map((product) => (
-              <div key={product.id} className=" w-72 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
+              <div key={product.id} className=" w-80 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200">
                 <div className="w-full flex justify-center items-center">
 
-                  <button
+                  {/* <button
                     aria-label="Toggle Wishlist"
                     className="absolute top-1 right-9 text-xl cursor-pointer"
                     onClick={() => Wishlist(product)}
                   >
                     <FaHeart className="text-red-800" />
-                  </button>
+                  </button> */}
 
                   <img src={product.image} alt={product.name} className=" border  h-56 object-cover" />
                 </div>
 
                 <div className="p-2">
                   <a href={`/product/${product.id}`}>
-                    <h2 className="text-lg font-bold my-1">{product.name ?.slice(0, 50)}...</h2>
+                    <h3 className="font-medium mb-1">
+                    {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
+                    </h3>
                   </a>
-                  <p className="text-gray-600">
-                    {product.description?.slice(0, 50)}...
+                  <p className="text-sm text-gray-600 mb-2">
+                    {product.description.length > 30 ? product.description?.slice(0, 30) + '...' : product.description}
                   </p>
+                  <div className=" flex justify-between items-center">
 
-                  <p className="font-bold text-xl text-red-700 py-3">रु {product.price}</p>
+                    <p className=" text-lg text-red-700 py-3">रु {product.price}</p>
+                    <p className="text-lg text-red-700 py-3">
+                      ⭐{"⭐".repeat(Math.round(product.ratings))} ({product.ratings})
+                    </p>
+
+                  </div>
 
                   <button onClick={() => handleCartList(product)} className="bg-red-800 w-full text-white py-2 rounded-md">
                     Add to Cart
@@ -192,7 +209,7 @@ const Accessories = () => {
 
                 <div className="p-2">
                   <a href={`/product/${product.id}`}>
-                    <h2 className="text-lg font-bold my-1">{product.name ?.slice(0, 50)}...</h2>
+                    <h2 className="text-lg font-bold my-1">{product.name?.slice(0, 50)}...</h2>
                   </a>
                   <p className="text-gray-600">
                     {product.description?.slice(0, 50)}...
@@ -213,7 +230,6 @@ const Accessories = () => {
     </section>
   );
 };
-
 
 const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -373,15 +389,18 @@ const ShopByBrand = () => {
     <section className="py-16 bg-gray-100 px-4 md:px-20">
       <div className="container mx-auto text-center">
         <h2 className="text-3xl font-semibold text-gray-800 mb-8">Shop by Brands</h2>
-        <div className="flex overflow-x-auto no-scrollbar scroll-smooth  items-center gap-6">
+        <div className="flex overflow-x-auto no-scrollbar scroll-smooth justify-between items-center gap-6">
           {Object.entries(BrandImages).map(([brand, image], index) => (
             <div key={index} className="flex flex-col items-center">
+              <a href={`/${brand}`}>
+
               <img
                 src={image}
                 alt={brand}
-                className="w-24 md:w-32 lg:w-40 h-auto object-contain cursor-pointer rounded-lg"
-              />
-              <span className="mt-2 text-gray-700 capitalize">{brand}</span>
+                className="w-10 md:w-10 lg:w-16 h-auto object-contain cursor-pointer rounded-lg"
+                />
+                </a>
+              {/* <span className="mt-2 text-gray-700 capitalize">{brand}</span> */}
             </div>
           ))}
         </div>
@@ -507,12 +526,13 @@ const Home = () => {
   return (
     <>
       <HeroSection />
+      <ShopByBrand />
       <SmartphoneProducts />
       <LaptopProducts />
-      <Accessories />
       <ShopByCategory />
+      <Accessories />
       <NewsletterSection />
-      <ShopByBrand />
+      <CustomerReviews/>
       {/* <FAQSection /> */}
       <ToastContainer />
     </>

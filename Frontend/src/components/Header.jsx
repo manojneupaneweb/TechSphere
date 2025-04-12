@@ -13,6 +13,7 @@ const Header = () => {
   const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -52,6 +53,29 @@ const Header = () => {
     setIsUserMenuOpen(false);
   };
 
+  const handelCart = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");  
+      if (!accessToken) {
+        toast.error("Please login to view cart!");
+        return;
+      }
+      const response = await axios.get("/api/v1/product/getcartitems", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      console.log("Cart data:", response);
+      
+      setCart(response.data.message);
+    } catch (error) {
+      console.error("Error getting cart items:", error);
+      toast.error("Failed to fetch cart items.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    handelCart();
+  })
   return (
     <>
       <header className="sticky top-0 px-14 z-50 bg-white border-b">
@@ -64,7 +88,6 @@ const Header = () => {
               <span>24/7 Customer Support</span>
             </div>
             <div className="flex space-x-4">
-              <Link to="/blog" className="hover:underline">Blog</Link>
               <Link to="/about" className="hover:underline">About Us</Link>
               <Link to="/contact" className="hover:underline">Contact</Link>
             </div>
@@ -105,13 +128,13 @@ const Header = () => {
                       />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        {userData?.profilePicture?(
+                        {userData?.profilePicture ? (
                           <img
                             src={userData.profilePicture}
                             alt="User"
                             className="h-8 w-8 rounded-full object-cover"
                           />
-                        ):(
+                        ) : (
 
                           <User className="h-5 w-5 text-gray-700" />
                         )}
@@ -177,7 +200,7 @@ const Header = () => {
                 <div className="relative">
                   <ShoppingCart className="h-5 w-5 text-gray-700" />
                   <span className="absolute -top-2 -right-2 bg-[#8a0106] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                    3
+                   {cart.length}
                   </span>
                 </div>
                 <span className="ml-1 hidden lg:inline">Cart</span>

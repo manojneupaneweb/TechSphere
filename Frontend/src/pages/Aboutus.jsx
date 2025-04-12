@@ -4,27 +4,7 @@ export default function Aboutus() {
     return (
         <div className="min-h-screen bg-white px-20">
             <main>
-                {/* Hero Section */}
-                <section className="relative bg-gray-400 text-black">
-                    <div className="absolute inset-0 opacity-30">
-                        <img src="/placeholder.svg?height=600&width=1200" alt="TechSphere Office" className="object-cover w-full h-full" />
-                    </div>
-                    <div className="container mx-auto px-4 py-24 relative z-10">
-                        <div className="max-w-3xl">
-                            <h1 className="text-4xl md:text-5xl font-bold mb-4">About TechSphere</h1>
-                            <p className="text-xl  mb-6">
-                                We're on a mission to make technology accessible to everyone through exceptional products, competitive
-                                prices, and unmatched customer service.
-                            </p>
-                            <div className="flex flex-wrap gap-4">
-                                <button className="bg-[#8a0106] hover:bg-[#6d0105] text-white px-4 py-2 rounded">Our Story</button>
-                                <button className="text-white border border-white hover:bg-white/10 px-4 py-2 rounded">
-                                    Join Our Team
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                
 
                 {/* Our Story */}
                 <section className="py-16 bg-white">
