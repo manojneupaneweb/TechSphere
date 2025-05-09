@@ -62,22 +62,6 @@ const Wishlist = async (product) => {
  
 
 
-
-const CartAdd = (product) => {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingProduct = cart.find(item => item.id === product.id);
-
-    if (existingProduct) {
-        existingProduct.quantity += 1;
-    } else {
-        product.quantity = 1;
-        cart.push(product);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    console.log("Added to Cart:", product);
-};
-
 const CartRemove = (item) => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     const newCart = cart.filter(cartItem => cartItem.id !== item.id);
@@ -106,4 +90,4 @@ const updateCartItemQuantity = (itemId, change) => {
     return cart; // Return the updated cart
 };
 
-export { Wishlist, CartList, CartAdd, CartRemove, updateCartItemQuantity, };
+export { Wishlist, CartList, CartRemove, updateCartItemQuantity, };

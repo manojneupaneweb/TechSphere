@@ -10,14 +10,17 @@ router.route("/getallcategory").get(getCategories);
 router.route("/deletecategory/:id").delete(deleteCategory);
 router.route("/getproductbycategories/:category").get(getProductByCategories);
 
+router.route("/:category").get(getProductByCategories);
+
 // ✅ Brand Routes
 router.route("/addbrand").post(addBrand);
 router.route("/getallbrand").get(getBrand);
 router.route("/deletebrand/:id").delete(deleteBrand);
 
+router.route("/brand/:brand").get(getProductByBrand);
 
+// ✅ Category and Brand Routes
 router.route("/:category/:brand").get(getProductByCategoriesAndBrand);
-router.route("/:brand").get(getProductByBrand);
 
 
 // ✅ Subcategory Routes

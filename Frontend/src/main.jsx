@@ -35,6 +35,7 @@ import AllProduct from "./pages/Admin/Product/AllProduct.jsx";
 import axios from "axios";
 import Aboutus from "./pages/Aboutus.jsx";
 import Wishlist from "./pages/Wishlist.jsx";
+import ProductCatagoryShow from "./pages/ProductShow/ProductCategoryShow.jsx";
 axios.defaults.baseURL = "http://localhost:3000";
 
 const router = createBrowserRouter([
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
       { path: "/catagory/:category/:brandname", element: <ProductShow /> },
       { path: "/wishlist", element: <Wishlist /> },
       { path: "/brand/:brand", element: <ProductbrandShow /> },
+      { path: "/category/:category", element: <ProductCatagoryShow /> },
  
       {
         path: "/cart", element: (

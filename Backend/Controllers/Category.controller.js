@@ -1,6 +1,7 @@
 import { Brand, Category, SubCategory } from "../models/Others.model.js";
 import { Product } from "../models/Product.model.js";
 import { ApiResponse } from "../Utils/apiResponse.util.js";
+import { Op }  from "sequelize" 
 
 //Add a New Category
 const addCategory = async (req, res) => {
@@ -33,28 +34,30 @@ const getCategories = async (req, res) => {
 const getProductByCategories = async (req, res) => {
     try {
         const category = req.params.category;
+        console.log("category:", category);
+        
 
         if (!category) {
-            const products = await Product.findAll({
-                limit: 15,
-            });
-            return res.status(200).json(products);
+            return res.status(400).json({ message: "Category is required" });
         }
 
         const products = await Product.findAll({
-            where: { category: category },
-            limit: 10,
-        });
-
-
+            where: {
+              category: {
+                [Op.eq]: sequelize.literal(`BINARY '${category}'`)
+              }
+            }
+          });
+        console.log("products:", products.length); 
+        
         return res.status(200).json(products);
+
     } catch (error) {
         return res.status(500).json({ message: "Error fetching products by category", error: error.message });
     }
 };
 
 
-//Get a Single Category by ID
 const getCategoryById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -164,24 +167,25 @@ const getBrand = async (req, res) => {
 };
 
 const getProductByBrand = async (req, res) => {
+    console.log("getProductByBrand called ");
+    
     try {
+
         const { brand } = req.params;
-
+        const cleanedBrand = brand.replace(/^:/, '');
         console.log("brand:", brand);
-
+        
         if (!brand) {
             return res.status(400).json({ message: "Brand are required" });
         }
 
-
         const products = await Product.findAll({
             where: {
-                brand: brand,
-            },
-            limit: 10,
+                brand: cleanedBrand,
+            }
         });
         console.log("products:", products);
-        
+
         return res.status(200).json(products);
     } catch (error) {
         return res.status(500).json({ message: "Error fetching products by category and brand", error: error.message });

@@ -6,11 +6,13 @@ import { asyncHandler } from "../Utils/asyncHandler.util.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../Utils/cloudiny.util.js";
 import { cookieOption } from "../Utils/cookieOption.util.js";
 import bcrypt from "bcrypt";
+import { sendOtpMail } from "../middleware/mailService.js";
+import { otpStore } from "../Utils/otpStore.js";
 
 const IsAdmin = async (userId) => {
   try {
     console.log("userId : ", userId);
-    
+
     const user = await User.findByPk(userId);
 
     if (!user) {
@@ -39,6 +41,63 @@ const generateAccessRefreshToken = async (userId) => {
 
   return { accessToken, refreshToken };
 };
+
+
+const sendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
+  const existingUser = await User.findOne({ where: { email } });
+  if (existingUser) {
+    throw new ApiError(400, "User already exists");
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  otpStore.set(email, {
+    otp,
+    expiresAt: Date.now() + 300000
+  });
+
+  await sendOtpMail(email, otp);
+
+  return res.status(200).json(
+    new ApiResponse(200, { message: "OTP sent successfully" })
+  );
+});
+
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({ message: "Email and OTP are required" });
+  }
+  console.log("otpStoreee : ", otpStore);
+  
+  const stored = otpStore.get(email);
+  
+  if (!stored) {
+    return res.status(400).json({ message: "No OTP found for this email" });
+  }
+  
+  if (Date.now() > stored.expiresAt) {
+    otpStore.delete(email);
+    return res.status(400).json({ message: "OTP expired" });
+  }
+
+  if (Number(otp) !== stored.otp) {
+    return res.status(400).json({ message: "Invalid OTP" });
+  }
+
+  otpStore.delete(email);
+  console.log("OTP verified successfully--------------------");
+
+  return res.status(200).json({ success: true, message: "OTP verified" });
+};
+
 
 const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -203,18 +262,18 @@ const getAllUserProfile = asyncHandler(async (req, res) => {
   const isAdmin = await IsAdmin(userId);
 
   if (!isAdmin) {
-      throw new ApiError(401, "Unauthorized");
+    throw new ApiError(401, "Unauthorized");
   }
 
   const users = await User.findAll({
-      attributes: { exclude: ["password"] } // Exclude password from results
+    attributes: { exclude: ["password"] } // Exclude password from results
   });
 
   if (!users || users.length === 0) {
-      throw new ApiError(404, "No users found");
+    throw new ApiError(404, "No users found");
   }
 
   res.status(200).json(new ApiResponse(200, "Users profiles retrieved", users));
 });
 
-export { registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile };
+export { sendOtp, verifyOtp, registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile };

@@ -12,11 +12,14 @@ router.route('/addproduct').post(verifyAdmin, upload.fields([{ name: "image", ma
 router.route('/editproduct/:id').put(upload.fields([{ name: "image", maxCount: 1 }]), editProduct);
 router.route('/deleteproduct/:id').delete(deleteProduct);
 
+router.route('/getcartitem').get(verifyJwt, getCartItems);
+
+
 router.route('/product/:id').get(getProductById);
 router.route('/getallproducts').get(getAllProducts);
 router.route('/search').get(searchProducts);
 router.route('/:category').get(getProductsByCategory);
-router.route('/:brand').get(getProductsByBrand);
+router.route('/brand/:brand').get(getProductsByBrand);
 
 
 
@@ -25,7 +28,6 @@ router.route('/wishlist').post(verifyJwt, addToWishlist);
 
 //cartlist routes
 router.route('/cartlist').post(verifyJwt, cartlist);
-router.route('/getCartItems').get(verifyJwt, getCartItems);
 
 
 export default router;

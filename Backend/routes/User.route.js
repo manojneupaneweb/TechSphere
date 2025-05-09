@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, logOutUser, updateUserProfile, deleteUser, getUserProfile, changePassword, getAllUserProfile } from "../Controllers/User.controller.js";
+import { registerUser, loginUser, logOutUser, updateUserProfile, deleteUser, getUserProfile, changePassword, getAllUserProfile, sendOtp, verifyOtp } from "../Controllers/User.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 import verifyAdmin from "../middleware/admin.middleware.js";
@@ -9,6 +9,11 @@ const router = Router();
 // Public routes
 router.route('/register').post(upload.fields([{ name: "profilePicture", maxCount: 1 }]), registerUser);
 router.route('/login').post(loginUser);
+
+// OTP routes
+router.route('/sendotp').post( sendOtp);
+router.route('/verifyotp').post(verifyOtp);
+
 
 // Protected routes (requires JWT)
 router.route('/logout').get(verifyJWT, logOutUser);

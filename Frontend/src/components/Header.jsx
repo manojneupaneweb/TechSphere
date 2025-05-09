@@ -56,16 +56,14 @@ const Header = () => {
 
   const handelCart = async () => {
     try {
-      const accessToken = localStorage.getItem("accessToken");  
+      const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        toast.error("Please login to view cart!");
         return;
       }
       const response = await axios.get("/api/v1/product/getcartitems", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      console.log("Cart data:", response);
-      
+
       setCart(response.data.message);
     } catch (error) {
       console.error("Error getting cart items:", error);
@@ -76,7 +74,8 @@ const Header = () => {
   };
   useEffect(() => {
     handelCart();
-  })
+  }, []);
+  
   return (
     <>
       <header className="sticky top-0 px-14 z-50 bg-white border-b">
@@ -201,7 +200,7 @@ const Header = () => {
                 <div className="relative">
                   <ShoppingCart className="h-5 w-5 text-gray-700" />
                   <span className="absolute -top-2 -right-2 bg-[#8a0106] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                   {cart.length}
+                    {cart.length}
                   </span>
                 </div>
                 <span className="ml-1 hidden lg:inline">Cart</span>

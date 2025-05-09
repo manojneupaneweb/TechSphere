@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Productcard from "../../components/productcard.jsx";
 
-const ProductbrandShow = () => {
-    const { brand } = useParams();
+const ProductCatagoryShow = () => {
+    const { category } = useParams();
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
     const [error, setError] = useState(null);
 
+    console.log("category", category);
     const fetchProducts = async () => {
         try {
-            const response = await axios.get(`/api/v1/category/brand/:${brand}`);
-            console.log("response", response);
+            const response = await axios.get(`/api/v1/category/${category}`);
             setProducts(Array.isArray(response.data) ? response.data : []);
 
         } catch (err) {
@@ -25,14 +25,13 @@ const ProductbrandShow = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [brand]);
+    }, [category]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
-
     console.log("products", products);
 
-    return <Productcard products={products} find={brand} />;
+    return <Productcard products={products} find={category} />;
 };
 
-export default ProductbrandShow;
+export default ProductCatagoryShow;

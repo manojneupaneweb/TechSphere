@@ -4,60 +4,15 @@ import { redirect, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../../components/Loading';
 import { toast, ToastContainer } from 'react-toastify';
-
+import { CartList } from '../../utils/Cart.utils.js'
 function ProductDetails() {
-    const [esewa, setEsewa] = useState(null);
 
-
-    const handelpayment = (product) => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-            toast.error('Please login to continue');
-            return;
-        }
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
-        form.target = '_blank';
-
-        const amount = 100;
-        const tax_amount = 10;
-        const total_amount = amount + tax_amount;
-
-        const data = {
-            "amount": "100",
-            "failure_url": "https://developer.esewa.com.np/failure",
-            "product_delivery_charge": "0",
-            "product_service_charge": "0",
-            "product_code": "EPAYTEST",
-            "signature": "i94zsd3oXF6ZsSr/kGqT4sSzYQzjj1W/waxjWyRwaME=",
-            "signed_field_names": "total_amount,transaction_uuid,product_code",
-            "success_url": "https://developer.esewa.com.np/success",
-            "tax_amount": "10",
-            "total_amount": "110",
-            "transaction_uuid": "241028"
-        };
-
-        for (let key in data) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = data[key];
-            form.appendChild(input);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-    };
-
-
-
-    const { id } = useParams(); // Get the product id from the URL params
+    const { id } = useParams();
+    const [ProductNumber, setProductNumber] = useState(1);
 
     const [activeTab, setActiveTab] = useState("Specifications");
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    // Function to fetch the product details from the server
     const fetchProduct = async () => {
         try {
             const response = await axios.get(`/api/v1/product/product/${id}`);
@@ -81,6 +36,19 @@ function ProductDetails() {
         );
     }
 
+
+    const handleCartList = async (product) => {
+        
+        
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            toast.error('Please login to add items to cart!');
+            return;
+        }
+        await CartList(product);
+        redirect('/cartlist');
+    };
+
     // Check if specifications is a string, then parse it to an object
     let specifications = [];
     if (product.specifications) {
@@ -94,7 +62,7 @@ function ProductDetails() {
     return (
         <div className="max-w-screen-xl mx-auto px-6 py-10 sm:px-12 md:px-16">
             <div className="flex flex-col md:flex-row justify-between items-center gap-10">
-            <ToastContainer />
+                <ToastContainer />
                 {/* Image Section */}
                 <div className="h-full">
                     <img
@@ -116,21 +84,40 @@ function ProductDetails() {
                         <h2 className="text-2xl font-bold text-gray-800">Price:
                             <span className="text-red-600 ml-4">रु {product.price}</span>
                         </h2>
-                        <h3 className="text-green-600 font-bold">In Stock: {product.stock}</h3>
+                        <h3 className="text-green-600 font-bold"> {product.stock > 0 ? (
+                            <span className="text-green-600">In Stock</span>
+                        ) : (<span className="text-red-600">Out of Stock</span>)} </h3>
                     </div>
 
-                    <div className="flex items-center mt-6">
+                    {/* <div className="flex items-center mt-6">
                         <span className="text-xl font-semibold mr-4">Qty:</span>
-                        <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">-</button>
-                        <span className="text-xl mx-4">1</span>
-                        <button className="bg-red-700 text-white font-bold px-4 py-2 rounded-full">+</button>
-                    </div>
+                        <button
+                            className="bg-red-700 text-white font-bold px-4 py-2 rounded-full"
+                            onClick={() => {
+                                if (ProductNumber === 1) {
+                                    toast.error('Minimum quantity is 1');
+                                } else {
+                                    setProductNumber(ProductNumber - 1);
+                                }
+                            }}
+                        >
+                            -
+                        </button>
+                        <span className="text-xl mx-4">{ProductNumber}</span>
+                        <button
+                            className="bg-red-700 text-white font-bold px-4 py-2 rounded-full"
+                            onClick={() => setProductNumber(ProductNumber + 1)}
+                        >
+                            +
+                        </button>
+                    </div> */}
 
                     <button
-                        className="bg-red-700 text-white font-bold py-3 px-12 rounded-lg mt-8 transition hover:bg-blue-800"
-                        onClick={handelpayment(product)}
+                        className="bg-red-700 text-white font-bold py-3 px-12 rounded-lg mt-8 transition hover:bg-red-800"
+                        onClick={() => handleCartList(product)}
+
                     >
-                        Buy Now
+                        Add to Cart
                     </button>
 
 
@@ -220,8 +207,8 @@ function ProductDetails() {
                     )}
                 </div>
             </div>
-            
-        </div>
+
+        </div >
     );
 }
 

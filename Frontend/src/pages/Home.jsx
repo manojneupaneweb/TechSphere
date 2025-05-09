@@ -402,13 +402,13 @@ const ShopByCategory = () => {
             className="flex overflow-x-auto space-x-6 py-4 no-scrollbar scrollbar-hide"
           >
             {[
-              { icon: <FaMobileAlt />, title: "Smartphones", color: "text-blue-500", link: "/smartphones", desc: "Explore the latest smartphones from top brands." },
-              { icon: <FaClock />, title: "Smartwatches", color: "text-gray-700", link: "/smartwatches", desc: "Track your fitness and style with the latest smartwatches." },
-              { icon: <FaHeadphonesAlt />, title: "Headphones", color: "text-purple-600", link: "/headphones", desc: "Discover high-quality headphones for every taste." },
-              { icon: <FaBatteryFull />, title: "Power Banks", color: "text-green-500", link: "/powerbanks", desc: "Stay powered up with the latest power banks." },
-              { icon: <FaShieldAlt />, title: "Screen Protectors", color: "text-yellow-500", link: "/screen-protectors", desc: "Protect your devices with durable screen protectors." },
-              { icon: <FaPlug />, title: "Chargers", color: "text-orange-600", link: "/chargers", desc: "Find fast and reliable chargers for all your devices." },
-              { icon: <FaLaptop />, title: "Cases", color: "text-gray-800", link: "/cases", desc: "Protect your devices with stylish and durable cases." },
+              { icon: <FaMobileAlt />, title: "Smartphones", color: "text-blue-500", link: "/category/smartphones", desc: "Explore the latest smartphones from top brands." },
+              { icon: <FaClock />, title: "Smartwatches", color: "text-gray-700", link: "/category/smartwatches", desc: "Track your fitness and style with the latest smartwatches." },
+              { icon: <FaHeadphonesAlt />, title: "Headphones", color: "text-purple-600", link: "/category/headphones", desc: "Discover high-quality headphones for every taste." },
+              { icon: <FaBatteryFull />, title: "Power Banks", color: "text-green-500", link: "/category/powerbanks", desc: "Stay powered up with the latest power banks." },
+              { icon: <FaShieldAlt />, title: "Screen Protectors", color: "text-yellow-500", link: "/category/screen-protectors", desc: "Protect your devices with durable screen protectors." },
+              { icon: <FaPlug />, title: "Chargers", color: "text-orange-600", link: "/category/chargers", desc: "Find fast and reliable chargers for all your devices." },
+              { icon: <FaLaptop />, title: "Cases", color: "text-gray-800", link: "/category/cases", desc: "Protect your devices with stylish and durable cases." },
             ].map(({ icon, title, color, link, desc }, index) => (
               <div
                 key={index}
