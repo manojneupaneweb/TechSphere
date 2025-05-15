@@ -1,12 +1,12 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../Config/Connect.js";
-import { Category, Brand } from "./Others.model.js";
 
 const Product = sequelize.define("Product", {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
+    allowNull: false
   },
   name: {
     type: DataTypes.STRING,
@@ -17,7 +17,7 @@ const Product = sequelize.define("Product", {
     allowNull: true,
   },
   price: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.INTEGER,
     allowNull: false,
     validate: {
       min: 0.01,
@@ -59,24 +59,12 @@ const Product = sequelize.define("Product", {
     },
   },
   category: {
-    type: DataTypes.INTEGER,
-    // references: {
-    //   model: Category,
-    //   key: 'id',
-    // },
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-    foreignKey: true,
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   brand: {
-    type: DataTypes.INTEGER,
-    // references: {
-    //   model: Brand,
-    //   key: 'id',
-    // },
-    onDelete: 'CASCADE',
-    foreignKey: true,
-    onUpdate: 'CASCADE',
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 }, {
   timestamps: true,
@@ -84,13 +72,3 @@ const Product = sequelize.define("Product", {
 });
 
 export { Product };
-
-// Product.belongsTo(Category, {
-//   foreignKey: 'category',
-//   as: 'categoryDetails',
-// });
-
-// Product.belongsTo(Brand, {
-//   foreignKey: 'brand',
-//   as: 'brandDetails',
-// });

@@ -39,8 +39,8 @@ function AddProduct() {
 
   const fetchBrands = async () => {
     try {
-      const response = await axios.get('/api/v1/category/getallbrand');
-      setBrands(response.data);
+      const response = await axios.get('/api/v1/product/getallbrand'); 
+      setBrands(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
       toast.error("Error fetching brands!");
     }

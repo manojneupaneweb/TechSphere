@@ -3,39 +3,58 @@ import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../components/Loading.jsx';
+import { v4 as uuidv4 } from "uuid";
+import CryptoJS from "crypto-js";
+import "crypto-js/hmac-sha256";
+import "crypto-js/enc-base64";
 
 function Cart() {
     const accessToken = localStorage.getItem("accessToken");
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [totalPrice, setTotalPrice] = useState(0);
-
-    useEffect(() => {
-        if (cart?.length) {
-            const calculatedTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-            setTotalPrice(calculatedTotal);
-        } else {
-            setTotalPrice(0);
-        }
-    }, [cart]);
+    const [showPopup, setShowPopup] = useState(false);
+    const [formData, setFormData] = useState({
+        amount: "0",
+        tax_amount: "0",
+        total_amount: "0",
+        transaction_uuid: uuidv4(),
+        product_service_charge: "0",
+        product_delivery_charge: "0",
+        product_code: "EPAYTEST",
+        success_url: "http://localhost:5173/paymentsuccess",
+        failure_url: "http://localhost:5173/paymentfailure",
+        signed_field_names: "total_amount,transaction_uuid,product_code",
+        signature: "",
+        secret: "8gBm/:&EnhH.1/q",
+    });
 
     const fetchCart = async () => {
         try {
+            setLoading(true);
             const response = await axios.get("/api/v1/product/getcartitem", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 
-            const cartItems = response.data.cartItem.map(async (cartItem) => {
-                const productResponse = await axios.get(`/api/v1/product/${cartItem.product_id}`);
-                return {
-                    ...productResponse.data,
-                    quantity: cartItem.quantity,
-                    cartItemId: cartItem.id, // in case needed for delete
-                };
-            });
+            // Ensure all numeric fields are properly converted to numbers
+            const processedCart = response.data.product.map(item => ({
+                ...item,
+                price: Number(item.price) || 0,
+                quantity: Number(item.quantity) || 1,
+                cartItemId: item.cartItemId || item.id // Fallback to item.id if cartItemId doesn't exist
+            }));
 
-            const resolvedCartItems = await Promise.all(cartItems);
-            setCart(resolvedCartItems);
+            setCart(processedCart);
+
+            // Calculate total price
+            const totalPrice = processedCart.reduce(
+                (total, item) => total + (item.price * item.quantity), 0
+            );
+
+            setFormData(prev => ({
+                ...prev,
+                amount: totalPrice.toString(),
+                total_amount: totalPrice.toString()
+            }));
         } catch (error) {
             console.error("Error getting cart items:", error);
             toast.error("Failed to fetch cart items.");
@@ -44,23 +63,68 @@ function Cart() {
         }
     };
 
-    const updateQuantity = (id, amount) => {
-        setCart((prevCart) =>
-            prevCart.map((item) =>
-                item.id === id
-                    ? { ...item, quantity: Math.max(1, item.quantity + amount) }
-                    : item
-            )
-        );
+    const updateQuantity = async (id, amount) => {
+        try {
+            const newCart = cart.map(item => {
+                if (item.id === id) {
+                    const newQuantity = Math.max(1, (Number(item.quantity) || 1) + amount);
+                    return {
+                        ...item,
+                        quantity: newQuantity
+                    };
+                }
+                return item;
+            });
+
+            setCart(newCart);
+
+            const updatedItem = newCart.find(item => item.id === id);
+
+            if (!updatedItem) {
+                return toast.error("Item not found in cart.");
+            }
+
+            await axios.put(
+                `/api/v1/product/updatecart/${updatedItem.cartItemId}`,
+                { quantity: updatedItem.quantity },
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+
+            const totalPrice = newCart.reduce(
+                (total, item) => total + (item.price * item.quantity), 0
+            );
+
+            setFormData(prev => ({
+                ...prev,
+                amount: totalPrice.toString(),
+                total_amount: totalPrice.toString()
+            }));
+        } catch (error) {
+            console.error("Error updating quantity:", error);
+            toast.error("Error updating quantity!");
+        }
     };
+
 
     const removeItem = async (item) => {
         try {
-            await axios.delete(`/api/v1/product/removeitem/${item.cartItemId}`, {
+            await axios.delete(`/api/v1/product/removecart/${item.cartItemId}`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            toast.success(`${item.title} removed from cart!`);
-            fetchCart(); // Refresh cart
+            toast.success(`${item.name} removed from cart!`);
+
+            const newCart = cart.filter(cartItem => cartItem.cartItemId !== item.cartItemId);
+            setCart(newCart);
+
+            const totalPrice = newCart.reduce(
+                (total, item) => total + (item.price * item.quantity), 0
+            );
+
+            setFormData(prev => ({
+                ...prev,
+                amount: totalPrice.toString(),
+                total_amount: totalPrice.toString()
+            }));
         } catch (error) {
             console.error("Error removing item from cart:", error);
             toast.error("Error removing item from cart!");
@@ -70,97 +134,248 @@ function Cart() {
     useEffect(() => {
         fetchCart();
     }, []);
-console.log('cart', cart.id);
 
+    const generateSignature = (formData) => {
+        const dataString =
+            `total_amount=${formData.total_amount},` +
+            `transaction_uuid=${formData.transaction_uuid},` +
+            `product_code=${formData.product_code}`;
+
+        const hmac = CryptoJS.HmacSHA256(
+            CryptoJS.enc.Utf8.parse(dataString),
+            CryptoJS.enc.Utf8.parse(formData.secret)
+        );
+
+        return CryptoJS.enc.Base64.stringify(hmac);
+    };
+
+    useEffect(() => {
+        const signature = generateSignature(formData);
+        setFormData(prev => ({ ...prev, signature }));
+    }, [formData.total_amount, formData.transaction_uuid, formData.product_code]);
+
+    const handleCheckout = () => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
+
+        const fieldsToSend = { ...formData };
+        delete fieldsToSend.secret;
+
+        Object.entries(fieldsToSend).forEach(([key, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    };
+
+    const totalPrice = cart.reduce((total, item) => {
+        const itemPrice = Number(item.price) || 0;
+        const itemQuantity = Number(item.quantity) || 1;
+        return total + (itemPrice * itemQuantity);
+    }, 0);
+
+    if (loading) {
+        return (
+            <div className='flex justify-center items-center h-[80vh]'>
+                <Loading />
+            </div>
+        );
+    }
+
+    if (cart.length === 0) {
+        return (
+            <div className='flex justify-center items-center h-[80vh]'>
+                <h1 className='text-2xl font-bold'>Your cart is empty</h1>
+            </div>
+        );
+    }
 
     return (
-        <>
-            {loading ? (
-                <div className='flex justify-center items-center h-[80vh]'>
-                    <Loading />
-                </div>
-            ) : (
-                <div className='p-3 md:p-5 lg:px-20'>
-                    <h1 className='text-2xl font-bold mb-4'>
-                        Shopping Cart
-                        <span className='text-lg'> (Total {cart?.length ?? 0} item{(cart?.length ?? 0) !== 1 ? 's' : ''})</span>
-                    </h1>
-                    <div className='flex flex-col lg:flex-row gap-5 md:gap-10'>
-                        <div className='lg:w-2/3 w-full'>
-                            {cart?.length > 0 ? cart.map((item) => (
-                                <div key={item.id} className='bg-slate-50 p-3 md:p-5 flex flex-col md:flex-row items-center gap-3 md:gap-5 rounded-lg mb-3 md:mb-5 shadow-sm hover:shadow-md transition-shadow'>
-                                    <div className='w-24 h-20 md:w-32 md:h-24 bg-slate-300 flex-shrink-0 rounded-lg overflow-hidden'>
-                                        <img src={item.image} alt={item.name} className='w-full h-full object-cover' />
-                                    </div>
-                                    <div className='flex flex-col w-full text-center md:text-left'>
-                                        <p className='font-semibold text-lg md:text-xl'>{item.name}</p>
-                                        <p className='text-sm md:text-base text-gray-600'>
-                                            {item.description?.length > 20
-                                                ? item.description.slice(0, 20) + '...'
-                                                : item.description}
-                                        </p>
-                                        <p className='text-red-700 font-semibold text-lg md:text-base'>रु {item.price}</p>
-                                    </div>
-                                    <div className='flex flex-col items-center md:items-end w-full'>
-                                        <button className='text-red-700 font-semibold text-sm md:text-base hover:underline' onClick={() => removeItem(item)}>Remove</button>
-                                        <div className='mt-2 flex items-center gap-2'>
-                                            <span className='text-sm md:text-base'>Qty:</span>
-                                            <button
-                                                className='py-1 px-3 bg-gray-200 rounded-md text-sm md:text-base hover:bg-gray-300 transition-colors'
-                                                onClick={() => updateQuantity(item.id, -1)}
-                                                disabled={item.quantity <= 1}
-                                            >
-                                                -
-                                            </button>
-                                            <span className='text-sm md:text-base'>{item.quantity}</span>
-                                            <button
-                                                className='py-1 px-3 bg-gray-200 rounded-md text-sm md:text-base hover:bg-gray-300 transition-colors'
-                                                onClick={() => updateQuantity(item.id, 1)}
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-                                        <p className='mt-1 text-sm md:text-base'>
-                                            Total: रु {(item.price * item.quantity).toFixed(2)}
-                                        </p>
-                                    </div>
-                                </div>
-                            )) : (
-                                <p className="text-center text-gray-500 text-sm md:text-base">Your cart is empty.</p>
-                            )}
-                        </div>
+        <div className='p-3 md:p-5 lg:px-20'>
+            <h1 className='text-2xl font-bold mb-4'>
+                Shopping Cart
+                <span className='text-lg'> ({cart.length} item{cart.length !== 1 ? 's' : ''})</span>
+            </h1>
 
-                        <div className='bg-slate-50 w-full lg:w-1/3 p-3 md:p-5 rounded-lg shadow-sm'>
-                            <h2 className='font-semibold text-lg md:text-xl border-b-2 pb-2 text-center md:text-left'>Summary</h2>
-                            <div className='border-b-2 py-2 text-sm md:text-lg'>
-                                <div className='flex justify-between my-2 md:my-3'>
-                                    <p>Subtotal</p>
-                                    <p className='text-red-700 font-semibold'>रु {totalPrice.toFixed(2)}</p>
+            <div className='flex flex-col lg:flex-row gap-5 md:gap-10'>
+                <div className='lg:w-2/3 w-full'>
+                    {cart.map(item => {
+                        const itemPrice = Number(item.price) || 0;
+                        const itemQuantity = Number(item.quantity) || 1;
+
+                        return (
+                            <div key={item.id} className='bg-slate-50 p-3 md:p-5 flex flex-col md:flex-row items-center gap-3 md:gap-5 rounded-lg mb-3 md:mb-5 shadow-sm hover:shadow-md transition-shadow'>
+                                <div className='w-24 h-20 md:w-32 md:h-24 bg-slate-300 flex-shrink-0 rounded-lg overflow-hidden'>
+                                    <img src={item.image} alt={item.name} className='w-full h-full object-cover' />
                                 </div>
-                                <div className='flex justify-between'>
-                                    <p>Shipping (Free, 1-3 Days)</p>
-                                    <p className='text-red-700 font-semibold'>रु 0</p>
+                                <div className='flex flex-col w-full text-center md:text-left'>
+                                    <p className='font-semibold text-lg md:text-xl'>{item.name}</p>
+                                    <p className='text-sm md:text-base text-gray-600'>
+                                        {item.description?.length > 20 ? `${item.description.slice(0, 20)}...` : item.description}
+                                    </p>
+                                    <p className='text-red-700 font-semibold text-lg md:text-base'>रु {itemPrice}</p>
+                                </div>
+                                <div className='flex flex-col items-center md:items-end w-full'>
+                                    <button
+                                        className='text-red-700 font-semibold text-sm md:text-base hover:underline'
+                                        onClick={() => removeItem(item)}
+                                    >
+                                        Remove
+                                    </button>
+                                    <div className='mt-2 flex items-center gap-2'>
+                                        <span className='text-sm md:text-base'>Qty:</span>
+
+                                        <button
+                                            className='py-1 px-3 bg-gray-200 rounded-md text-sm md:text-base hover:bg-gray-300 transition-colors disabled:opacity-50'
+                                            onClick={() => updateQuantity(item.id, -1)}
+                                            disabled={item.quantity <= 1}
+                                        >
+                                            -
+                                        </button>
+
+                                        <span className='text-sm md:text-base min-w-[20px] text-center'>
+                                            {item.quantity}
+                                        </span>
+
+                                        <button
+                                            className='py-1 px-3 bg-gray-200 rounded-md text-sm md:text-base hover:bg-gray-300 transition-colors'
+                                            onClick={() => updateQuantity(item.id, 1)}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <p className='mt-1 text-sm md:text-base font-semibold'>
+                                        Total: रु {(itemPrice * itemQuantity)}
+                                    </p>
                                 </div>
                             </div>
-                            <div className='border-b-2 py-2'></div>
-                            <input type='text' placeholder='Enter Coupon Code' className='my-3 w-full h-9 md:h-10 border-2 border-gray-300 bg-white outline-none px-2 md:px-3 rounded-md text-sm md:text-base focus:border-red-700 transition-colors' />
-                            <button className='w-full py-2 bg-gray-400 rounded-md font-semibold hover:bg-gray-500 transition text-sm md:text-base'>Apply</button>
-                            <div className='flex justify-between border-b-2 py-2 text-sm md:text-lg'>
-                                <p>Grand Total</p>
-                                <p className='text-red-700 font-semibold'>रु {totalPrice.toFixed(2)}</p>
-                            </div>
-                            <button
-                                className='w-full py-2 md:py-3 text-white bg-red-700 mt-3 md:mt-5 rounded-md hover:bg-red-800 transition text-sm md:text-base'
-                                disabled={cart.length === 0}
-                            >
-                                Proceed to Checkout
-                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className='bg-slate-50 w-full lg:w-1/3 p-3 md:p-5 rounded-lg shadow-sm'>
+                    <h2 className='font-semibold text-lg md:text-xl border-b-2 pb-2 text-center md:text-left'>Summary</h2>
+                    <div className='border-b-2 py-2 text-sm md:text-lg'>
+                        <div className='flex justify-between my-2 md:my-3'>
+                            <p>Subtotal</p>
+                            <p className='text-red-700 font-semibold'>रु {totalPrice}</p>
+                        </div>
+                        <div className='flex justify-between'>
+                            <p>Shipping (Free, 1-3 Days)</p>
+                            <p className='text-red-700 font-semibold'>रु 0</p>
                         </div>
                     </div>
-                    <ToastContainer />
+                    <div className='border-b-2 py-2'></div>
+                    <input
+                        type='text'
+                        placeholder='Enter Coupon Code'
+                        className='my-3 w-full h-9 md:h-10 border-2 border-gray-300 bg-white outline-none px-2 md:px-3 rounded-md text-sm md:text-base focus:border-red-700 transition-colors'
+                    />
+                    <button className='w-full py-2 bg-gray-400 rounded-md font-semibold hover:bg-gray-500 transition text-sm md:text-base'>
+                        Apply
+                    </button>
+                    <div className='flex justify-between border-b-2 py-2 text-sm md:text-lg'>
+                        <p>Grand Total</p>
+                        <p className='text-red-700 font-semibold'>रु {totalPrice}</p>
+                    </div>
+                    <button
+                        onClick={() => setShowPopup(true)}
+                        className='w-full py-2 md:py-3 text-white bg-red-700 mt-3 md:mt-5 rounded-md hover:bg-red-800 transition text-sm md:text-base'
+                        disabled={cart.length === 0}
+                    >
+                        Proceed to Checkout
+                    </button>
+
                 </div>
-            )}
-        </>
+                {showPopup && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm transition-opacity duration-300">
+                        <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in-up">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-gray-800">Select Payment Method</h2>
+                                <button
+                                    onClick={() => setShowPopup(false)}
+                                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <button
+                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg"
+                                >
+                                    <img
+                                        src="https://esewa.com.np/common/images/esewa_logo.png"
+                                        alt="eSewa Logo"
+                                        className="h-6 object-contain"
+                                    />
+                                    Pay with eSewa
+                                </button>
+
+                                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                    <p className="text-blue-800 text-sm italic">
+                                        This project demonstrates payment integration for learning purposes.
+                                    </p>
+                                </div>
+
+                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                    <h3 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                                        </svg>
+                                        Test Credentials
+                                    </h3>
+                                    <ul className="text-sm text-gray-600 space-y-1.5">
+                                        <li className="flex gap-2">
+                                            <span className="font-medium text-gray-700">eSewa ID:</span>
+                                            <span>9806800001-9806800005</span>
+                                        </li>
+                                        <li className="flex gap-2">
+                                            <span className="font-medium text-gray-700">MPIN:</span>
+                                            <span>1122 (app only)</span>
+                                        </li>
+                                        <li className="flex gap-2">
+                                            <span className="font-medium text-gray-700">Password:</span>
+                                            <span>Nepal@123</span>
+                                        </li>
+                                        <li className="flex gap-2">
+                                            <span className="font-medium text-gray-700">Token:</span>
+                                            <span>123456</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                <button
+                                    onClick={() => {
+                                        setShowPopup(false);
+                                        handleCheckout();
+                                    }}
+                                    className="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                    </svg>
+                                    Proceed to Payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+            </div>
+            <ToastContainer />
+        </div>
     );
 }
 

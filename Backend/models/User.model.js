@@ -3,12 +3,14 @@ import jwt from 'jsonwebtoken';
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../Config/Connect.js';
 import { Wishlist } from './Others.model.js';
+import Sequelize from 'sequelize';
 
 const User = sequelize.define('users', {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
+        type: DataTypes.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
+        allowNull: false
     },
     fullName: {
         type: DataTypes.STRING,
@@ -49,8 +51,8 @@ Wishlist.belongsTo(User, { foreignKey: 'userId' });
 
 
 User.prototype.isPasswordCorrect = async function (password) {
-    console.log("password" ,password);
-    console.log("this.password" , this.password);
+    console.log("password", password);
+    console.log("this.password", this.password);
 
     return await bcrypt.compare(password, this.password);
 };

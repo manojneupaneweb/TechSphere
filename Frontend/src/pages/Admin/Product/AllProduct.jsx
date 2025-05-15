@@ -8,7 +8,8 @@ function AllProduct() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 2;
+  let count = 1 ;
+  const productsPerPage = 10;
 
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -71,16 +72,16 @@ function AllProduct() {
             </div>
           </div>
 
-          <div className="rounded-lg border shadow-sm overflow-x-auto">
+          <div className="rounded-lg border shadow-sm overflow-x-auto overflow-scroll">
             <table className="w-full border-collapse min-w-[900px] text-sm">
               <thead className="bg-gray-100 sticky top-0 z-10">
                 <tr className="text-left text-gray-600">
                   <th className="px-4 py-3 w-12"></th>
-                  <th className="px-4 py-3">ID</th>
+                  <th className="px-4 py-3">S.N</th>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Category</th>
                   <th className="px-4 py-3 text-center">Brand</th>
-                  <th className="px-4 py-3 text-right">Price</th>
+                  <th className="px-4 py-3 text-center">Price</th>
                   <th className="px-4 py-3 text-center">Stock</th>
                   <th className="px-4 py-3 text-center">Status</th>
                   <th className="px-4 py-3 text-center">Featured</th>
@@ -100,9 +101,8 @@ function AllProduct() {
                       />
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-700">
-                      {product._id
-                        ? product._id.slice(0, 6) + "..."
-                        : "N/A"}
+                      {count++}
+
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -120,19 +120,18 @@ function AllProduct() {
                     </td>
                     <td className="px-4 py-3">{product.category}</td>
                     <td className="text-center px-4 py-3">{product.brand}</td>
-                    <td className="text-right px-4 py-3">
-                      ${Number(product.price).toFixed(2)}
+                    <td className="text-center px-4 py-3">
+                      रु. {Number(product.price)}
                     </td>
                     <td className="text-center px-4 py-3">{product.stock}</td>
                     <td className="text-center px-4 py-3">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          product.status
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-600"
-                        }`}
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${product.status
+                          ? "bg-red-100 text-red-600"
+                            : "bg-green-100 text-green-700"
+                          }`}
                       >
-                        {product.status ? "Active" : "Inactive"}
+                        {product.status ? "Inactive" : "Active"}
                       </span>
                     </td>
                     <td className="text-center px-4 py-3">
@@ -165,11 +164,10 @@ function AllProduct() {
                   <button
                     key={index}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`px-3 py-1 rounded-md ${
-                      currentPage === index + 1
+                    className={`px-3 py-1 rounded-md ${currentPage === index + 1
                         ? "bg-[#8a0106] text-white"
                         : "bg-gray-200 text-gray-700"
-                    }`}
+                      }`}
                   >
                     {index + 1}
                   </button>

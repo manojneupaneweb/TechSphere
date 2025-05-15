@@ -4,7 +4,7 @@ const accessToken = localStorage.getItem("accessToken");
 
 
 const CartList = async (product) => {
-    const accessToken = localStorage.getItem("accessToken"); // Ensure token is available
+    const accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken) {
         return toast.error("Please login to add to cart!");
@@ -16,7 +16,9 @@ const CartList = async (product) => {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        toast.success(`${product.title} added to cart!`);
+        console.log("product" , product);
+        
+        toast.success(`${product.name} added to cart!`);
     } catch (error) {
         toast.error(error.response?.data?.message || "Failed to add to cart!");
         console.error("Error adding to cart:", error);

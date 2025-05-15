@@ -50,7 +50,7 @@ const UserAccess = ({ children }) => {
 
   if (!accessToken) {
     toast.error("Please login to access this page");
-    return <Navigate to="/login" />;
+    return <Navigate to="/auth/login" />;
   }
 
   return children;
@@ -69,7 +69,7 @@ const Logout = async () => {
   } finally {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    window.location.href = "/login";
+    window.location.href = "/auth/login";
   }
 };
 

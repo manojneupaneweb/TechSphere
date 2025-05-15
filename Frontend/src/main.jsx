@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       { path: "/wishlist", element: <Wishlist /> },
       { path: "/brand/:brand", element: <ProductbrandShow /> },
       { path: "/category/:category", element: <ProductCatagoryShow /> },
- 
+
       {
         path: "/cart", element: (
           <UserAccess>
@@ -64,13 +64,18 @@ const router = createBrowserRouter([
         element: (
           <UserAccess>
             <Profile />
-          </UserAccess> 
+          </UserAccess>
         )
       },
       { path: "*", element: <PageNotFound /> },
-      { path: "/signup", element: <Signup /> },
-      { path: "/login", element: <Login /> },
+
     ],
+  }, {
+    path: "/auth",
+    children: [
+      { path: "signup", element: <Signup /> },
+      { path: "login", element: <Login /> },
+    ]
   },
   {
     path: "/admin",

@@ -1,35 +1,66 @@
+import { Brand } from '../models/Others.model.js';
 import { Product } from '../models/Product.model.js'
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
 import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
 
+const getAllBrand = asyncHandler(async (req, res) => {
+  const brands = await Brand.findAll({});
+
+  if (!brands || brands.length === 0) {
+    throw new ApiError(404, "No brands found");
+  }
+  res.status(200).json(new ApiResponse(200, brands, "Brands fetched successfully"));
+});
 
 
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, price, warranty, category, brand, stock, return_policy, description, specifications } = req.body;
+  try {
+    const { name, price, warranty, category, brand, stock, return_policy, description, specifications } = req.body;
 
-  if (!name || !price || !warranty || !category || !brand || !stock || !return_policy || !description || !specifications) {
-    throw new ApiError(400, "All required fields");
+    if (
+      !name ||
+      !price ||
+      !warranty ||
+      !category ||
+      !brand ||
+      stock === undefined ||
+      !return_policy ||
+      !description ||
+      !specifications
+    ) {
+      throw new ApiError(400, "All required fields");
+    }
+
+
+    const localFilePath = req.files?.image?.[0]?.path;
+    if (!localFilePath) {
+      throw new ApiError(400, "Product image is required");
+    }
+
+    const imageUrl = await uploadOnCloudinary(localFilePath);
+
+    if (!imageUrl) {
+      throw new ApiError(500, "Failed to upload image to Cloudinary");
+    }
+    console.log("price", price);
+    console.log("category", category);
+    console.log("brand", brand);
+
+    
+
+    const newProduct = await Product.create({
+      name, price, brand, warranty, category, stock, return_policy, description, specifications,
+      image: imageUrl,
+    });
+
+    res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw new ApiError(500, "Internal server error while creating product");
+
   }
-
-  const localFilePath = req.files?.image?.[0]?.path;
-  if (!localFilePath) {
-    throw new ApiError(400, "Product image is required");
-  }
-
-  const imageUrl = await uploadOnCloudinary(localFilePath);
-
-  if (!imageUrl) {
-    throw new ApiError(500, "Failed to upload image to Cloudinary");
-  }
-
-  const newProduct = await Product.create({
-    name, price, brand, warranty, category, stock, return_policy, description, specifications,
-    image: imageUrl,
-  });
-
-  res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));
 });
 
 const editProduct = asyncHandler(async (req, res) => {
@@ -114,8 +145,6 @@ const getProductById = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 const getAllProducts = asyncHandler(async (req, res) => {
   console.log("Fetching all products...................................");
 
@@ -129,7 +158,6 @@ const getAllProducts = asyncHandler(async (req, res) => {
     new ApiResponse(200, products, "Products fetched successfully")
   );
 });
-
 
 const getProductsByCategory = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
@@ -272,6 +300,56 @@ const updateProductImage = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Product image updated successfully", product));
 });
 
+
+const productOrder = asyncHandler(async (req, res) => {
+  try {
+    const { user_id, product_id, status, } = req.body;
+
+    if (
+      !name ||
+      !price ||
+      !warranty ||
+      !category ||
+      !brand ||
+      stock === undefined ||
+      !return_policy ||
+      !description ||
+      !specifications
+    ) {
+      throw new ApiError(400, "All required fields");
+    }
+
+
+    const localFilePath = req.files?.image?.[0]?.path;
+    if (!localFilePath) {
+      throw new ApiError(400, "Product image is required");
+    }
+
+    const imageUrl = await uploadOnCloudinary(localFilePath);
+
+    if (!imageUrl) {
+      throw new ApiError(500, "Failed to upload image to Cloudinary");
+    }
+    console.log("price", price);
+    console.log("category", category);
+    console.log("brand", brand);
+
+    
+
+    const newProduct = await Product.create({
+      name, price, brand, warranty, category, stock, return_policy, description, specifications,
+      image: imageUrl,
+    });
+
+    res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw new ApiError(500, "Internal server error while creating product");
+
+  }
+});
+
+
 export {
   addProduct,
   editProduct,
@@ -284,5 +362,11 @@ export {
   updateStock,
   addProductReview,
   getProductReviews,
-  updateProductImage
+  updateProductImage,
+  getAllBrand,
+
+
+
+  //order 
+  productOrder
 };

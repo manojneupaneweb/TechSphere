@@ -1,3 +1,4 @@
+import { sequelize } from "../Config/Connect.js";
 import { Brand, Category, SubCategory } from "../models/Others.model.js";
 import { Product } from "../models/Product.model.js";
 import { ApiResponse } from "../Utils/apiResponse.util.js";
@@ -10,7 +11,7 @@ const addCategory = async (req, res) => {
 
         if (!name) return res.status(400).json({ message: "Category name is required" });
 
-        const category = await Category.create({ name });
+        const category = await Category.create({   name });
         return res.status(201).json({ message: "Category created successfully", category });
     } catch (error) {
         return res.status(500).json({ message: "Error creating category", error: error.message });
@@ -19,10 +20,7 @@ const addCategory = async (req, res) => {
 
 const getCategories = async (req, res) => {
     try {
-        // console.log(".......................................................................................");
-        const categories = await Category.findAll({
-            // include: [{ model: SubCategory, as: "subCategories" }]
-        });
+        const categories = await Category.findAll({        });
 
         return res.status(200).json(categories);
     } catch (error) {
@@ -34,8 +32,6 @@ const getCategories = async (req, res) => {
 const getProductByCategories = async (req, res) => {
     try {
         const category = req.params.category;
-        console.log("category:", category);
-        
 
         if (!category) {
             return res.status(400).json({ message: "Category is required" });
@@ -43,12 +39,12 @@ const getProductByCategories = async (req, res) => {
 
         const products = await Product.findAll({
             where: {
-              category: {
-                [Op.eq]: sequelize.literal(`BINARY '${category}'`)
-              }
-            }
-          });
-        console.log("products:", products.length); 
+                category: {
+                    [Op.eq]: category
+                }
+            },
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
+        });
         
         return res.status(200).json(products);
 
@@ -139,6 +135,16 @@ const getProductByCategoriesAndBrand = async (req, res) => {
         return res.status(500).json({ message: "Error fetching products by category and brand", error: error.message });
     }
 }
+
+
+
+
+
+
+
+
+
+
 //----------------------------Brand ----------------------------------
 // Add a New
 const addBrand = async (req, res) => {
@@ -156,13 +162,14 @@ const addBrand = async (req, res) => {
     }
 };
 
-const getBrand = async (req, res) => {
+const getAllBrand = async (req, res) => {
+    console.log("getAllBrand called ================================================");
     try {
-        const brand = await Brand.findAll({});
-
-        return res.status(200).json(brand);
+        
+        const brands = await Brand.findAll({});
+        return res.status(200).json(brands);
     } catch (error) {
-        return res.status(500).json({ message: "Error fetching categories", error: error.message });
+        return res.status(500).json({ message: "Error fetching brands", error: error.message });
     }
 };
 
@@ -212,7 +219,17 @@ const deleteBrand = async (req, res) => {
     }
 };
 
-export { addBrand, getBrand, deleteBrand, getProductByBrand }
+export { addBrand, getAllBrand, deleteBrand, getProductByBrand }
+
+
+
+
+
+
+
+
+
+
 
 
 //------------------------- subcategory ----------------------------------

@@ -1,4 +1,3 @@
-import { log } from "console";
 import User from "../models/User.model.js";
 import { ApiError } from "../Utils/apiError.util.js";
 import { ApiResponse } from "../Utils/apiResponse.util.js";
@@ -11,18 +10,17 @@ import { otpStore } from "../Utils/otpStore.js";
 
 const IsAdmin = async (userId) => {
   try {
-    console.log("userId : ", userId);
 
     const user = await User.findByPk(userId);
 
     if (!user) {
-      console.log("User not found");
+      ApiError(404, "User not found");
       return false;
     }
 
     return user.role === "admin";
   } catch (error) {
-    console.error("Error checking admin status:", error);
+    ApiError(500, "Internal server error");
     return false;
   }
 };
@@ -75,7 +73,6 @@ const verifyOtp = async (req, res) => {
   if (!email || !otp) {
     return res.status(400).json({ message: "Email and OTP are required" });
   }
-  console.log("otpStoreee : ", otpStore);
   
   const stored = otpStore.get(email);
   
@@ -93,7 +90,6 @@ const verifyOtp = async (req, res) => {
   }
 
   otpStore.delete(email);
-  console.log("OTP verified successfully--------------------");
 
   return res.status(200).json({ success: true, message: "OTP verified" });
 };
@@ -135,7 +131,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
     return res.status(201).json(new ApiResponse(201, { message: "User created successfully!", user: newUser }));
   } catch (error) {
-    console.error("Error during user registration:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -180,7 +175,6 @@ const logOutUser = asyncHandler(async (req, res, next) => {
     res.clearCookie("refreshToken", cookieOption);
     return res.status(200).json(new ApiResponse(200, { message: "User logged out successfully" }));
   } catch (error) {
-    console.error("Error during user logout:", error);
     next(error);
   }
 });

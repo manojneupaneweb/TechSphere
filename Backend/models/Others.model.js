@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { Sequelize, DataTypes, DATE } from 'sequelize';
 import { sequelize } from "../Config/Connect.js";
 import User from './User.model.js';
 import { Product } from './Product.model.js';
@@ -15,14 +15,17 @@ const Category = sequelize.define('categories', {
         type: DataTypes.STRING,
         allowNull: false
     }
-}, { timestamps: true });
+}, {
+    timestamps: true
+});
+
 
 
 // ---------------Brand model ---------------
 const Brand = sequelize.define('brands', {
     id: {
-        type: DataTypes.UUID, 
-        defaultValue: DataTypes.UUIDV4, 
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
     name: {
@@ -61,22 +64,22 @@ SubCategory.belongsTo(Category, { foreignKey: 'categoryId' });
 
 const Order = sequelize.define('Order', {
     id: {
-      type: DataTypes.UUID, // UUID
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+        type: DataTypes.UUID, // UUID
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
     },
     user_id: {
-      type: DataTypes.UUID, // UUID
-      references: {
-        model: 'Users',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+        type: DataTypes.UUID, // UUID
+        references: {
+            model: 'Users',
+            key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
     },
     // other fields...
-  }, { timestamps: true });
-  
+}, { timestamps: true });
+
 const OrderItem = sequelize.define('OrderItem', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     order_id: { type: DataTypes.INTEGER, references: { model: Order, key: 'id' }, onDelete: 'CASCADE' },
@@ -125,22 +128,22 @@ const Review = sequelize.define('Review', {
     comment: { type: DataTypes.TEXT }
 }, { timestamps: true });
 
+
 const Cart = sequelize.define('Cart', {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false,
+       type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
     },
     user_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         references: { model: 'Users', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     },
     product_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
         references: { model: 'Products', key: 'id' },
         onDelete: 'CASCADE',
@@ -150,18 +153,17 @@ const Cart = sequelize.define('Cart', {
 }, { timestamps: true, tableName: 'Cart' });
 
 
-
 const Wishlist = sequelize.define('Wishlist', {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
     },
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Users',  // ✅ Use table name as a string
+            model: 'Users',
             key: 'id'
         },
         onDelete: 'CASCADE',
@@ -171,7 +173,7 @@ const Wishlist = sequelize.define('Wishlist', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Products',  // ✅ Use table name as a string
+            model: 'Products',
             key: 'id'
         },
         onDelete: 'CASCADE',
