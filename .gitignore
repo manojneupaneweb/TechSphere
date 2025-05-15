@@ -1,1 +1,24 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment file at root (if any)
 .env
+
+# Ignore log files at root
+*.log
+
+# Ignore OS-generated files
+*.swp
+*.swo
+
+# Ignore npm/yarn lock if not used globally
+package-lock.json
+yarn.lock
+
+# Optional: ignore IDE/editor config
+.vscode/
+.idea/
+
+# Ignore node_modules if accidentally installed in root
+node_modules/
