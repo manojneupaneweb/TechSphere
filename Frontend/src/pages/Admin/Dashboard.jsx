@@ -43,6 +43,35 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 min-h-screen">
+      {/* Buttons */}
+      <div className="flex my-5 justify-around">
+        <a href="/admin/add-product" className="bg-red-500 text-white rounded-sm py-2 px-3">All Product</a>
+        <a href="/admin/add-product" className="bg-yellow-500 text-white rounded-sm py-2 px-3">Add Product</a>
+        <a href="/admin/add-product" className="bg-green-500 text-white rounded-sm py-2 px-3">Add Category</a>
+        <a href="/admin/add-product" className="bg-blue-500 text-white rounded-sm py-2 px-3">Add Product</a>
+        <a href="/admin/add-product" className="bg-orange-500 text-white rounded-sm py-2 px-3">Costumers</a>
+      </div>
+
+
+      {/* //boxes */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-10 ">
+        <div className=" bg-green-700 h-28 cursor-pointer text-center flex justify-center items-center rounded-sm">
+          <p className=" text-white  text-2xl font-semibold"> 450 <br /> Users</p>
+
+        </div>
+        <div className=" bg-blue-700 h-28 cursor-pointer text-center flex justify-center items-center rounded-sm">
+          <p className=" text-white  text-2xl font-semibold"> 350 <br /> Orders</p>
+
+        </div>
+        <div className=" bg-yellow-700 h-28 cursor-pointer text-center flex justify-center items-center rounded-sm">
+          <p className=" text-white  text-2xl font-semibold"> 3850 <br /> Costumers</p>
+
+        </div>
+
+      </div>
+
+
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Section 1 */}
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">

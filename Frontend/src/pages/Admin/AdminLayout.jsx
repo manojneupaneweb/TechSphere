@@ -1,13 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Outlet } from "react-router-dom";
-import { LayoutDashboard, ShoppingBag, Package, Users, Layers, BarChart3, Percent, FileText, Truck, CreditCard, Globe, MessageSquare, Settings, HelpCircle } from "lucide-react"; // Import your icons
+import { LayoutDashboard, ShoppingBag, Package, Users, Layers, BarChart3, Percent, FileText, Truck, CreditCard, Globe, MessageSquare, Settings, HelpCircle, User, ChevronDown, Heart } from "lucide-react"; // Import your icons
 import Logo from "../../assets/image/favicon.png"; // Logo image
 import { Menu } from "lucide-react";
-
+import axios from "axios";
+import { Logout } from "../../utils/AuthContext";
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeLink, setActiveLink] = useState("Dashboard"); // Track the active link
+  const [activeLink, setActiveLink] = useState("Dashboard");
   const [openSubmenu, setOpenSubmenu] = useState(null);
+  const [userData, setUserData] = useState();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const date = Date.now
+  useEffect(() => {
+    const handelProfile = async () => {
+      const token = localStorage.getItem("accessToken");
+      const { data } = await axios.get("/api/v1/user/getprofile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserData(data.message);
+      console.log("data", data);
+
+    }
+
+
+    handelProfile();
+  }, []);
+
+
 
 
   const navItems = [
@@ -41,11 +61,6 @@ const AdminLayout = () => {
       title: "Customers",
       href: "/admin/customers",
       icon: <Users className="h-5 w-5" />,
-    },
-    {
-      title: "Inventory",
-      href: "/admin/inventory",
-      icon: <Layers className="h-5 w-5" />,
     },
     {
       title: "Analytics",
@@ -83,26 +98,6 @@ const AdminLayout = () => {
       icon: <Truck className="h-5 w-5" />,
     },
     {
-      title: "Payments",
-      href: "/admin/payments",
-      icon: <CreditCard className="h-5 w-5" />,
-    },
-    {
-      title: "Integrations",
-      href: "/admin/integrations",
-      icon: <Globe className="h-5 w-5" />,
-    },
-    {
-      title: "Support",
-      href: "/admin/support",
-      icon: <MessageSquare className="h-5 w-5" />,
-      subItems: [
-        { title: "Tickets", href: "/admin/support/tickets" },
-        { title: "Live Chat", href: "/admin/support/chat" },
-        { title: "FAQ Management", href: "/admin/support/faq" },
-      ],
-    },
-    {
       title: "Settings",
       href: "/admin/settings",
       icon: <Settings className="h-5 w-5" />,
@@ -137,7 +132,7 @@ const AdminLayout = () => {
       >
         <div className="flex justify-center">
           <a href="/admin/dashboard">
-          <img src={Logo} alt="Logo" className="w-40 h-14" />
+            <img src={Logo} alt="Logo" className="w-40 h-14" />
           </a>
         </div>
         <nav className="space-y-4 mt-5">
@@ -154,9 +149,8 @@ const AdminLayout = () => {
                       {item.icon}
                       <span>{item.title}</span>
                       <span
-                        className={`ml-auto transition-transform transform ${
-                          openSubmenu === item.title ? "rotate-90" : ""
-                        }`}
+                        className={`ml-auto transition-transform transform ${openSubmenu === item.title ? "rotate-90" : ""
+                          }`}
                       >
                         {">"}
                       </span>
@@ -211,6 +205,64 @@ const AdminLayout = () => {
             placeholder="Search..."
             className="pl-10 pr-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-md focus:ring w-64"
           />
+
+
+          <div className="flex items-center space-x-4">
+            {/* User Account Dropdown */}
+            <div className="hidden sm:flex items-center relative user-menu-container">
+              <div
+                className="flex flex-col items-center space-x-1 cursor-pointer"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              >
+                {userData?.profilePicture ? (
+                  <img
+                    src={userData.profilePicture}
+                    alt="User"
+                    className="h-5 w-5 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <User className="h-5 w-5 text-gray-700" />
+                  </div>
+                )}
+                <span className="ml-1  hidden lg:inline ">
+                  <span className="flex">
+
+                   {userData?.fullName}
+                <ChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                  </span>
+                </span>
+
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                    <Link
+                      to="/admin/settings/general"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      Setting
+                    </Link>
+                    <button
+                      onClick={Logout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <button
+              className="md:hidden"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          </div>
+
+
         </header>
 
         {/* Main Content Section */}

@@ -17,113 +17,6 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 
-// Mock data
-// const userData = {
-//   name: "John Smith",
-//   email: "john.smith@example.com",
-//   phone: "+1 (555) 123-4567",
-//   avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces",
-//   memberSince: "June 2022",
-//   orders: [
-//     {
-//       id: "ORD-12345",
-//       date: "2023-05-15",
-//       status: "Delivered",
-//       total: 1299.99,
-//       items: [{ name: "Premium Ultrabook Pro", quantity: 1, price: 1299.99 }],
-//     },
-//     {
-//       id: "ORD-12346",
-//       date: "2023-04-02",
-//       status: "Delivered",
-//       total: 428.98,
-//       items: [
-//         { name: "Wireless Noise-Cancelling Headphones", quantity: 1, price: 249.99 },
-//         { name: "Smart Fitness Watch", quantity: 1, price: 178.99 },
-//       ],
-//     },
-//     {
-//       id: "ORD-12347",
-//       date: "2023-06-10",
-//       status: "Processing",
-//       total: 899.99,
-//       items: [{ name: "Smartphone Pro Max", quantity: 1, price: 899.99 }],
-//     },
-//   ],
-//   addresses: [
-//     {
-//       id: 1,
-//       default: true,
-//       name: "John Smith",
-//       line1: "123 Main Street",
-//       line2: "Apt 4B",
-//       city: "New York",
-//       state: "NY",
-//       zip: "10001",
-//       country: "United States",
-//       phone: "+1 (555) 123-4567",
-//     },
-//     {
-//       id: 2,
-//       default: false,
-//       name: "John Smith",
-//       line1: "456 Work Avenue",
-//       line2: "Suite 700",
-//       city: "New York",
-//       state: "NY",
-//       zip: "10022",
-//       country: "United States",
-//       phone: "+1 (555) 987-6543",
-//     },
-//   ],
-//   paymentMethods: [
-//     {
-//       id: 1,
-//       default: true,
-//       type: "Visa",
-//       last4: "4242",
-//       expiry: "05/25",
-//       name: "John Smith",
-//     },
-//     {
-//       id: 2,
-//       default: false,
-//       type: "Mastercard",
-//       last4: "5555",
-//       expiry: "08/24",
-//       name: "John Smith",
-//     },
-//   ],
-//   wishlist: [
-//     {
-//       id: 1,
-//       name: "Gaming Laptop Pro",
-//       price: 1899.99,
-//       image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=80&h=80&fit=crop",
-//       inStock: true,
-//     },
-//     {
-//       id: 2,
-//       name: "Wireless Earbuds",
-//       price: 149.99,
-//       image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=80&h=80&fit=crop",
-//       inStock: true,
-//     },
-//     {
-//       id: 3,
-//       name: "4K Smart TV",
-//       price: 799.99,
-//       image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=80&h=80&fit=crop",
-//       inStock: false,
-//     },
-//   ],
-//   notifications: {
-//     orderUpdates: true,
-//     promotions: true,
-//     newProducts: false,
-//     newsletter: true,
-//   },
-// };
 
 function Profile() {
   const [user, setUser] = useState();
@@ -202,11 +95,11 @@ function Profile() {
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="h-12 w-12 rounded-full overflow-hidden cursor-pointer">
-                  <img src={user.profilePicture}  className="h-full w-full object-cover" />
+                  {/* <img src={user.profilePicture}  className="h-full w-full object-cover" /> */}
                 </div>
                 <div>
-                  <h2 className="font-bold">{user.fullName}</h2>
-                  <p className="text-sm text-gray-500">Member since {userData.memberSince}</p>
+                  {/* <h2 className="font-bold">{user.fullName}</h2> */}
+                  {/* <p className="text-sm text-gray-500">Member since {user.memberSince}</p> */}
                 </div>
               </div>
 
@@ -429,14 +322,14 @@ function Profile() {
                       <div className="flex items-center">
                         <div className="h-24 w-24 rounded-full overflow-hidden mr-6">
                           <img
-                            src={user.profilePicture}
-                            alt={user.fullName}
+                            // src={user.profilePicture}
+                            // alt={user.fullName}
                             className="h-full w-full object-cover"
                           />
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold mb-1">{user.fullName}</h3>
-                          <p className="text-gray-500">Member since {userData.memberSince}</p>
+                          {/* <h3 className="text-xl font-bold mb-1">{user.fullName}</h3> */}
+                          <p className="text-gray-500">Member since {user.memberSince}</p>
                           <button className="text-[#8a0106] hover:text-[#6d0105] mt-2">
                             Change profile picture
                           </button>
@@ -484,7 +377,7 @@ function Profile() {
                 </div>
 
                 <div className="p-6">
-                  {userData.orders.length === 0 ? (
+                  {user.orders.length === 0 ? (
                     <div className="text-center py-8">
                       <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                       <h3 className="text-lg font-medium mb-2">No orders yet</h3>
@@ -498,7 +391,7 @@ function Profile() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {userData.orders.map((order) => (
+                      {user.orders.map((order) => (
                         <div key={order.id} className="border rounded-lg overflow-hidden">
                           <div className="bg-gray-50 p-4">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -585,7 +478,7 @@ function Profile() {
 
                 <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {userData.addresses.map((address) => (
+                    {user.addresses.map((address) => (
                       <div
                         key={address.id}
                         className={`border rounded-lg p-4 ${address.default ? "border-[#8a0106]" : ""
@@ -648,7 +541,7 @@ function Profile() {
 
                 <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {userData.paymentMethods.map((method) => (
+                    {user.paymentMethods.map((method) => (
                       <div
                         key={method.id}
                         className={`border rounded-lg p-4 ${method.default ? "border-[#8a0106]" : ""
@@ -710,7 +603,7 @@ function Profile() {
                 </div>
 
                 <div className="p-6">
-                  {userData.wishlist.length === 0 ? (
+                  {user.wishlist.length === 0 ? (
                     <div className="text-center py-8">
                       <Heart className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                       <h3 className="text-lg font-medium mb-2">Your wishlist is empty</h3>
@@ -724,7 +617,7 @@ function Profile() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {userData.wishlist.map((item) => (
+                      {user.wishlist.map((item) => (
                         <div key={item.id} className="flex items-center border-b pb-4 last:border-0 last:pb-0">
                           <div className="h-20 w-20 bg-gray-100 rounded-md flex-shr
 ink-0 mr-4 relative">
@@ -788,7 +681,7 @@ ink-0 mr-4 relative">
                             <input
                               type="checkbox"
                               className="sr-only peer"
-                              checked={userData.notifications.orderUpdates}
+                              checked={user.notifications.orderUpdates}
                               readOnly
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#8a0106]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8a0106]"></div>
@@ -806,7 +699,7 @@ ink-0 mr-4 relative">
                             <input
                               type="checkbox"
                               className="sr-only peer"
-                              checked={userData.notifications.promotions}
+                              checked={user.notifications.promotions}
                               readOnly
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#8a0106]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8a0106]"></div>
@@ -824,7 +717,7 @@ ink-0 mr-4 relative">
                             <input
                               type="checkbox"
                               className="sr-only peer"
-                              checked={userData.notifications.newProducts}
+                              checked={user.notifications.newProducts}
                               readOnly
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#8a0106]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8a0106]"></div>
@@ -842,7 +735,7 @@ ink-0 mr-4 relative">
                             <input
                               type="checkbox"
                               className="sr-only peer"
-                              checked={userData.notifications.newsletter}
+                              checked={user.notifications.newsletter}
                               readOnly
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#8a0106]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8a0106]"></div>

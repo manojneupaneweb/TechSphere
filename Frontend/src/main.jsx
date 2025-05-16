@@ -96,6 +96,8 @@ const router = createBrowserRouter([
       { path: "settings", element: <Settings /> },
       { path: "user-management", element: <UserManagement /> },
       { path: "help", element: <HelpSupport /> },
+      { path: "*", element: <PageNotFound /> },
+
     ],
   },
 ]);

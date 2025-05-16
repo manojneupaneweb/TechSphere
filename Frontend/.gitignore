@@ -20,4 +20,6 @@ Thumbs.db
 
 # Ignore IDE/editor folders
 .vscode/
+
+test.env
 .idea/
