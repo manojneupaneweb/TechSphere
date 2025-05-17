@@ -1,4 +1,4 @@
-import { Brand } from '../models/Others.model.js';
+import { Brand, Order } from '../models/Others.model.js';
 import { Product } from '../models/Product.model.js'
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
@@ -13,7 +13,6 @@ const getAllBrand = asyncHandler(async (req, res) => {
   }
   res.status(200).json(new ApiResponse(200, brands, "Brands fetched successfully"));
 });
-
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
@@ -48,7 +47,7 @@ const addProduct = asyncHandler(async (req, res) => {
     console.log("category", category);
     console.log("brand", brand);
 
-    
+
 
     const newProduct = await Product.create({
       name, price, brand, warranty, category, stock, return_policy, description, specifications,
@@ -300,54 +299,96 @@ const updateProductImage = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Product image updated successfully", product));
 });
 
-
-const productOrder = asyncHandler(async (req, res) => {
+/// Order related functions
+const createOrder = asyncHandler(async (req, res) => {
   try {
-    const { user_id, product_id, status, } = req.body;
 
-    if (
-      !name ||
-      !price ||
-      !warranty ||
-      !category ||
-      !brand ||
-      stock === undefined ||
-      !return_policy ||
-      !description ||
-      !specifications
-    ) {
-      throw new ApiError(400, "All required fields");
+    const userId = req.user?.id;
+    const orderItems = req.body.orderItems;
+
+
+    console.log("Order items:", orderItems);
+
+    console.log("orderItems type:", typeof orderItems);
+    console.log("orderItems value:", orderItems);
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
     }
 
-
-    const localFilePath = req.files?.image?.[0]?.path;
-    if (!localFilePath) {
-      throw new ApiError(400, "Product image is required");
+    if (!Array.isArray(orderItems)) {
+      return res.status(400).json({ message: "Order items must be an array." });
     }
 
-    const imageUrl = await uploadOnCloudinary(localFilePath);
-
-    if (!imageUrl) {
-      throw new ApiError(500, "Failed to upload image to Cloudinary");
+    if (orderItems.length === 0) {
+      return res.status(400).json({ message: "Order items cannot be empty." });
     }
-    console.log("price", price);
-    console.log("category", category);
-    console.log("brand", brand);
 
-    
+    console.log("Creating order...................................");
 
-    const newProduct = await Product.create({
-      name, price, brand, warranty, category, stock, return_policy, description, specifications,
-      image: imageUrl,
-    });
+    const createdOrders = [];
 
-    res.status(201).json(new ApiResponse(201, "Product created successfully", newProduct));
+    for (const item of orderItems) {
+      const order = await Order.create({
+        user_id: userId,
+        product_id: item.productId,
+        quantity: item.quantity,
+        payment_status: item.paymentStatus,
+        order_status: item.orderStatus,
+      });
+
+      createdOrders.push(order);
+    }
+
+    res.status(201).json({ message: "Order placed successfully", orders: createdOrders });
   } catch (error) {
-    console.error("Error creating product:", error);
-    throw new ApiError(500, "Internal server error while creating product");
+    console.error("Error creating order:", error);
+    res.status(500).json({ message: "Internal server error while creating order." });
 
   }
 });
+
+const viewOrders = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    let orders;
+
+    if (userRole === "admin") {
+      // Admin sees all orders
+      orders = await Order.findAll({
+        order: [['createdAt', 'DESC']], // latest first
+      });
+    } else {
+      // Regular user sees only their own orders
+      // orders = await Order.findAll({
+      //   where: { user_id: userId },
+      //   order: [['createdAt', 'DESC']],
+      // });
+    }
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found." });
+    }
+    console.log("==============================================================");
+    
+    console.log("Orders:", orders);
+    
+
+    res.status(200).json({ orders });
+
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Internal server error while fetching orders." });
+  }
+});
+
+
 
 
 export {
@@ -368,5 +409,6 @@ export {
 
 
   //order 
-  productOrder
+  createOrder,
+  viewOrders
 };

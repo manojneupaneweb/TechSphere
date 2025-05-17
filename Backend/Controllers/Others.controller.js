@@ -125,39 +125,38 @@ const getCartItems = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "User ID is required." });
     }
 
-    const cartItem = await Cart.findAll(
-      {
-        where:
-        {
-          user_id: userId
-        }
-      }
-    );
+    const cartItems = await Cart.findAll({
+      where: { user_id: userId },
+    });
 
-    if (!cartItem || cartItem.length === 0) {
-      return res.status(404).json({ message: "Cart not found" });
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(404).json({ message: "Cart is empty." });
     }
 
-    const productIds = cartItem.map(item => item.product_id);
-    console.log("Product IDs: ", productIds);
-
-    const product = await Product.findAll({
-      where: {
-        id: productIds,
-      },
+    // Get full product info and attach quantity from Cart
+    const productIds = cartItems.map(item => item.product_id);
+    const products = await Product.findAll({
+      where: { id: productIds },
       attributes: ['id', 'name', 'price', 'image']
     });
 
+    // Attach quantity and cartItemId to each product
+    const cartWithQty = products.map(product => {
+      const cartItem = cartItems.find(item => item.product_id === product.id);
+      return {
+        ...product.toJSON(),
+        quantity: cartItem.quantity,
+        cartItemId: cartItem.id
+      };
+    });
 
-    return res.status(200).json({ product });
+    return res.status(200).json({ product: cartWithQty });
 
   } catch (error) {
     console.error("Error fetching cart items:", error);
     res.status(500).json({ message: "Error fetching cart items", error: error.message });
   }
 });
-
-
 
 
 const addToWishlist = async (req, res) => {

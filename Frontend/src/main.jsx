@@ -38,6 +38,9 @@ import Wishlist from "./pages/Wishlist.jsx";
 import ProductCatagoryShow from "./pages/ProductShow/ProductCategoryShow.jsx";
 axios.defaults.baseURL = "http://localhost:3000";
 
+//payment Sucess 
+import PaymentSuccess from "./components/payment.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -51,6 +54,8 @@ const router = createBrowserRouter([
       { path: "/wishlist", element: <Wishlist /> },
       { path: "/brand/:brand", element: <ProductbrandShow /> },
       { path: "/category/:category", element: <ProductCatagoryShow /> },
+      { path: "/paymentsuccess", element: <PaymentSuccess /> },
+
 
       {
         path: "/cart", element: (

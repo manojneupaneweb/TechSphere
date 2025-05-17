@@ -7,9 +7,12 @@ import { v4 as uuidv4 } from "uuid";
 import CryptoJS from "crypto-js";
 import "crypto-js/hmac-sha256";
 import "crypto-js/enc-base64";
+import { useNavigate } from 'react-router-dom';
 
 function Cart() {
     const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const navigate = useNavigate();
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
@@ -21,8 +24,8 @@ function Cart() {
         product_service_charge: "0",
         product_delivery_charge: "0",
         product_code: "EPAYTEST",
-        success_url: "http://localhost:5173/paymentsuccess",
-        failure_url: "http://localhost:5173/paymentfailure",
+        success_url: `${window.location.origin}/paymentsuccess`,
+        failure_url: `${window.location.origin}/paymentfailure`,
         signed_field_names: "total_amount,transaction_uuid,product_code",
         signature: "",
         secret: "8gBm/:&EnhH.1/q",
@@ -31,21 +34,21 @@ function Cart() {
     const fetchCart = async () => {
         try {
             setLoading(true);
-            const response = await axios.get("/api/v1/product/getcartitem", {
+            const response = await axios.get("api/v1/product/getcartitem", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
+            console.log("Cart items:", response.data.product);
+            
 
-            // Ensure all numeric fields are properly converted to numbers
             const processedCart = response.data.product.map(item => ({
                 ...item,
                 price: Number(item.price) || 0,
                 quantity: Number(item.quantity) || 1,
-                cartItemId: item.cartItemId || item.id // Fallback to item.id if cartItemId doesn't exist
+                cartItemId: item.cartItemId || item.id
             }));
 
             setCart(processedCart);
 
-            // Calculate total price
             const totalPrice = processedCart.reduce(
                 (total, item) => total + (item.price * item.quantity), 0
             );
@@ -105,7 +108,6 @@ function Cart() {
         }
     };
 
-
     const removeItem = async (item) => {
         try {
             await axios.delete(`/api/v1/product/removecart/${item.cartItemId}`, {
@@ -131,10 +133,6 @@ function Cart() {
         }
     };
 
-    useEffect(() => {
-        fetchCart();
-    }, []);
-
     const generateSignature = (formData) => {
         const dataString =
             `total_amount=${formData.total_amount},` +
@@ -148,6 +146,10 @@ function Cart() {
 
         return CryptoJS.enc.Base64.stringify(hmac);
     };
+
+    useEffect(() => {
+        fetchCart();
+    }, []);
 
     useEffect(() => {
         const signature = generateSignature(formData);
@@ -292,8 +294,8 @@ function Cart() {
                     >
                         Proceed to Checkout
                     </button>
-
                 </div>
+
                 {showPopup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm transition-opacity duration-300">
                         <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in-up">
@@ -372,7 +374,6 @@ function Cart() {
                         </div>
                     </div>
                 )}
-
             </div>
             <ToastContainer />
         </div>

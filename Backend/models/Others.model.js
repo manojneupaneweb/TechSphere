@@ -63,75 +63,42 @@ SubCategory.belongsTo(Category, { foreignKey: 'categoryId' });
 
 
 const Order = sequelize.define('Order', {
-    id: {
-        type: DataTypes.UUID, // UUID
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-    },
-    user_id: {
-        type: DataTypes.UUID, // UUID
-        references: {
-            model: 'Users',
-            key: 'id',
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    },
-    // other fields...
-}, { timestamps: true });
+  id: {
+    type: DataTypes.STRING(50),
+    primaryKey: true,
+    allowNull: false,
+    defaultValue: DataTypes.UUIDV4,
+  },
+  user_id: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+  product_id: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  payment_status: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+  order_status: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+}, {
+  tableName: 'orders',
+  timestamps: true,
+});
 
-const OrderItem = sequelize.define('OrderItem', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    order_id: { type: DataTypes.INTEGER, references: { model: Order, key: 'id' }, onDelete: 'CASCADE' },
-    product_id: { type: DataTypes.INTEGER, references: { model: Product, key: 'id' }, onDelete: 'CASCADE' },
-    quantity: { type: DataTypes.INTEGER, allowNull: false },
-    price: { type: DataTypes.FLOAT, allowNull: false }
-}, { timestamps: true });
-
-const Payment = sequelize.define('Payment', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    user_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'User',
-            key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    },
-    order_id: { type: DataTypes.INTEGER, references: { model: Order, key: 'id' }, onDelete: 'CASCADE' },
-    payment_method: { type: DataTypes.ENUM('eSewa', 'Khalti'), allowNull: false },
-    payment_status: { type: DataTypes.ENUM('Pending', 'Completed'), defaultValue: 'Pending' }
-}, { timestamps: true });
-
-const Review = sequelize.define('Review', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    user_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'User',
-            key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    },
-    product_id: { type: DataTypes.INTEGER, references: { model: Product, key: 'id' }, onDelete: 'CASCADE' },
-    rating: { type: DataTypes.INTEGER, allowNull: false },
-    comment: { type: DataTypes.TEXT }
-}, { timestamps: true });
 
 
 const Cart = sequelize.define('Cart', {
     id: {
-       type: DataTypes.UUID,
+        type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
@@ -183,4 +150,4 @@ const Wishlist = sequelize.define('Wishlist', {
     timestamps: true
 });
 
-export { Category, SubCategory, Brand, Order, OrderItem, Payment, Review, Cart, Wishlist };
+export { Category, SubCategory, Brand, Order, Cart, Wishlist };

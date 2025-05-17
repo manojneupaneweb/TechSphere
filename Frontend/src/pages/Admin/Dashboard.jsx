@@ -52,23 +52,34 @@ const Dashboard = () => {
         <a href="/admin/add-product" className="bg-orange-500 text-white rounded-sm py-2 px-3">Costumers</a>
       </div>
 
-
-      {/* //boxes */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-10 ">
-        <div className=" bg-green-700 h-28 cursor-pointer text-center flex justify-center items-center rounded-sm">
-          <p className=" text-white  text-2xl font-semibold"> 450 <br /> Users</p>
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-10 px-4">
+        <div className="bg-green-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">450<br /><span className="text-sm">Users</span></p>
         </div>
-        <div className=" bg-blue-700 h-28 cursor-pointer text-center flex justify-center items-center rounded-sm">
-          <p className=" text-white  text-2xl font-semibold"> 350 <br /> Orders</p>
-
+        <div className="bg-blue-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">350<br /><span className="text-sm">Orders</span></p>
         </div>
-        <div className=" bg-yellow-700 h-28 cursor-pointer text-center flex justify-center items-center rounded-sm">
-          <p className=" text-white  text-2xl font-semibold"> 3850 <br /> Costumers</p>
-
+        <div className="bg-yellow-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">3850<br /><span className="text-sm">Customers</span></p>
+        </div>
+        <div className="bg-purple-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">120<br /><span className="text-sm">New Users Today</span></p>
+        </div>
+        <div className="bg-orange-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">$45K<br /><span className="text-sm">Monthly Revenue</span></p>
+        </div>
+        <div className="bg-teal-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">25<br /><span className="text-sm">Pending Orders</span></p>
+        </div>
+        <div className="bg-red-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">8<br /><span className="text-sm">Refund Requests</span></p>
+        </div>
+        <div className="bg-pink-600 h-28 rounded-md shadow-md flex items-center justify-center text-white text-center hover:scale-105 transition">
+          <p className="text-xl font-semibold">1200<br /><span className="text-sm">Product Views</span></p>
         </div>
 
       </div>
+
 
 
 

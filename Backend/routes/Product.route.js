@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middleware/multer.middleware.js";
-import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts, getProductsByCategory, getProductsByBrand, getAllBrand, productOrder } from "../Controllers/Product.controller.js";
+import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts, getProductsByCategory, getProductsByBrand, getAllBrand, createOrder } from "../Controllers/Product.controller.js";
 import verifyAdmin from "../middleware/admin.middleware.js";
 import { addToWishlist, cartlist, getCartItems, removeFromCart, updateFromCart } from "../Controllers/Others.controller.js";
 import verifyJwt from "../middleware/auth.middleware.js";
@@ -35,7 +35,8 @@ router.route('/updatecart/:id').put(verifyJwt, updateFromCart);
 
 
 //Product Order
-router.route('/order').post(verifyJwt, productOrder);
+router.route('/createorder').post(verifyJwt, createOrder);
+router.route('/vieworder').post(verifyJwt, createOrder);
 
 
 
