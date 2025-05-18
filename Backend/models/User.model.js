@@ -66,7 +66,6 @@ User.prototype.generateAccessToken = function () {
     );
 };
 
-// Generate Refresh Token
 User.prototype.generateRefreshToken = function () {
     return jwt.sign(
         { id: this.id },

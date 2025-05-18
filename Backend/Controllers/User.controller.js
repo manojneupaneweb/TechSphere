@@ -209,16 +209,16 @@ const changePassword = asyncHandler(async (req, res) => {
   const user = req.user;
 
   const { currentPassword, newPassword } = req.body;
-  
+
   const userInDatabase = await User.findByPk(user.id);
 
   if (!userInDatabase) {
     throw new ApiError(404, "User not found");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(currentPassword);
+  const isPasswordValid = await userInDatabase.isPasswordCorrect(currentPassword);
   if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid user credentials");
+    throw new ApiError(401, "Invalid current password");
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -227,6 +227,7 @@ const changePassword = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Password updated successfully"));
 });
+
 
 const updateUserProfile = asyncHandler(async (req, res) => {
   const { id } = req.params;
