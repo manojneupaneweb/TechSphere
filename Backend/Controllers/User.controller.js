@@ -73,13 +73,13 @@ const verifyOtp = async (req, res) => {
   if (!email || !otp) {
     return res.status(400).json({ message: "Email and OTP are required" });
   }
-  
+
   const stored = otpStore.get(email);
-  
+
   if (!stored) {
     return res.status(400).json({ message: "No OTP found for this email" });
   }
-  
+
   if (Date.now() > stored.expiresAt) {
     otpStore.delete(email);
     return res.status(400).json({ message: "OTP expired" });
@@ -206,22 +206,24 @@ const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 const changePassword = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { oldPassword, newPassword } = req.body;
+  const user = req.user;
 
-  const user = await User.findByPk(id);
-  if (!user) {
+  const { currentPassword, newPassword } = req.body;
+  
+  const userInDatabase = await User.findByPk(user.id);
+
+  if (!userInDatabase) {
     throw new ApiError(404, "User not found");
   }
 
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
-  if (!isMatch) {
-    throw new ApiError(400, "Old password is incorrect");
+  const isPasswordValid = await user.isPasswordCorrect(currentPassword);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid user credentials");
   }
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  user.password = hashedPassword;
-  await user.save();
+  userInDatabase.password = hashedPassword;
+  await userInDatabase.save();
 
   res.status(200).json(new ApiResponse(200, "Password updated successfully"));
 });
@@ -269,5 +271,7 @@ const getAllUserProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Users profiles retrieved", users));
 });
+
+
 
 export { sendOtp, verifyOtp, registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile };

@@ -2,7 +2,7 @@ import { sequelize } from "../Config/Connect.js";
 import { Brand, Category, SubCategory } from "../models/Others.model.js";
 import { Product } from "../models/Product.model.js";
 import { ApiResponse } from "../Utils/apiResponse.util.js";
-import { Op }  from "sequelize" 
+import { Op } from "sequelize"
 
 //Add a New Category
 const addCategory = async (req, res) => {
@@ -11,7 +11,7 @@ const addCategory = async (req, res) => {
 
         if (!name) return res.status(400).json({ message: "Category name is required" });
 
-        const category = await Category.create({   name });
+        const category = await Category.create({ name });
         return res.status(201).json({ message: "Category created successfully", category });
     } catch (error) {
         return res.status(500).json({ message: "Error creating category", error: error.message });
@@ -20,7 +20,7 @@ const addCategory = async (req, res) => {
 
 const getCategories = async (req, res) => {
     try {
-        const categories = await Category.findAll({        });
+        const categories = await Category.findAll({});
 
         return res.status(200).json(categories);
     } catch (error) {
@@ -36,6 +36,14 @@ const getProductByCategories = async (req, res) => {
         if (!category) {
             return res.status(400).json({ message: "Category is required" });
         }
+        if (category === "Newproducts") {
+            const products = await Product.findAll({
+                order: [['createdAt', 'DESC']],
+                limit: 10,
+                attributes: { exclude: ['createdAt', 'updatedAt'] }
+            });
+            return res.status(200).json(products);
+        }        
 
         const products = await Product.findAll({
             where: {
@@ -45,7 +53,7 @@ const getProductByCategories = async (req, res) => {
             },
             attributes: { exclude: ['createdAt', 'updatedAt'] }
         });
-        
+
         return res.status(200).json(products);
 
     } catch (error) {
@@ -165,7 +173,7 @@ const addBrand = async (req, res) => {
 const getAllBrand = async (req, res) => {
     console.log("getAllBrand called ================================================");
     try {
-        
+
         const brands = await Brand.findAll({});
         return res.status(200).json(brands);
     } catch (error) {
@@ -175,13 +183,13 @@ const getAllBrand = async (req, res) => {
 
 const getProductByBrand = async (req, res) => {
     console.log("getProductByBrand called ");
-    
+
     try {
 
         const { brand } = req.params;
         const cleanedBrand = brand.replace(/^:/, '');
         console.log("brand:", brand);
-        
+
         if (!brand) {
             return res.status(400).json({ message: "Brand are required" });
         }

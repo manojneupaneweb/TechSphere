@@ -20,7 +20,6 @@ import ProductbrandShow from "./pages/ProductShow/ProductbrandShow.jsx";
 // Admin Pages
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
-import Orders from "./pages/Admin/Ordres.jsx"; // Fixed filename typo
 import Reports from "./pages/Admin/Reports.jsx";
 import AddProduct from "./pages/Admin/Product/AddProduct.jsx";
 import Customers from "./pages/Admin/Customers.jsx";
@@ -40,6 +39,7 @@ axios.defaults.baseURL = "http://localhost:3000";
 
 //payment Sucess 
 import PaymentSuccess from "./components/payment.jsx";
+import Orders from "./pages/Admin/Orders/Ordres.jsx";
 
 const router = createBrowserRouter([
   {
@@ -98,7 +98,8 @@ const router = createBrowserRouter([
       { path: "customers", element: <Customers /> },
       { path: "reports", element: <Reports /> },
       { path: "marketing", element: <Marketing /> },
-      { path: "settings", element: <Settings /> },
+
+      { path: "settings/general", element: <Settings /> },
       { path: "user-management", element: <UserManagement /> },
       { path: "help", element: <HelpSupport /> },
       { path: "*", element: <PageNotFound /> },

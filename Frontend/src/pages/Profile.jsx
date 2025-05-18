@@ -1,50 +1,176 @@
 // ProfileInfo.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { User } from 'lucide-react';
+import Loading from '../components/Loading';
+import axios from 'axios';
 
-const ProfileInfo = ({ user }) => (
-  <div className="space-y-6">
-    <div className="flex items-center">
-      <div className="h-24 w-24 rounded-full overflow-hidden mr-6 bg-gray-100 flex items-center justify-center">
-        {user.profilePicture ? (
-          <img
-            src={user.profilePicture}
-            alt={user.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <User className="h-12 w-12 text-gray-400" />
-        )}
+const ProfileInfo = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState(null);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const { data } = await axios.get("/api/v1/user/getprofile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(data.message);
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    const fetchOrderData = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const { data } = await axios.get("/api/v1/order/getallorder", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("order data", data);
+        
+        setOrder(data.orders);
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfileData();
+    fetchOrderData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loading />
       </div>
-      <div>
-        <h3 className="text-xl font-bold mb-1">{user.name}</h3>
-        <p className="text-gray-500">Member since {user.memberSince}</p>
-        <button className="text-[#8a0106] hover:text-[#6d0105] mt-2">
-          Change profile picture
-        </button>
+    );
+  }
+
+  console.log("order", order);
+
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">No user data found.</p>
       </div>
+    );
+  }
+
+
+  return (
+    <div className="space-y-8 px-36">
+      {/* Profile Information Section */}
+      <section className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+        <div className="h-28 w-28 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-4 border-[#8a0106] shadow-md">
+          {user.profilePicture ? (
+            <img
+              src={user.profilePicture}
+              alt={user.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <User className="h-14 w-14 text-gray-400" />
+          )}
+        </div>
+        <div className="flex-1">
+          <h2 className="text-2xl font-extrabold text-[#8a0106] mb-1">{user.fullName}</h2>
+          <p className="text-gray-500 mb-2">Member since {user.createdAt}</p>
+          {/* <button className="text-[#8a0106] hover:text-[#6d0105] font-medium underline transition">
+            Change profile picture
+          </button> */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Email Address</p>
+              <p className="font-medium">{user.email}</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Phone Number</p>
+              <p className="font-medium">{user.phone}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Order List Section */}
+      <section className="bg-white rounded-xl shadow p-6">
+
+        <div className="max-w-4xl mx-auto p-4">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Order Details</h1>
+
+          {order.map((item, index) => (
+            <div key={item.id} className="bg-white rounded-xl shadow-md overflow-hidden mb-6 transition-all hover:shadow-lg">
+              <div className="p-6">
+                {/* Order Header */}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-800">Order #{index + 1}</h2>
+                    <p className="text-sm text-gray-500">Placed on {new Date(item.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${item.order_status === 'pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-green-100 text-green-800'
+                    }`}>
+                    {item.order_status}
+                  </span>
+                </div>
+
+                {/* Product Details */}
+                <div className="flex items-start space-x-4 mb-4">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">{item.product.name}</h3>
+                    <p className="text-gray-600">Quantity: {item.quantity}</p>
+                    <p className="text-gray-600">Price: ₹{item.product.price.toLocaleString()}</p>
+                    <p className="text-gray-600">Total: ₹{(item.quantity * item.product.price).toLocaleString()}</p>
+                  </div>
+                </div>
+
+                {/* User Information */}
+                <div className="border-t border-gray-200 pt-4">
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Customer Details</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Name: {item.user.fullname}</p>
+                      <p className="text-sm text-gray-600">Email: {item.user.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">
+                        Payment Status:
+                        <span className={`ml-2 ${item.payment_status === 'COMPLETE'
+                            ? 'text-green-600 font-medium'
+                            : 'text-red-600'
+                          }`}>
+                          {item.payment_status}
+                        </span>
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Last Updated: {new Date(item.updatedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </section>
+
+
     </div>
-    <hr />
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4">
-      <div>
-        <p className="text-sm text-gray-500">Email Address</p>
-        <p>{user.email}</p>
-      </div>
-      <div>
-        <p className="text-sm text-gray-500">Phone Number</p>
-        <p>{user.phone}</p>
-      </div>
-    </div>
-    <hr />
-    <div>
-      <h3 className="font-medium mb-2">Account Security</h3>
-      <div className="space-x-2">
-        <button className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-50">
-          Change Password
-        </button>
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 export default ProfileInfo;

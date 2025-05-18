@@ -47,6 +47,9 @@ const removeFromCart = asyncHandler(async (req, res) => {
   try {
     const productId = req.params.id;
     const userId = req.user.id;
+    console.log("===========================================================");
+    console.log("productId", productId);
+    console.log("userId", userId);
 
     if (!productId || !userId) {
       return res.status(400).json({ message: "Please provide product ID and user ID" });
@@ -81,9 +84,16 @@ const removeFromCart = asyncHandler(async (req, res) => {
 
 const updateFromCart = asyncHandler(async (req, res) => {
   try {
-    const productId = req.params.id;
+
+    const productId = req.params.id?.trim();
     const { quantity } = req.body;
     const userId = req.user.id;
+    console.log("===========================================================");
+    console.log("userId", userId);
+    console.log("quantity", quantity);
+    console.log("Product ID:", productId);
+
+
 
     if (!productId || !userId || !quantity) {
       return res.status(400).json({ message: "Missing product ID, user ID, or quantity" });

@@ -25,5 +25,6 @@ router.route('/profile/:id/change-password').put(verifyJWT, changePassword);
 
 //admin pannel 
 router.route('/getalluser').get(verifyAdmin, getAllUserProfile);
+router.route('/cheangepassword').post(verifyJWT, changePassword);
 
 export default router;

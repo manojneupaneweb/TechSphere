@@ -97,7 +97,7 @@ const NewProducts = () => {
 
   const allproduct = async () => {
     try {
-      const response = await fatchByCategory('Smartphone');
+      const response = await fatchByCategory('Newproducts');
       setProducts(response.data);
     } catch (error) {
       console.log('error fetching products:', error);
@@ -111,7 +111,7 @@ const NewProducts = () => {
   return (
     <section className="py-10 px-20 bg-white">
       <div className="container mx-auto px-6">
-        <h2 className="text-2xl md:text-3xl mb-3 font-bold">New Arrivals</h2>
+        <h2 className="text-2xl md:text-3xl mb-3 font-bold" id="explore">New Arrivals</h2>
 
         <div className="flex space-x-4 overflow-x-scroll no-scrollbar scroll-smooth p-3">
           {products && products.length === 0 ? (
@@ -135,7 +135,7 @@ const NewProducts = () => {
                 <div className="p-2">
                   <a href={`/product/${product.id}`}>
                     <h3 className="font-medium mb-1">
-                      {product.name.length > 28 ? product.name?.slice(0, 30) + '...' : product.name}
+                      {product.name.length > 28 ? product.name?.slice(0, 25) + '...' : product.name}
                     </h3>
                   </a>
                   <p className="text-sm text-gray-600 ">
@@ -342,10 +342,11 @@ const HeroSection = () => {
           Find the latest tech gadgets and accessories here!
         </p>
         <a
-          href="#products"
+          href="#explore"
           className="bg-blue-600 text-white px-6 py-3 text-lg rounded-lg shadow-lg hover:bg-blue-700 transition-all transform hover:scale-105 animate__animated animate__fadeInUp animate__delay-2s"
         >
-          Explore Now
+               Explore Now
+         
         </a>
       </div>
 

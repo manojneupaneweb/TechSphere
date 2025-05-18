@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from "../middleware/multer.middleware.js";
-import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts, getProductsByCategory, getProductsByBrand, getAllBrand, createOrder } from "../Controllers/Product.controller.js";
+import { addProduct, editProduct, deleteProduct, getProductById, getAllProducts, searchProducts, getProductsByCategory, getProductsByBrand, getAllBrand, createOrder, AllOrder } from "../Controllers/Product.controller.js";
 import verifyAdmin from "../middleware/admin.middleware.js";
 import { addToWishlist, cartlist, getCartItems, removeFromCart, updateFromCart } from "../Controllers/Others.controller.js";
 import verifyJwt from "../middleware/auth.middleware.js";
@@ -18,6 +18,8 @@ router.route('/getcartitem').get(verifyJwt, getCartItems);
 router.route('/product/:id').get(getProductById);
 router.route('/getallproducts').get(getAllProducts);
 router.route('/getallbrand').get(getAllBrand);
+
+
 router.route('/search').get(searchProducts);
 router.route('/:category').get(getProductsByCategory);
 router.route('/brand/:brand').get(getProductsByBrand);
@@ -27,16 +29,11 @@ router.route('/brand/:brand').get(getProductsByBrand);
 //wishlist routes
 router.route('/wishlist').post(verifyJwt, addToWishlist);
 
-//cartlist routes
-router.route('/cartlist').post(verifyJwt, cartlist);
-router.route('/removecart/:id').delete(verifyJwt, removeFromCart);
-router.route('/updatecart/:id').put(verifyJwt, updateFromCart);
 
 
 
-//Product Order
-router.route('/createorder').post(verifyJwt, createOrder);
-router.route('/vieworder').post(verifyJwt, createOrder);
+
+
 
 
 

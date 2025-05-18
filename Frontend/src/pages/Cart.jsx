@@ -38,7 +38,6 @@ function Cart() {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             console.log("Cart items:", response.data.product);
-            
 
             const processedCart = response.data.product.map(item => ({
                 ...item,
@@ -88,7 +87,7 @@ function Cart() {
             }
 
             await axios.put(
-                `/api/v1/product/updatecart/${updatedItem.cartItemId}`,
+                `/api/v1/order/updatecart/${updatedItem.id}`,
                 { quantity: updatedItem.quantity },
                 { headers: { Authorization: `Bearer ${accessToken}` } }
             );
@@ -110,7 +109,7 @@ function Cart() {
 
     const removeItem = async (item) => {
         try {
-            await axios.delete(`/api/v1/product/removecart/${item.cartItemId}`, {
+            await axios.delete(`/api/v1/order/removecart/${item.id}`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             toast.success(`${item.name} removed from cart!`);

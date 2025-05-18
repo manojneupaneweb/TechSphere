@@ -1,6 +1,7 @@
 import express from "express";
 import {addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, addBrand, getAllBrand, deleteBrand, getProductByCategories, getProductByCategoriesAndBrand, getProductByBrand,} from "../Controllers/Category.controller.js";
 import { addSubCategory, getSubCategories, getSubCategoryById, updateSubCategory, deleteSubCategory} from "../Controllers/Category.controller.js";
+import verifyJwt from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -21,6 +22,12 @@ router.route("/brand/:brand").get(getProductByBrand);
 
 // ✅ Category and Brand Routes
 router.route("/:category/:brand").get(getProductByCategoriesAndBrand);
+
+//Product Order
+router.route('/vieworder').get(verifyJwt);
+
+
+
 
 
 // ✅ Subcategory Routes

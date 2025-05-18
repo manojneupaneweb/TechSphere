@@ -1,5 +1,6 @@
 import { Brand, Order } from '../models/Others.model.js';
 import { Product } from '../models/Product.model.js'
+import User from '../models/User.model.js';
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
@@ -144,9 +145,8 @@ const getProductById = asyncHandler(async (req, res) => {
   }
 });
 
-const getAllProducts = asyncHandler(async (req, res) => {
-  console.log("Fetching all products...................................");
 
+const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.findAll({});
 
   if (!products || products.length === 0) {
@@ -169,7 +169,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No products found for this category");
   }
 
-  res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
+  // res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
 });
 
 const getProductsByBrand = asyncHandler(async (req, res) => {
@@ -187,26 +187,26 @@ const getProductsByBrand = asyncHandler(async (req, res) => {
 });
 
 const searchProducts = asyncHandler(async (req, res) => {
-  const { query } = req.query; // Search query from the request
+  // const { query } = req.query; // Search query from the request
 
-  if (!query) {
-    throw new ApiError(400, "Search query is required");
-  }
+  // if (!query) {
+  //   throw new ApiError(400, "Search query is required");
+  // }
 
-  const products = await Product.findAll({
-    where: {
-      [Op.or]: [
-        { name: { [Op.iLike]: `%${query}%` } },
-        { description: { [Op.iLike]: `%${query}%` } },
-      ],
-    },
-  });
+  // const products = await Product.findAll({
+  //   where: {
+  //     [Op.or]: [
+  //       { name: { [Op.iLike]: `%${query}%` } },
+  //       { description: { [Op.iLike]: `%${query}%` } },
+  //     ],
+  //   },
+  // });
 
-  if (!products.length) {
-    throw new ApiError(404, "No products found matching your search");
-  }
+  // if (!products.length) {
+  //   throw new ApiError(404, "No products found matching your search");
+  // }
 
-  res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
+  // res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
 });
 
 const updateStock = asyncHandler(async (req, res) => {
@@ -306,12 +306,6 @@ const createOrder = asyncHandler(async (req, res) => {
     const userId = req.user?.id;
     const orderItems = req.body.orderItems;
 
-
-    console.log("Order items:", orderItems);
-
-    console.log("orderItems type:", typeof orderItems);
-    console.log("orderItems value:", orderItems);
-
     if (!userId) {
       return res.status(400).json({ message: "User ID is required." });
     }
@@ -323,8 +317,6 @@ const createOrder = asyncHandler(async (req, res) => {
     if (orderItems.length === 0) {
       return res.status(400).json({ message: "Order items cannot be empty." });
     }
-
-    console.log("Creating order...................................");
 
     const createdOrders = [];
 
@@ -340,6 +332,13 @@ const createOrder = asyncHandler(async (req, res) => {
       createdOrders.push(order);
     }
 
+    // clear the cart after order creation
+    await Cart.destroy({
+      where: {
+        user_id: userId,
+      },
+    });
+
     res.status(201).json({ message: "Order placed successfully", orders: createdOrders });
   } catch (error) {
     console.error("Error creating order:", error);
@@ -348,45 +347,45 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 });
 
-const viewOrders = asyncHandler(async (req, res) => {
+
+const AllOrder = asyncHandler(async (req, res) => {
   try {
-    const userId = req.user?.id;
-    const userRole = req.user?.role;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required." });
-    }
-
-    let orders;
-
-    if (userRole === "admin") {
-      // Admin sees all orders
-      orders = await Order.findAll({
-        order: [['createdAt', 'DESC']], // latest first
-      });
-    } else {
-      // Regular user sees only their own orders
-      // orders = await Order.findAll({
-      //   where: { user_id: userId },
-      //   order: [['createdAt', 'DESC']],
-      // });
-    }
+    const orders = await Order.findAll({
+      order: [["createdAt", "DESC"]],
+    });
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({ message: "No orders found." });
     }
-    console.log("==============================================================");
-    
-    console.log("Orders:", orders);
-    
 
-    res.status(200).json({ orders });
+    const detailedOrders = await Promise.all(
+      orders.map(async (order) => {
+        const user = await User.findByPk(order.user_id, {
+          attributes: ["fullname", "email"],
+        });
+        const product = await Product.findByPk(order.product_id, {
+          attributes: ["name", "price"],
+        });
 
+        const allordes = { ...order.toJSON(), user, product }
+        console.log("allordes", allordes);
+        return {
+          ...order.toJSON(),
+          user,
+          product,
+        };
+      })
+    );
+
+    res.status(200).json({ message: "Order fetched successfully", orders: detailedOrders });
   } catch (error) {
     console.error("Error fetching orders:", error);
     res.status(500).json({ message: "Internal server error while fetching orders." });
   }
 });
+
+
+
 
 
 
@@ -410,5 +409,5 @@ export {
 
   //order 
   createOrder,
-  viewOrders
+  AllOrder
 };

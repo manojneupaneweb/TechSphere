@@ -11,7 +11,7 @@ const CartList = async (product) => {
     }
 
     try { 
-        await axios.post("/api/v1/product/cartlist", { productId: product.id }, {
+        await axios.post("/api/v1/order/cartlist", { productId: product.id }, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },

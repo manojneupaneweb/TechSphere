@@ -1,34 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
-import { LayoutDashboard, ShoppingBag, Package, Users, Layers, BarChart3, Percent, FileText, Truck, CreditCard, Globe, MessageSquare, Settings, HelpCircle, User, ChevronDown, Heart } from "lucide-react"; // Import your icons
-import Logo from "../../assets/image/favicon.png"; // Logo image
-import { Menu } from "lucide-react";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Package,
+  Users,
+  BarChart3,
+  Percent,
+  FileText,
+  Truck,
+  Settings,
+  HelpCircle,
+  User,
+  ChevronDown,
+  Menu,
+  ChevronRight,
+} from "lucide-react";
+import Logo from "../../assets/image/favicon.png";
 import axios from "axios";
 import { Logout } from "../../utils/AuthContext";
+
 const AdminLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("Dashboard");
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [userData, setUserData] = useState();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const date = Date.now
+
+  const location = useLocation();
+
   useEffect(() => {
     const handelProfile = async () => {
       const token = localStorage.getItem("accessToken");
-      const { data } = await axios.get("/api/v1/user/getprofile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUserData(data.message);
-      console.log("data", data);
-
-    }
-
-
+      try {
+        const { data } = await axios.get("/api/v1/user/getprofile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserData(data.message);
+      } catch (err) {
+        // handle error
+      }
+    };
     handelProfile();
   }, []);
 
-
-
+  useEffect(() => {
+    // Set active link based on current path
+    const found = navItems.find(
+      (item) =>
+        item.href === location.pathname ||
+        (item.subItems &&
+          item.subItems.some((sub) => sub.href === location.pathname))
+    );
+    if (found) {
+      setActiveLink(
+        found.subItems
+          ? found.subItems.find((sub) => sub.href === location.pathname)?.title ||
+              found.title
+          : found.title
+      );
+      if (found.subItems) setOpenSubmenu(found.title);
+    }
+  }, [location.pathname]);
 
   const navItems = [
     {
@@ -53,8 +86,8 @@ const AdminLayout = () => {
       icon: <Package className="h-5 w-5" />,
       subItems: [
         { title: "All Orders", href: "/admin/orders" },
-        { title: "Abandoned Carts", href: "/admin/orders/abandoned" },
-        { title: "Returns", href: "/admin/orders/returns" },
+        // { title: "Pending Orders", href: "/admin/pending-order" },
+        
       ],
     },
     {
@@ -63,49 +96,12 @@ const AdminLayout = () => {
       icon: <Users className="h-5 w-5" />,
     },
     {
-      title: "Analytics",
-      href: "/admin/analytics",
-      icon: <BarChart3 className="h-5 w-5" />,
-      subItems: [
-        { title: "Sales Reports", href: "/admin/analytics/sales" },
-        { title: "Traffic", href: "/admin/analytics/traffic" },
-        { title: "Customer Insights", href: "/admin/analytics/customers" },
-      ],
-    },
-    {
-      title: "Marketing",
-      href: "/admin/marketing",
-      icon: <Percent className="h-5 w-5" />,
-      subItems: [
-        { title: "Promotions", href: "/admin/marketing/promotions" },
-        { title: "Coupons", href: "/admin/marketing/coupons" },
-        { title: "Email Campaigns", href: "/admin/marketing/email" },
-      ],
-    },
-    {
-      title: "Content",
-      href: "/admin/content",
-      icon: <FileText className="h-5 w-5" />,
-      subItems: [
-        { title: "Pages", href: "/admin/content/pages" },
-        { title: "Blog", href: "/admin/content/blog" },
-        { title: "Banners", href: "/admin/content/banners" },
-      ],
-    },
-    {
-      title: "Shipping",
-      href: "/admin/shipping",
-      icon: <Truck className="h-5 w-5" />,
-    },
-    {
       title: "Settings",
       href: "/admin/settings",
       icon: <Settings className="h-5 w-5" />,
       subItems: [
         { title: "General", href: "/admin/settings/general" },
         { title: "Users & Permissions", href: "/admin/settings/users" },
-        { title: "Store Details", href: "/admin/settings/store" },
-        { title: "Taxes", href: "/admin/settings/taxes" },
       ],
     },
     {
@@ -115,72 +111,105 @@ const AdminLayout = () => {
     },
   ];
 
-
   const toggleSubmenu = (title) => {
     setOpenSubmenu(openSubmenu === title ? null : title);
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+  const handleSidebarToggle = () => {
+    setIsSidebarOpen((prev) => !prev);
   };
 
+  // Close sidebar on nav click (mobile)
+  const handleNavClick = () => {
+    if (window.innerWidth < 768) setIsSidebarOpen(false);
+  };
+
+  // Close sidebar on outside click (mobile)
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    const handleClick = (e) => {
+      if (
+        !e.target.closest(".admin-sidebar") &&
+        !e.target.closest(".sidebar-toggle-btn")
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [isSidebarOpen]);
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside
-        className={`bg-white-900 text-white p-5 w-64 fixed inset-y-0 left-0 transform transition-transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static`}
+        className={`admin-sidebar fixed z-40 top-0 left-0 h-full w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0 md:static md:shadow-none
+        `}
+        style={{ minWidth: "16rem" }}
       >
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center py-6">
           <a href="/admin/dashboard">
             <img src={Logo} alt="Logo" className="w-40 h-14" />
           </a>
         </div>
-        <nav className="space-y-4 mt-5">
+        <nav className="space-y-2 px-2">
           {navItems.map((item) => (
             <div key={item.title}>
-              {/* Main Link */}
               <div>
                 {item.subItems ? (
                   <button
                     onClick={() => toggleSubmenu(item.title)}
-                    className={`block px-3 py-2 rounded w-full text-left ${activeLink === item.title ? "bg-[#8a0106] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                    className={`flex items-center gap-3 px-3 py-2 rounded w-full text-left transition
+                      ${openSubmenu === item.title || activeLink === item.title
+                        ? "bg-[#8a0106] text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                      }`}
                   >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span>{item.title}</span>
-                      <span
-                        className={`ml-auto transition-transform transform ${openSubmenu === item.title ? "rotate-90" : ""
-                          }`}
-                      >
-                        {">"}
-                      </span>
-                    </div>
+                    {item.icon}
+                    <span>{item.title}</span>
+                    <span
+                      className={`ml-auto transition-transform ${openSubmenu === item.title ? "rotate-90" : ""
+                        }`}
+                    >
+                      {<ChevronRight className="w-4 h-4 text-gray-400" />}
+                    </span>
                   </button>
                 ) : (
                   <Link
                     to={item.href}
-                    onClick={() => setActiveLink(item.title)}
-                    className={`block px-3 py-2 rounded ${activeLink === item.title ? "bg-[#8a0106] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                    onClick={() => {
+                      setActiveLink(item.title);
+                      handleNavClick();
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2 rounded transition
+                      ${activeLink === item.title ? "text-gray-700 hover:bg-gray-100 " : "text-gray-700 hover:bg-gray-100"}
+                    `}
                   >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span>{item.title}</span>
-                    </div>
+                    {item.icon}
+                    <span>{item.title}</span>
                   </Link>
                 )}
               </div>
-
               {/* Submenu */}
               {item.subItems && openSubmenu === item.title && (
-                <div className="pl-4 mt-2 transition-all duration-1000 ease-in-out">
+                <div className="pl-7 mt-1 space-y-1">
                   {item.subItems.map((subItem) => (
                     <Link
                       key={subItem.title}
                       to={subItem.href}
-                      onClick={() => setActiveLink(subItem.title)}
-                      className={`block px-3 py-2 rounded ${activeLink === subItem.title ? "bg-[#8a0106] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                      onClick={() => {
+                        setActiveLink(subItem.title);
+                        handleNavClick();
+                      }}
+                      className={`block px-3 py-2 rounded transition
+                        ${activeLink === subItem.title
+                          ? "bg-[#8a0106] text-white"
+                          : "text-gray-700 hover:bg-gray-100"
+                        }`}
                     >
-                      <span>{subItem.title}</span>
+                      {subItem.title}
                     </Link>
                   ))}
                 </div>
@@ -190,86 +219,82 @@ const AdminLayout = () => {
         </nav>
       </aside>
 
+      {/* Overlay for mobile sidebar */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-30 z-30 transition-opacity md:hidden ${isSidebarOpen ? "block" : "hidden"
+          }`}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-gray-100 overflow-y-auto ">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="bg-white dark:bg-gray-800 p-4 flex justify-between items-center shadow-md">
+        <header className="bg-white p-4 flex items-center justify-between shadow-md sticky top-0 z-20">
           <button
-            className="md:hidden"
-            onClick={toggleSidebar}
+            className="sidebar-toggle-btn md:hidden mr-2"
+            onClick={handleSidebarToggle}
+            aria-label="Open sidebar"
           >
-            <Menu className="w-6 h-6 text-gray-700 dark:text-white" />
+            <Menu className="w-6 h-6 text-gray-700" />
           </button>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="pl-10 pr-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-md focus:ring w-64"
-          />
-
-
-          <div className="flex items-center space-x-4">
+          <div className="flex-1 flex items-center">
+            {/* <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-3 py-2 bg-gray-100 rounded-md focus:ring w-full max-w-xs"
+            /> */}
+          </div>
+          <div className="flex items-center space-x-4 ml-4">
             {/* User Account Dropdown */}
-            <div className="hidden sm:flex items-center relative user-menu-container">
+            <div className="relative">
               <div
-                className="flex flex-col items-center space-x-1 cursor-pointer"
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center cursor-pointer"
+                onClick={() => setIsUserMenuOpen((prev) => !prev)}
               >
                 {userData?.profilePicture ? (
                   <img
                     src={userData.profilePicture}
                     alt="User"
-                    className="h-5 w-5 rounded-full object-cover"
+                    className="h-8 w-8 rounded-full object-cover"
                   />
                 ) : (
                   <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
                     <User className="h-5 w-5 text-gray-700" />
                   </div>
                 )}
-                <span className="ml-1  hidden lg:inline ">
-                  <span className="flex">
-
-                   {userData?.fullName}
-                <ChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-                  </span>
+                <span className="ml-2 hidden sm:block font-medium">
+                  {userData?.fullName}
                 </span>
-
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                    <Link
-                      to="/admin/settings/general"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Setting
-                    </Link>
-                    <button
-                      onClick={Logout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
+                <ChevronDown
+                  className={`h-4 w-4 ml-1 transition-transform ${isUserMenuOpen ? "rotate-180" : ""
+                    }`}
+                />
               </div>
+              {isUserMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                  <Link
+                    to="/admin/settings/general"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={Logout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
-
-            <button
-              className="md:hidden"
-              onClick={() => setMobileNavOpen(true)}
-              aria-label="Open menu"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
           </div>
-
-
         </header>
-
         {/* Main Content Section */}
-        <div className="mt-6">
+        <div className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </div>
-      </main>
+      </div>
     </div>
   );
 };

@@ -12,12 +12,9 @@ const DesktopNavigation = () => {
         link: "/catagory/laptops/featured",
       },
       subcategories: [
-        { name: "Gaming Laptops", description: "High-performance laptops for gaming", link: "/catagory/laptops/gaming" },
-        { name: "Business Laptops", description: "Reliable laptops for professionals", link: "/catagory/laptops/business" },
-        { name: "Ultrabooks", description: "Thin and light with long battery life", link: "/catagory/laptops/ultrabooks" },
-        { name: "Budget Laptops", description: "Affordable quality laptops", link: "/catagory/laptops/budget" },
-        { name: "2-in-1 Laptops", description: "Convertible laptop/tablet devices", link: "/catagory/laptops/2-in-1" },
-        { name: "MacBooks", description: "Apple's premium laptops", link: "/catagory/laptops/macbooks" },
+        { name: "Hp", description: "High-performance laptops for gaming", link: "/catagory/laptops/gaming" },
+        { name: "Dell", description: "Reliable laptops for professionals", link: "/catagory/laptops/business" },
+        { name: "Lenovo", description: "Thin and light with long battery life", link: "/catagory/laptops/ultrabooks" },
       ],
     },
     {
@@ -40,17 +37,6 @@ const DesktopNavigation = () => {
         { name: "Storage Devices", description: "External drives and memory cards", link: "/catagory/accessories/storage" },
         { name: "Keyboards & Mice", description: "Ergonomic peripherals", link: "/catagory/accessories/keyboards" },
         { name: "Speakers", description: "Bluetooth and wired speakers", link: "/catagory/accessories/speakers" },
-      ],
-    },
-    {
-      name: "Gaming",
-      subcategories: [
-        { name: "Gaming Consoles", description: "PlayStation, Xbox, and Nintendo", link: "/catagory/gaming/consoles" },
-        { name: "Controllers", description: "Gaming controllers for all platforms", link: "/catagory/gaming/controllers" },
-        { name: "Gaming Headsets", description: "Immersive audio for gaming", link: "/catagory/gaming/headsets" },
-        { name: "Gaming Chairs", description: "Comfort for long sessions", link: "/catagory/gaming/chairs" },
-        { name: "Gaming Accessories", description: "Keyboards, mice, and more", link: "/catagory/gaming/accessories" },
-        { name: "Virtual Reality", description: "VR headsets and gear", link: "/catagory/gaming/vr" },
       ],
     },
   ];
@@ -100,11 +86,7 @@ const DesktopNavigation = () => {
             </div>
           </li>
         ))}
-        <li>
-          <Link to="/deals" className="block py-3 font-medium hover:text-[#8a0106] transition-colors">
-            Deals
-          </Link>
-        </li>
+        
       </ul>
     </nav>
   );
