@@ -55,6 +55,7 @@ const router = createBrowserRouter([
       { path: "/brand/:brand", element: <ProductbrandShow /> },
       { path: "/category/:category", element: <ProductCatagoryShow /> },
       { path: "/paymentsuccess", element: <PaymentSuccess /> },
+      { path: "settings", element: <Settings /> },
 
 
       {
@@ -98,8 +99,8 @@ const router = createBrowserRouter([
       { path: "customers", element: <Customers /> },
       { path: "reports", element: <Reports /> },
       { path: "marketing", element: <Marketing /> },
-
       { path: "settings/general", element: <Settings /> },
+      { path: "settings", element: <Settings /> },
       { path: "user-management", element: <UserManagement /> },
       { path: "help", element: <HelpSupport /> },
       { path: "*", element: <PageNotFound /> },

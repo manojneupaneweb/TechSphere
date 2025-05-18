@@ -88,12 +88,6 @@ const updateFromCart = asyncHandler(async (req, res) => {
     const productId = req.params.id?.trim();
     const { quantity } = req.body;
     const userId = req.user.id;
-    console.log("===========================================================");
-    console.log("userId", userId);
-    console.log("quantity", quantity);
-    console.log("Product ID:", productId);
-
-
 
     if (!productId || !userId || !quantity) {
       return res.status(400).json({ message: "Missing product ID, user ID, or quantity" });

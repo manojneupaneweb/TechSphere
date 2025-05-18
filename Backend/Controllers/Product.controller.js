@@ -350,7 +350,50 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const AllOrder = asyncHandler(async (req, res) => {
   try {
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    // Admin: Fetch all orders
+    if (userRole === "admin") {
+      const orders = await Order.findAll({
+        order: [["createdAt", "DESC"]],
+      });
+
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({ message: "No orders found." });
+      }
+
+      const detailedOrders = await Promise.all(
+        orders.map(async (order) => {
+          const user = await User.findByPk(order.user_id, {
+            attributes: ["fullname", "email"],
+          });
+
+          const product = await Product.findByPk(order.product_id, {
+            attributes: ["name", "price"],
+          });
+
+          return {
+            ...order.toJSON(),
+            user,
+            product,
+          };
+        })
+      );
+
+      return res.status(200).json({
+        message: "Orders fetched successfully",
+        orders: detailedOrders,
+      });
+    }
+
+    // Regular User: Fetch their own orders
     const orders = await Order.findAll({
+      where: { user_id: userId },
       order: [["createdAt", "DESC"]],
     });
 
@@ -360,29 +403,30 @@ const AllOrder = asyncHandler(async (req, res) => {
 
     const detailedOrders = await Promise.all(
       orders.map(async (order) => {
-        const user = await User.findByPk(order.user_id, {
-          attributes: ["fullname", "email"],
-        });
         const product = await Product.findByPk(order.product_id, {
           attributes: ["name", "price"],
         });
 
-        const allordes = { ...order.toJSON(), user, product }
-        console.log("allordes", allordes);
         return {
           ...order.toJSON(),
-          user,
           product,
         };
       })
     );
 
-    res.status(200).json({ message: "Order fetched successfully", orders: detailedOrders });
+    res.status(200).json({
+      message: "Orders fetched successfully",
+      orders: detailedOrders,
+    });
   } catch (error) {
     console.error("Error fetching orders:", error);
-    res.status(500).json({ message: "Internal server error while fetching orders." });
+    res.status(500).json({
+      message: "Internal server error while fetching orders.",
+    });
   }
 });
+
+
 
 
 

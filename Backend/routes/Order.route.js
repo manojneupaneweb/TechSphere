@@ -7,7 +7,7 @@ const router = Router();
 
 //Product Order
 router.route('/createorder').post(verifyJwt, createOrder);
-router.route('/getallorder').get(AllOrder);
+router.route('/getallorder').get(verifyJwt, AllOrder);
 
 //cartlist routes
 router.route('/cartlist').post(verifyJwt, cartlist);
