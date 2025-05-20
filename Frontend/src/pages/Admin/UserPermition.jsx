@@ -1,8 +1,7 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Loading from "../../components/Loading";
-
-function Customers() {
+import axios from "axios";
+function UserPermission() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,6 +14,8 @@ function Customers() {
             Authorization: `Bearer ${accessToken}`,
           },
         });
+        console.log("responce : ", response);
+        
 
         setUsers(response.data.message);
       } catch (error) {
@@ -72,4 +73,4 @@ function Customers() {
   );
 }
 
-export default Customers;
+export default UserPermission

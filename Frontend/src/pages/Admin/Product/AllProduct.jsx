@@ -76,7 +76,6 @@ function AllProduct() {
             <table className="w-full border-collapse min-w-[900px] text-sm">
               <thead className="bg-gray-100 sticky top-0 z-10">
                 <tr className="text-left text-gray-600">
-                  <th className="px-4 py-3 w-12"></th>
                   <th className="px-4 py-3">S.N</th>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Category</th>
@@ -84,7 +83,6 @@ function AllProduct() {
                   <th className="px-4 py-3 text-center">Price</th>
                   <th className="px-4 py-3 text-center">Stock</th>
                   <th className="px-4 py-3 text-center">Status</th>
-                  <th className="px-4 py-3 text-center">Featured</th>
                   <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -94,12 +92,7 @@ function AllProduct() {
                     key={product._id}
                     className="border-b hover:bg-gray-50 transition-colors"
                   >
-                    <td className="text-center px-4 py-3">
-                      <input
-                        type="checkbox"
-                        aria-label={`Select ${product.name}`}
-                      />
-                    </td>
+                    
                     <td className="px-4 py-3 font-medium text-gray-700">
                       {count++}
 
@@ -135,17 +128,10 @@ function AllProduct() {
                       </span>
                     </td>
                     <td className="text-center px-4 py-3">
-                      {product.featured ? (
-                        <Check className="mx-auto h-5 w-5 text-green-600" />
-                      ) : (
-                        <X className="mx-auto h-5 w-5 text-gray-400" />
-                      )}
-                    </td>
-                    <td className="text-center px-4 py-3">
                       <div className="flex justify-center gap-3">
-                        <button className="text-blue-600 hover:text-blue-800">
+                        <Link to={`/admin/updateproduct/${product.id}`} className="text-blue-600 hover:text-blue-800">
                           <Pencil size={16} />
-                        </button>
+                        </Link>
                         <button className="text-red-600 hover:text-red-800">
                           <Trash2 size={16} />
                         </button>

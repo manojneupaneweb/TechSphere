@@ -123,25 +123,24 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Product deleted successfully"));
 });
 
-const getProductById = asyncHandler(async (req, res) => {
+const getProductById = asyncHandler(async (req, res, next) => {
   try {
-
-    const id = String(req.params.id).trim();
+    const id = req.params.id?.trim();
 
     if (!id) {
-      throw new ApiError(400, "Product ID is required");
+      return next(new ApiError(400, "Product ID is required"));
     }
 
     const product = await Product.findByPk(id);
 
     if (!product) {
-      throw new ApiError(404, "Product not found");
+      return next(new ApiError(404, "Product not found"));
     }
 
-    res.status(200).json(new ApiResponse(200, "Product fetched successfully", product));
+    return res.status(200).json(new ApiResponse(200, product, "Product fetched successfully"));
   } catch (error) {
     console.error("Error fetching product:", error);
-    throw new ApiError(500, "Internal server error while fetching product");
+    return next(new ApiError(500, "Internal server error while fetching product"));
   }
 });
 

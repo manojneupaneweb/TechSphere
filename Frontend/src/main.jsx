@@ -40,6 +40,8 @@ axios.defaults.baseURL = "http://localhost:3000";
 //payment Sucess 
 import PaymentSuccess from "./components/payment.jsx";
 import Orders from "./pages/Admin/Orders/Ordres.jsx";
+import UserPermission from "./pages/Admin/UserPermition.jsx";
+import UpdateProduct from "./pages/Admin/Product/UpdateProduct.jsx";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +58,7 @@ const router = createBrowserRouter([
       { path: "/category/:category", element: <ProductCatagoryShow /> },
       { path: "/paymentsuccess", element: <PaymentSuccess /> },
       { path: "settings", element: <Settings /> },
+
 
 
       {
@@ -91,10 +94,15 @@ const router = createBrowserRouter([
       </AdminAccess>
     ),
     children: [
-      { path: "dashboard", element: <Dashboard /> }, // Use lowercase paths
+      { path: "dashboard", element: <Dashboard /> }, 
+
+      // admin product releted route
       { path: "add-product", element: <AddProduct /> },
       { path: "all-product", element: <AllProduct /> },
       { path: "add-category", element: <AddCategory /> },
+      { path: "updateproduct/:id", element: <UpdateProduct /> },
+
+
       { path: "orders", element: <Orders /> },
       { path: "customers", element: <Customers /> },
       { path: "reports", element: <Reports /> },
@@ -103,6 +111,7 @@ const router = createBrowserRouter([
       { path: "settings", element: <Settings /> },
       { path: "user-management", element: <UserManagement /> },
       { path: "help", element: <HelpSupport /> },
+      { path: "settings/userpermission", element: <UserPermission /> },
       { path: "*", element: <PageNotFound /> },
 
     ],

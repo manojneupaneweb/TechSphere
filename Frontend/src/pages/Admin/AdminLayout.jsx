@@ -101,7 +101,7 @@ const AdminLayout = () => {
       icon: <Settings className="h-5 w-5" />,
       subItems: [
         { title: "General", href: "/admin/settings/general" },
-        { title: "Users & Permissions", href: "/admin/settings/users" },
+        { title: "Users & Permissions", href: "/admin/settings/userpermission" },
       ],
     },
     {
