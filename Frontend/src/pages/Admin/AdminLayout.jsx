@@ -97,6 +97,11 @@ const AdminLayout = () => {
       icon: <Users className="h-5 w-5" />,
     },
     {
+      title: "Stocks",
+      href: "/admin/stocks",
+      icon: <Users className="h-5 w-5" />,
+    },
+    {
       title: "Settings",
       href: "/admin/settings",
       icon: <Settings className="h-5 w-5" />,

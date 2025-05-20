@@ -4,18 +4,20 @@ import { useState } from "react";
 
 const MobileNavigation = ({ isOpen, onClose, isLoggedIn, isAdmin, userData, handleLogout }) => {
   const [openCategory, setOpenCategory] = useState(null);
-  
+
   const categories = [
     {
       name: "Laptops",
       subcategories: [
-        { name: "Gaming Laptops", link: "/category/laptops/gaming" },
-        { name: "Business Laptops", link: "/category/laptops/business" },
-        { name: "Ultrabooks", link: "/category/laptops/ultrabooks" },
-        { name: "Budget Laptops", link: "/category/laptops/budget" },
-        { name: "2-in-1 Laptops", link: "/category/laptops/2-in-1" },
-        { name: "MacBooks", link: "/category/laptops/macbooks" }
+        { name: "HP", link: "/category/laptops/hp" },
+        { name: "Lenovo", link: "/category/laptops/lenovo" },
+        { name: "Apple (MacBooks)", link: "/category/laptops/apple" },
+        { name: "Dell", link: "/category/laptops/dell" },
+        { name: "Asus", link: "/category/laptops/asus" },
+        { name: "Acer", link: "/category/laptops/acer" },
+        { name: "MSI", link: "/category/laptops/msi" }
       ]
+
     },
     {
       name: "Smartphones",
@@ -134,9 +136,8 @@ const MobileNavigation = ({ isOpen, onClose, isLoggedIn, isAdmin, userData, hand
                   >
                     <span className="font-medium">{category.name}</span>
                     <ChevronDown
-                      className={`h-4 w-4 opacity-60 transition-transform ${
-                        openCategory === category.name ? "rotate-180" : ""
-                      }`}
+                      className={`h-4 w-4 opacity-60 transition-transform ${openCategory === category.name ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 

@@ -372,7 +372,7 @@ const AllOrder = asyncHandler(async (req, res) => {
           });
 
           const product = await Product.findByPk(order.product_id, {
-            attributes: ["name", "price"],
+            attributes: ["name", "price", "image"],
           });
 
           return {

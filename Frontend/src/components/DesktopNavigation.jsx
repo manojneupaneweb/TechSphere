@@ -9,34 +9,57 @@ const DesktopNavigation = () => {
         title: "Featured Laptops",
         description:
           "Discover our top-rated laptops with the latest technology and exceptional performance.",
-        link: "/catagory/laptops/featured",
+        link: "/category/laptops/featured",
       },
       subcategories: [
-        { name: "Hp", description: "High-performance laptops for gaming", link: "/catagory/laptops/gaming" },
-        { name: "Dell", description: "Reliable laptops for professionals", link: "/catagory/laptops/business" },
-        { name: "Lenovo", description: "Thin and light with long battery life", link: "/catagory/laptops/ultrabooks" },
-      ],
+        {
+          name: "HP",
+          description: "High-performance laptops for gaming",
+          link: "/category/laptop/apple"
+        },
+        {
+          name: "Dell",
+          description: "Reliable laptops for professionals",
+          link: "/category/laptops/dell"
+        },
+        {
+          name: "Lenovo",
+          description: "Thin and light with long battery life",
+          link: "/category/laptops/lenovo"
+        },
+        {
+          name: "Asus",
+          description: "Affordable laptops with great features",
+          link: "/category/laptops/asus"
+        },
+        {
+          name: "Apple (MacBooks)",
+          description: "Premium laptops with macOS and sleek design",
+          link: "/category/laptops/apple"
+        }
+      ]
+
     },
     {
       name: "Smartphones",
       subcategories: [
-        { name: "Apple iPhones", description: "Latest iPhones with cutting-edge features", link: "/catagory/Smartphone/apple" },
-        { name: "Samsung Galaxy", description: "Innovative Android Smartphone", link: "/catagory/Smartphone/samsung" },
-        { name: "Google Pixel", description: "Pure Android with great cameras", link: "/catagory/Smartphone/google" },
-        { name: "Xiaomi", description: "Feature-rich at competitive prices", link: "/catagory/Smartphone/xiaomi" },
-        { name: "OnePlus", description: "Performance-focused devices", link: "/catagory/Smartphone/oneplus" },
-        { name: "Budget Phones", description: "Affordable Smartphone", link: "/catagory/Smartphone/budget" },
+        { name: "Apple iPhones", description: "Latest iPhones with cutting-edge features", link: "/category/Smartphone/apple" },
+        { name: "Samsung Galaxy", description: "Innovative Android Smartphone", link: "/category/Smartphone/samsung" },
+        { name: "Google Pixel", description: "Pure Android with great cameras", link: "/category/Smartphone/google" },
+        { name: "Xiaomi", description: "Feature-rich at competitive prices", link: "/category/Smartphone/xiaomi" },
+        { name: "OnePlus", description: "Performance-focused devices", link: "/category/Smartphone/oneplus" },
+        { name: "Budget Phones", description: "Affordable Smartphone", link: "/category/Smartphone/budget" },
       ],
     },
     {
       name: "Accessories",
       subcategories: [
-        { name: "Headphones", description: "Wireless and wired headphones", link: "/catagory/accessories/headphones" },
-        { name: "Cases & Covers", description: "Protection for your devices", link: "/catagory/accessories/cases" },
-        { name: "Chargers & Cables", description: "Fast charging solutions", link: "/catagory/accessories/chargers" },
-        { name: "Storage Devices", description: "External drives and memory cards", link: "/catagory/accessories/storage" },
-        { name: "Keyboards & Mice", description: "Ergonomic peripherals", link: "/catagory/accessories/keyboards" },
-        { name: "Speakers", description: "Bluetooth and wired speakers", link: "/catagory/accessories/speakers" },
+        { name: "Headphones", description: "Wireless and wired headphones", link: "/category/accessories/headphones" },
+        { name: "Cases & Covers", description: "Protection for your devices", link: "/category/accessories/cases" },
+        { name: "Chargers & Cables", description: "Fast charging solutions", link: "/category/accessories/chargers" },
+        { name: "Storage Devices", description: "External drives and memory cards", link: "/category/accessories/storage" },
+        { name: "Keyboards & Mice", description: "Ergonomic peripherals", link: "/category/accessories/keyboards" },
+        { name: "Speakers", description: "Bluetooth and wired speakers", link: "/category/accessories/speakers" },
       ],
     },
   ];
@@ -86,7 +109,7 @@ const DesktopNavigation = () => {
             </div>
           </li>
         ))}
-        
+
       </ul>
     </nav>
   );

@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { FiPackage, FiCheckCircle } from "react-icons/fi";
 
-const statusConfig = {
-    Cancel: {
+const STATUS_CONFIG = {
+    cancel: {
         color: "bg-emerald-100 text-emerald-800",
         icon: <FiCheckCircle className="mr-1" />,
-    }
+        label: "Cancel",
+    },
 };
 
 const CancelOrder = () => {
@@ -22,11 +23,10 @@ const CancelOrder = () => {
                 return;
             }
             try {
-                const response = await axios.get("/api/v1/order/getallorder", {
+                const { data } = await axios.get("/api/v1/order/getallorder", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                const ordersData = Array.isArray(response.data.orders) ? response.data.orders : [];
-                setOrders(ordersData);
+                setOrders(Array.isArray(data.orders) ? data.orders : []);
             } catch (error) {
                 console.error("Failed to fetch orders:", error);
             }
@@ -35,8 +35,10 @@ const CancelOrder = () => {
         fetchOrders();
     }, []);
 
-    // Only show Cancel orders
-    const filteredOrders = orders.filter((order) => order.order_status === "cancel");
+    const filteredOrders = useMemo(
+        () => orders.filter((order) => order.order_status === "cancel"),
+        [orders]
+    );
 
     if (loading) {
         return (
@@ -106,9 +108,7 @@ const CancelOrder = () => {
                                             <div className="flex flex-col items-center justify-center text-gray-500">
                                                 <FiPackage className="h-12 w-12 mb-4 opacity-30" />
                                                 <p className="text-lg font-medium">No Cancel orders found</p>
-                                                <p className="text-sm mt-1">
-                                                    Cancel orders will appear here
-                                                </p>
+                                                <p className="text-sm mt-1">Cancel orders will appear here</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -165,7 +165,7 @@ const CancelOrder = () => {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">
                                                     {order.product?.price
-                                                        ? `₦${(order.product.price * order.quantity).toLocaleString()}`
+                                                        ? `₦${(order.product.price * (order.quantity || 1)).toLocaleString()}`
                                                         : "-"}
                                                 </div>
                                             </td>
@@ -185,11 +185,12 @@ const CancelOrder = () => {
                                                 <div className="flex items-center">
                                                     <span
                                                         className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                            statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
+                                                            STATUS_CONFIG[order.order_status]?.color ||
+                                                            "bg-gray-100 text-gray-800"
                                                         }`}
                                                     >
-                                                        {statusConfig[order.status]?.icon}
-                                                        {order.status || "Cancel"}
+                                                        {STATUS_CONFIG[order.order_status]?.icon}
+                                                        {STATUS_CONFIG[order.order_status]?.label || "Cancel"}
                                                     </span>
                                                 </div>
                                             </td>

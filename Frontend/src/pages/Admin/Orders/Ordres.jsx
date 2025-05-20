@@ -32,13 +32,13 @@ const actionOptions = [
     icon: <FiTruck className="mr-1" />,
   },
   {
-    status: "completed",
+    status: "complete",
     label: "Mark as Completed",
     color: "bg-green-100 text-green-800",
     icon: <FiCheck className="mr-1" />,
   },
   {
-    status: "cancelled",
+    status: "cancel",
     label: "Cancel Order",
     color: "bg-red-100 text-red-800",
     icon: <FiX className="mr-1" />,

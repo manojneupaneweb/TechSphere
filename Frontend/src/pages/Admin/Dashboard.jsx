@@ -90,9 +90,15 @@ const Dashboard = () => {
 
   const pendingOrders = orders.filter((o) => o.order_status === "pending").length;
   const refundRequests = orders.filter((o) => o.status === "refund").length;
-  const revenue = orders
-    .filter((o) => o.order_status === "complete")
-    .reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+
+  const revenue = orders.filter((o) => o.order_status === "complete").length
+    // .reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+
+
+
+  console.log(orders.length);
+
+
 
   const stats = [
     {
@@ -120,7 +126,7 @@ const Dashboard = () => {
       color: "bg-purple-500",
     },
     {
-      title: "Revenue",
+      title: "Totle Complete",
       value: `$${revenue.toLocaleString()}`,
       icon: <FiDollarSign size={24} />,
       color: "bg-orange-500",

@@ -1,13 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { FiPackage, FiCheckCircle } from "react-icons/fi";
 
-const statusConfig = {
+const STATUS_CONFIG = {
     Completed: {
         color: "bg-emerald-100 text-emerald-800",
         icon: <FiCheckCircle className="mr-1" />,
-    }
+    },
+};
+
+const getOrderStatus = (order) => {
+    // Normalize status for display and badge
+    if (order.status) return order.status;
+    if (order.order_status?.toLowerCase() === "complete") return "Completed";
+    return "Completed";
 };
 
 const CompleteOrders = () => {
@@ -22,11 +29,10 @@ const CompleteOrders = () => {
                 return;
             }
             try {
-                const response = await axios.get("/api/v1/order/getallorder", {
+                const { data } = await axios.get("/api/v1/order/getallorder", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                const ordersData = Array.isArray(response.data.orders) ? response.data.orders : [];
-                setOrders(ordersData);
+                setOrders(Array.isArray(data.orders) ? data.orders : []);
             } catch (error) {
                 console.error("Failed to fetch orders:", error);
             }
@@ -35,8 +41,10 @@ const CompleteOrders = () => {
         fetchOrders();
     }, []);
 
-    // Only show completed orders
-    const filteredOrders = orders.filter((order) => order.order_status === "complete");
+    const completedOrders = useMemo(
+        () => orders.filter((order) => order.order_status?.toLowerCase() === "complete"),
+        [orders]
+    );
 
     if (loading) {
         return (
@@ -100,108 +108,108 @@ const CompleteOrders = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {filteredOrders.length === 0 ? (
+                                {completedOrders.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="px-6 py-8 text-center">
                                             <div className="flex flex-col items-center justify-center text-gray-500">
                                                 <FiPackage className="h-12 w-12 mb-4 opacity-30" />
                                                 <p className="text-lg font-medium">No completed orders found</p>
-                                                <p className="text-sm mt-1">
-                                                    Completed orders will appear here
-                                                </p>
+                                                <p className="text-sm mt-1">Completed orders will appear here</p>
                                             </div>
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredOrders.map((order, index) => (
-                                        <motion.tr
-                                            key={order._id || index}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.05 }}
-                                            className="hover:bg-gray-50 transition-colors"
-                                        >
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    #{order._id?.substring(0, 8) || "N/A"}
-                                                </div>
-                                                <div className="text-xs text-gray-500">
-                                                    {order._id || order.id}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {order.user?.fullname || "Guest"}
-                                                </div>
-                                                <div className="text-xs text-gray-500">
-                                                    {order.user?.email || "N/A"}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center">
-                                                    <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md overflow-hidden">
-                                                        {order.product?.image ? (
-                                                            <img
-                                                                className="h-full w-full object-cover"
-                                                                src={order.product.image}
-                                                                alt={order.product.name}
-                                                            />
-                                                        ) : (
-                                                            <div className="h-full w-full flex items-center justify-center text-gray-400">
-                                                                <FiPackage />
+                                    completedOrders.map((order, index) => {
+                                        const status = getOrderStatus(order);
+                                        const statusProps = STATUS_CONFIG[status] || STATUS_CONFIG.Completed;
+                                        return (
+                                            <motion.tr
+                                                key={order._id || index}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                                className="hover:bg-gray-50 transition-colors"
+                                            >
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        #{order._id?.substring(0, 8) || "N/A"}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        {order._id || order.id}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {order.user?.fullname || "Guest"}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        {order.user?.email || "N/A"}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center">
+                                                        <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md overflow-hidden">
+                                                            {order.product?.image ? (
+                                                                <img
+                                                                    className="h-full w-full object-cover"
+                                                                    src={order.product.image}
+                                                                    alt={order.product.name}
+                                                                />
+                                                            ) : (
+                                                                <div className="h-full w-full flex items-center justify-center text-gray-400">
+                                                                    <FiPackage />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="ml-4">
+                                                            <div className="text-sm font-medium text-gray-900">
+                                                                {order.product?.name || "Unknown Product"}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-gray-900">
-                                                            {order.product?.name || "Unknown Product"}
-                                                        </div>
-                                                        <div className="text-sm text-gray-500">
-                                                            Qty: {order.quantity || 1}
+                                                            <div className="text-sm text-gray-500">
+                                                                Qty: {order.quantity || 1}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {order.product?.price
-                                                        ? `₦${(order.product.price * order.quantity).toLocaleString()}`
-                                                        : "-"}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">
-                                                    {order.createdAt
-                                                        ? new Date(order.createdAt).toLocaleDateString()
-                                                        : "-"}
-                                                </div>
-                                                <div className="text-xs text-gray-500">
-                                                    {order.createdAt
-                                                        ? new Date(order.createdAt).toLocaleTimeString()
-                                                        : ""}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <span
-                                                        className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                            statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
-                                                        }`}
-                                                    >
-                                                        {statusConfig[order.status]?.icon}
-                                                        {order.status || "Completed"}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                        </motion.tr>
-                                    ))
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {order.product?.price
+                                                            ? `रु.  ${(order.product.price * (order.quantity || 1)).toLocaleString()}`
+                                                            : "-"}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">
+                                                        {order.createdAt
+                                                            ? new Date(order.createdAt).toLocaleDateString()
+                                                            : "-"}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500">
+                                                        {order.createdAt
+                                                            ? new Date(order.createdAt).toLocaleTimeString()
+                                                            : ""}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center">
+                                                        <span
+                                                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusProps.color}`}
+                                                        >
+                                                            {statusProps.icon}
+                                                            {status}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </motion.tr>
+                                        );
+                                    })
                                 )}
                             </tbody>
                         </table>
                     </div>
                 </motion.div>
 
-                {filteredOrders.length > 0 && (
+                {completedOrders.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -209,7 +217,7 @@ const CompleteOrders = () => {
                         className="mt-6 flex justify-between items-center text-sm text-gray-600"
                     >
                         <div>
-                            Showing <span className="font-medium">{filteredOrders.length}</span> of{" "}
+                            Showing <span className="font-medium">{completedOrders.length}</span> of{" "}
                             <span className="font-medium">{orders.length}</span> completed orders
                         </div>
                     </motion.div>
