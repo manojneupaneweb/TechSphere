@@ -56,7 +56,7 @@ const AdminLayout = () => {
       setActiveLink(
         found.subItems
           ? found.subItems.find((sub) => sub.href === location.pathname)?.title ||
-              found.title
+          found.title
           : found.title
       );
       if (found.subItems) setOpenSubmenu(found.title);
@@ -77,7 +77,6 @@ const AdminLayout = () => {
         { title: "All Products", href: "/admin/all-product" },
         { title: "Add New", href: "/admin/add-product" },
         { title: "Categories", href: "/admin/add-category" },
-        { title: "Delete", href: "/admin/delete-products" },
       ],
     },
     {
@@ -85,9 +84,11 @@ const AdminLayout = () => {
       href: "/admin/orders",
       icon: <Package className="h-5 w-5" />,
       subItems: [
-        { title: "All Orders", href: "/admin/orders" },
-        // { title: "Pending Orders", href: "/admin/pending-order" },
-        
+        { title: "Orders", href: "/admin/orders" },
+        { title: "Shipped Orders", href: "/admin/orders/shipped" },
+        { title: "Complete Orders", href: "/admin/orders/complete" },
+        { title: "Cancel Orders", href: "/admin/orders/cancel" },
+
       ],
     },
     {

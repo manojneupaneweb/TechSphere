@@ -4,7 +4,7 @@ import User from '../models/User.model.js';
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
-import { uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
+import { deleteFromCloudinary, uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
 
 const getAllBrand = asyncHandler(async (req, res) => {
   const brands = await Brand.findAll({});
@@ -112,10 +112,9 @@ const deleteProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found");
   }
 
-  // Optionally, delete the image from Cloudinary if you want to clean up after deletion
   if (product.image) {
-    const imageId = product.image.split('/').pop().split('.')[0]; // Extract image ID from the URL
-    await deleteFromCloudinary(imageId); // Assuming a function to delete image from Cloudinary
+    const imageId = product.image.split('/').pop().split('.')[0];
+    await deleteFromCloudinary(imageId);
   }
 
   await product.destroy();
@@ -426,6 +425,36 @@ const AllOrder = asyncHandler(async (req, res) => {
 });
 
 
+const ChengeStatus = asyncHandler(async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    if (!orderId) {
+      return res.status(400).json({ message: "Order ID is required." });
+    }
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required." });
+    }
+
+    const orderitem = await Order.findByPk(orderId);
+
+    if (!orderitem) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+
+    orderitem.order_status = status;
+    await orderitem.save();
+
+    res.status(200).json(new ApiResponse(200, "Order status updated successfully", orderitem));
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: "Something went wrong.", error: error.message });
+  }
+});
+
+
+
 
 
 
@@ -452,5 +481,6 @@ export {
 
   //order 
   createOrder,
-  AllOrder
+  AllOrder,
+  ChengeStatus
 };

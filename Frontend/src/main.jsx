@@ -42,6 +42,9 @@ import PaymentSuccess from "./components/payment.jsx";
 import Orders from "./pages/Admin/Orders/Ordres.jsx";
 import UserPermission from "./pages/Admin/UserPermition.jsx";
 import UpdateProduct from "./pages/Admin/Product/UpdateProduct.jsx";
+import CompleteOrders from "./pages/Admin/Orders/CompleteOrders.jsx";
+import CancelOrder from "./pages/Admin/Orders/CancelOrder.jsx";
+import ShippedOrder from "./pages/Admin/Orders/ShippedOrder.jsx";
 
 const router = createBrowserRouter([
   {
@@ -96,14 +99,19 @@ const router = createBrowserRouter([
     children: [
       { path: "dashboard", element: <Dashboard /> }, 
 
-      // admin product releted route
+      //  product releted route
       { path: "add-product", element: <AddProduct /> },
       { path: "all-product", element: <AllProduct /> },
       { path: "add-category", element: <AddCategory /> },
       { path: "updateproduct/:id", element: <UpdateProduct /> },
-
-
+      
+      // order product releted route
       { path: "orders", element: <Orders /> },
+      { path: "orders/complete", element: <CompleteOrders /> },
+      { path: "orders/cancel", element: <CancelOrder /> },
+      { path: "orders/shipped", element: <ShippedOrder /> },
+
+
       { path: "customers", element: <Customers /> },
       { path: "reports", element: <Reports /> },
       { path: "marketing", element: <Marketing /> },
