@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, logOutUser, updateUserProfile, deleteUser, getUserProfile, changePassword, getAllUserProfile, sendOtp, verifyOtp } from "../Controllers/User.controller.js";
+import { registerUser, loginUser, logOutUser, updateUserProfile, deleteUser, getUserProfile, changePassword, getAllUserProfile, sendOtp, verifyOtp, changeRole } from "../Controllers/User.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 import verifyAdmin from "../middleware/admin.middleware.js";
@@ -26,5 +26,6 @@ router.route('/profile/:id/change-password').put(verifyJWT, changePassword);
 //admin pannel 
 router.route('/getalluser').get(verifyAdmin, getAllUserProfile);
 router.route('/cheangepassword').post(verifyJWT, changePassword);
+router.route('/changerole').post(verifyJWT, changeRole);
 
 export default router;

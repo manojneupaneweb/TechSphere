@@ -273,6 +273,28 @@ const getAllUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Users profiles retrieved", users));
 });
 
+const changeRole = asyncHandler(async (req, res) => {
+  const { id, role } = req.body;
+
+  try {
+    console.log("id:", id);
+    console.log("role:", role);
+
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    user.role = role;
+    await user.save(); 
+    res.status(200).json(new ApiResponse(200, "Role updated successfully"));
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Something went wrong" });
+  }
+});
 
 
-export { sendOtp, verifyOtp, registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile };
+
+
+export { sendOtp, verifyOtp, registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile, changeRole };

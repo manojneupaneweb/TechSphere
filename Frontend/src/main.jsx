@@ -40,11 +40,11 @@ axios.defaults.baseURL = "http://localhost:3000";
 //payment Sucess 
 import PaymentSuccess from "./components/payment.jsx";
 import Orders from "./pages/Admin/Orders/Ordres.jsx";
-import UserPermission from "./pages/Admin/UserPermition.jsx";
 import UpdateProduct from "./pages/Admin/Product/UpdateProduct.jsx";
 import CompleteOrders from "./pages/Admin/Orders/CompleteOrders.jsx";
 import CancelOrder from "./pages/Admin/Orders/CancelOrder.jsx";
 import ShippedOrder from "./pages/Admin/Orders/ShippedOrder.jsx";
+import UserPermission from "./pages/Admin/Userpermission.jsx";
 
 const router = createBrowserRouter([
   {
