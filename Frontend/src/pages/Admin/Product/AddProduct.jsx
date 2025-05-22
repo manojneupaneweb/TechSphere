@@ -144,9 +144,26 @@ function AddProduct() {
         {/* BASIC INPUT FIELDS */}
         <input type="text" name="name" value={product.name} onChange={handleChange} placeholder="Product Name" className="w-full p-2 border rounded " required />
         <input type="number" name="price" value={product.price} onChange={handleChange} placeholder="Price" className="w-full p-2 border rounded" required />
-        <input type="text" name="warranty" value={product.warranty} onChange={handleChange} placeholder="Warranty" className="w-full p-2 border rounded" required />
-        <input type="number" name="stock" value={product.stock} onChange={handleChange} placeholder="Stock" className="w-full p-2 border rounded" required />
-        <input type="text" name="return_policy" value={product.return_policy} onChange={handleChange} placeholder="Return Policy" className="w-full p-2 border rounded" required />
+        <select name="warranty" value={product.warranty} onChange={handleChange} className="w-full p-2 border rounded" required>
+  <option value="">Select Warranty</option>
+  <option value="No Warranty">No Warranty</option>
+  <option value="7 Days">7 Days</option>
+  <option value="15 Days">15 Days</option>
+  <option value="1 Month">1 Month</option>
+  <option value="6 Months">6 Months</option>
+  <option value="1 Year">1 Year</option>
+</select>
+
+<input type="number" name="stock" value={product.stock} onChange={handleChange} placeholder="Stock" className="w-full p-2 border rounded" required />
+
+<select name="return_policy" value={product.return_policy} onChange={handleChange} className="w-full p-2 border rounded" required>
+  <option value="">Select Return Policy</option>
+  <option value="No Return">No Return</option>
+  <option value="Return within 7 Days">Return within 7 Days</option>
+  <option value="Return within 15 Days">Return within 15 Days</option>
+  <option value="Return within 30 Days">Return within 30 Days</option>
+</select>
+
 
         {/* CATEGORY */}
         <select name="category" value={product.category} onChange={handleChange} className="w-full p-2 border rounded" required>
