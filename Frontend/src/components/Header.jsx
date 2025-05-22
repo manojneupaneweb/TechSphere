@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Logo from "../assets/image/logo.png";
 import { Search, ShoppingCart, User, Heart, Menu, ChevronDown } from "lucide-react";
 import { Logout } from "../utils/AuthContext";
 import DesktopNavigation from "./DesktopNavigation";
 import MobileNavigation from "./MobileNavigation";
+import { handelcartcount } from "../utils/Cart.utils";
 
 const Header = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -14,6 +15,8 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -25,7 +28,6 @@ const Header = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUserData(data.message);
-        
         setIsLoggedIn(true);
         setIsAdmin(data.message.role === "admin");
       } catch (error) {
@@ -41,9 +43,7 @@ const Header = () => {
       }
 
       try {
-        const response = await axios.get("/api/v1/product/getcartitem", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await handelcartcount();
         setCartCount(response.data.product.length);
       } catch (error) {
         console.error("Error getting cart items:", error);
@@ -73,7 +73,11 @@ const Header = () => {
     setCartCount(0);
   };
 
-  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(`/search?content=${encodeURIComponent(searchQuery)}`);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b">
       <div className="container mx-auto px-20">
@@ -99,14 +103,19 @@ const Header = () => {
           </div>
 
           <div className="hidden md:flex items-center flex-1 max-w-xl mx-6">
-            <div className="relative w-full">
+            <form onSubmit={handleSearch} className="relative w-full">
               <input
                 type="search"
                 placeholder="Search for products..."
                 className="w-full pr-10 border-2 p-2 rounded-md border-gray-300 focus:border-[#8a0106] focus:ring-[#8a0106]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            </div>
+
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <Search className="text-gray-400 h-5 w-5 hover:text-[#8a0106]" />
+              </button>
+            </form>
           </div>
 
           <div className="flex items-center space-x-4">
@@ -147,7 +156,7 @@ const Header = () => {
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
-                       Settings
+                        Settings
                       </Link>
                       {isAdmin && (
                         <Link
@@ -181,7 +190,10 @@ const Header = () => {
               )}
             </div>
 
-           
+            <Link to="/wishlist" className="hidden md:flex items-center hover:text-[#8a0106]">
+              <Heart className="h-5 w-5 text-gray-700" />
+              <span className="ml-1 hidden lg:inline">Wishlist</span>
+            </Link>
 
             <Link to="/cart" className="flex items-center hover:text-[#8a0106]">
               <div className="relative">

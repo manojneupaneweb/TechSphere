@@ -46,6 +46,7 @@ import CancelOrder from "./pages/Admin/Orders/CancelOrder.jsx";
 import ShippedOrder from "./pages/Admin/Orders/ShippedOrder.jsx";
 import UserPermission from "./pages/Admin/Userpermission.jsx";
 import Stocks from "./pages/Admin/Stocks.jsx";
+import Search from "./pages/ProductShow/Search.jsx";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
       { path: "/category/:category", element: <ProductCatagoryShow /> },
       { path: "/paymentsuccess", element: <PaymentSuccess /> },
       { path: "settings", element: <Settings /> },
+      { path: "/search", element: <Search /> },
 
 
 

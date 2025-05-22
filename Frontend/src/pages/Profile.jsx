@@ -4,10 +4,12 @@ import { User } from 'lucide-react';
 import Loading from '../components/Loading';
 import axios from 'axios';
 
+const STATUS_ORDER = ['pending', 'shipping', 'complete', 'cancel'];
+
 const ProfileInfo = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState([]); // Initialize as empty array
+  const [order, setOrder] = useState([]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -40,7 +42,7 @@ const ProfileInfo = () => {
         setOrder(Array.isArray(data.orders) ? data.orders : []);
       } catch (error) {
         console.error("Error fetching order data", error);
-        setOrder([]); // Ensure order is always an array
+        setOrder([]);
       } finally {
         setLoading(false);
       }
@@ -48,6 +50,13 @@ const ProfileInfo = () => {
     fetchProfileData();
     fetchOrderData();
   }, []);
+
+  // Sort orders by STATUS_ORDER priority
+  const sortedOrders = [...order].sort((a, b) => {
+    const aIndex = STATUS_ORDER.indexOf((a.order_status || '').toLowerCase());
+    const bIndex = STATUS_ORDER.indexOf((b.order_status || '').toLowerCase());
+    return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
+  });
 
   if (loading) {
     return (
@@ -100,13 +109,13 @@ const ProfileInfo = () => {
       <section className="bg-white rounded-xl shadow p-6">
         <div className="max-w-4xl mx-auto p-4">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Order Details</h1>
-          {order.length === 0 && (
+          {sortedOrders.length === 0 && (
             <div className="text-center">
               <p className="text-gray-500">No orders found.</p>
             </div>
           )}
 
-          {order.map((item, index) => (
+          {sortedOrders.map((item, index) => (
             <div key={item.id || index} className="bg-white rounded-xl shadow-md overflow-hidden mb-6 transition-all hover:shadow-lg">
               <div className="p-6">
                 {/* Order Header */}
@@ -115,10 +124,17 @@ const ProfileInfo = () => {
                     <h2 className="text-xl font-semibold text-gray-800">Order #{index + 1}</h2>
                     <p className="text-sm text-gray-500">Placed on {new Date(item.createdAt).toLocaleDateString()}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${item.order_status === 'pending'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-green-100 text-green-800'
-                    }`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    item.order_status === 'pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : item.order_status === 'shipping'
+                      ? 'bg-blue-100 text-blue-800'
+                      : item.order_status === 'complete'
+                      ? 'bg-green-100 text-green-800'
+                      : item.order_status === 'cancel'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
                     {item.order_status}
                   </span>
                 </div>
@@ -147,7 +163,7 @@ const ProfileInfo = () => {
                         <span className={`ml-2 ${item.payment_status === 'COMPLETE'
                           ? 'text-green-600 font-medium'
                           : 'text-red-600'
-                          }`}>
+                        }`}>
                           {item.payment_status}
                         </span>
                       </p>

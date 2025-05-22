@@ -1,3 +1,4 @@
+import { Op, fn, col, where } from 'sequelize';
 import { Brand, Order } from '../models/Others.model.js';
 import { Product } from '../models/Product.model.js'
 import User from '../models/User.model.js';
@@ -185,26 +186,37 @@ const getProductsByBrand = asyncHandler(async (req, res) => {
 });
 
 const searchProducts = asyncHandler(async (req, res) => {
-  // const { query } = req.query; // Search query from the request
+  const query = req.params.content;
 
-  // if (!query) {
-  //   throw new ApiError(400, "Search query is required");
-  // }
+  if (!query) {
+    throw new ApiError(400, "Search query is required");
+  }
 
-  // const products = await Product.findAll({
-  //   where: {
-  //     [Op.or]: [
-  //       { name: { [Op.iLike]: `%${query}%` } },
-  //       { description: { [Op.iLike]: `%${query}%` } },
-  //     ],
-  //   },
-  // });
+  const lowerQuery = query.toLowerCase();
 
-  // if (!products.length) {
-  //   throw new ApiError(404, "No products found matching your search");
-  // }
+  try {
+    const products = await Product.findAll({
+      where: {
+        [Op.or]: [
+          where(fn('LOWER', col('name')), { [Op.like]: `%${lowerQuery}%` }),
+          where(fn('LOWER', col('description')), { [Op.like]: `%${lowerQuery}%` }),
+          where(fn('LOWER', col('category')), { [Op.like]: `%${lowerQuery}%` }),
+          where(fn('LOWER', col('brand')), { [Op.like]: `%${lowerQuery}%` }),
+        ],
+      },
+    });
 
-  // res.status(200).json(new ApiResponse(200, "Products fetched successfully", products));
+    if (!products.length) {
+      throw new ApiError(404, "No products found matching your search");
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Products fetched successfully", products));
+  } catch (error) {
+    console.error("Error searching products:", error);
+    throw new ApiError(500, "Internal server error while searching products");
+  }
 });
 
 const updateStock = asyncHandler(async (req, res) => {

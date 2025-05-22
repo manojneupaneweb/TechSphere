@@ -1,38 +1,44 @@
-
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import Productcard from "../../components/productcard.jsx";
+import { useLocation } from "react-router-dom";
+import ProductCard from "../../components/productcard.jsx";
 
-const ProductbrandShow = () => {
-    const { brand } = useParams();
-    const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState([]);
-    const [error, setError] = useState(null);
+const Search = () => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const content = params.get("content");
 
-    const fetchProducts = async () => {
-        try {
-            const response = await axios.get(`/api/v1/category/brand/:${brand}`);
-            console.log("response", response);
-            setProducts(Array.isArray(response.data) ? response.data : []);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
 
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`/api/v1/search?query=${encodeURIComponent(content)}`);
+      setProducts(response.data.products || response.data); // adjust based on your API response
+      setError(null);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchProducts();
-    }, [brand]);
+  useEffect(() => {
+    if (content) {
+      fetchProducts();
+    } else {
+      setLoading(false);
+      setProducts([]);
+      setError(null);
+    }
+  }, [content]);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
-    console.log("products", products);
-
-    return <Productcard products={products} find={brand} />;
+  return <ProductCard products={products} find={content} />;
 };
 
-export default ProductbrandShow;
+export default Search;

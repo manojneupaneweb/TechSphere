@@ -23,7 +23,7 @@ import mobiles2 from "../assets/image/mobiles2.jpg";
 import Loading from "../components/Loading";
 import { toast, ToastContainer } from "react-toastify";
 import fatchByCategory from "../utils/Fatch";
-import { CartList } from "../utils/Cart.utils";
+import { CartList, handelcartcount } from "../utils/Cart.utils";
 import CustomerReviews from "../components/CustomerReviews";
 import { NewsletterSection } from "../components/Newsletter";
 import { FAQSection } from "../components/FAQ";
@@ -32,7 +32,7 @@ const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
 
 const handleCartList = async (product) => {
   await CartList(product);
-  toast.success("Added to cart!");
+  handelcartcount();
 };
 
 // Hero Section

@@ -117,15 +117,12 @@ function AllProduct() {
               </p>
             </div>
             <div className="flex items-center gap-5">
-              <Link to="/admin/addproduct">
+              <Link to="/admin/add-product">
                 <button className="bg-[#8a0106] hover:bg-[#6d0105] text-white p-3 rounded-lg">
                   Add Product
                 </button>
               </Link>
-              <button className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md text-sm text-gray-700">
-                <Download className="h-4 w-4" />
-                Export
-              </button>
+              
             </div>
           </div>
 

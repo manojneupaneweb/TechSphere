@@ -2,6 +2,18 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const accessToken = localStorage.getItem("accessToken");
 
+export const handelcartcount = async () => {
+    const token = localStorage.getItem("accessToken");
+    try {
+        const response = await axios.get("/api/v1/product/getcartitem", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response;
+    } catch (error) {
+        console.error("Error fetching cart count:", error);
+        return { data: { product: [] } };
+    }
+};
 
 const CartList = async (product) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -10,21 +22,19 @@ const CartList = async (product) => {
         return toast.error("Please login to add to cart!");
     }
 
-    try { 
+    try {
         await axios.post("/api/v1/order/cartlist", { productId: product.id }, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log("product" , product);
-        
-        toast.success(`${product.name} added to cart!`);
+        toast.success(`${product.name} added to Cart!`);
+
     } catch (error) {
         toast.error(error.response?.data?.message || "Failed to add to cart!");
         console.error("Error adding to cart:", error);
     }
 };
-
 
 const Wishlist = async (product) => {
     try {
@@ -61,8 +71,6 @@ const Wishlist = async (product) => {
         console.error("Error managing wishlist:", error);
     }
 };
- 
-
 
 const CartRemove = (item) => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -91,5 +99,8 @@ const updateCartItemQuantity = (itemId, change) => {
 
     return cart; // Return the updated cart
 };
+
+
+
 
 export { Wishlist, CartList, CartRemove, updateCartItemQuantity, };

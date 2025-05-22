@@ -78,7 +78,8 @@ function Stocks() {
                 })
             ]);
             setProducts(productsRes.data.data || []);
-            setCategories(categoriesRes.data.data || []);
+            setCategories(categoriesRes.data || []);
+            
             setBrands(brandsRes.data.data || []);
         } catch (err) {
             setError(err.message || 'Failed to fetch data');

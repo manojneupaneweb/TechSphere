@@ -20,7 +20,7 @@ router.route('/getallproducts').get(getAllProducts);
 router.route('/getallbrand').get(getAllBrand);
 
 
-router.route('/search').get(searchProducts);
+router.route('/search/:content').get(searchProducts);
 router.route('/:category').get(getProductsByCategory);
 router.route('/brand/:brand').get(getProductsByBrand);
 
