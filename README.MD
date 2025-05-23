@@ -1,6 +1,4 @@
-Sure! Here's a clean, professional `README.md` draft for your **TechSphere** project based on your previous info:
 
----
 
 # TechSphere E-commerce Project
 
@@ -34,7 +32,7 @@ TechSphere is a modern e-commerce platform built with **React**, **Node.js**, an
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/yourusername/TechSphere.git
+   git clone https://github.com/manojneupaneweb/TechSphere.git
    cd TechSphere
    ```
 
@@ -98,6 +96,4 @@ Feel free to open issues or submit pull requests for improvements.
 
 [MIT](LICENSE)
 
----
 
-If you want me to customize this more — like add environment variable details, API routes, or screenshots — just say!
