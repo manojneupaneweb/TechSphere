@@ -92,7 +92,7 @@ const AddCategory = () => {
 
   // Delete Category
   const handleDeleteCategory = async (id, categoryName) => {
-    if (!window.confirm(`Are you sure you want to delete ${categoryName} category?`)) return;
+    if (!window.confirm(`Are you sure you want to delete ${id} category?`)) return;
 
     try {
       await axios.delete(`/api/v1/category/deletecategory/:${id}`);
@@ -171,7 +171,7 @@ const AddCategory = () => {
               <li key={category._id} className="mb-2 flex justify-between">
                 <span className="font-semibold">{category.name}</span>
                 <div>
-                  <button className="text-red-500" onClick={() => handleDeleteCategory(category._id, category.name)}>
+                  <button className="text-red-500" onClick={() => handleDeleteCategory(category.id, category.name)}>
                     Delete
                   </button>
                 </div>

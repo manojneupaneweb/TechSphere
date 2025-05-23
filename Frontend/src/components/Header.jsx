@@ -190,10 +190,10 @@ const Header = () => {
               )}
             </div>
 
-            <Link to="/wishlist" className="hidden md:flex items-center hover:text-[#8a0106]">
+            {/* <Link to="/wishlist" className="hidden md:flex items-center hover:text-[#8a0106]">
               <Heart className="h-5 w-5 text-gray-700" />
               <span className="ml-1 hidden lg:inline">Wishlist</span>
-            </Link>
+            </Link> */}
 
             <Link to="/cart" className="flex items-center hover:text-[#8a0106]">
               <div className="relative">

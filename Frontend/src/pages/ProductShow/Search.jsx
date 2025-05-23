@@ -18,14 +18,24 @@ const Search = () => {
             setError(null);
             try {
                 const response = await axios.get(`/api/v1/product/search/${content}`);
-                console.log(response.data.message);
-                setProducts(response.data.message);
+                const data = response.data.data;
+
+                if (Array.isArray(data)) {
+                    setProducts(data);
+                } else if (data && typeof data === 'object') {
+                    // Wrap single object inside an array
+                    setProducts([data]);
+                } else {
+                    setProducts([]);
+                }
+
             } catch (err) {
                 setError("Failed to fetch products.");
             } finally {
                 setLoading(false);
             }
         };
+
 
         fetchProducts();
     }, [content, location.state]);

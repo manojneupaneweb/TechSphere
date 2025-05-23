@@ -1,21 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-const esewaGreen = "#1EBE4A";
 
 const PaymentSuccess = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
+    const [isProcessing, setIsProcessing] = useState(true);
 
     useEffect(() => {
         const createOrder = async () => {
             try {
                 const query = new URLSearchParams(location.search);
                 const data = query.get("data");
+
+                if (!data || data === "null") {
+                    toast.error("Invalid payment data.");
+                    return;
+                }
+
                 const parsed = JSON.parse(atob(data));
+
                 if (parsed.status !== "COMPLETE") {
                     toast.error("Payment failed or incomplete.");
                     return;
@@ -33,72 +39,98 @@ const PaymentSuccess = () => {
                     orderStatus: "pending",
                 }));
 
-                const response = await axios.post(
-                    "/api/v1/product/createorder",
+                await axios.post(
+                    "/api/v1/order/createorder",
                     { orderItems },
-                    {
-                        headers: { Authorization: `Bearer ${accessToken}` },
-                    }
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
                 );
-                if (response.status !== 200) {
-                    toast.error("Failed to create order.");
-                    return;
-                }
 
                 toast.success("Order placed successfully!");
-                setTimeout(() => navigate("/order"), 2000);
+                setIsProcessing(false);
+                
+                // Redirect after showing success for 2 seconds
+                setTimeout(() => navigate("/account"), 2000);
             } catch (err) {
-                toast.error("Something went wrong during order creation.");
+                console.error("Error:", err);
+                toast.error(err.response?.data?.message || "An error occurred.");
+                setTimeout(() => navigate("/cart"), 2000);
             }
         };
 
         createOrder();
-        // eslint-disable-next-line
     }, [location]);
 
     return (
-    <div className="min-h-screen bg-[#2dba4e] flex flex-col items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-8 sm:p-6 max-w-md w-full shadow-[0_4px_24px_rgba(30,190,74,0.15)] flex flex-col items-center">
-            {/* eSewa Logo Checkmark */}
-            <div className="w-16 h-16 bg-[#2dba4e] rounded-full flex items-center justify-center mb-4">
-                <svg
-                    width="32"
-                    height="32"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M44 26L29 41L20 32"
-                        stroke="#fff"
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
+                {/* eSewa Header */}
+                <div className="bg-[#1EBE4A] py-4 px-6 flex items-center">
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="#1EBE4A"
+                            className="w-8 h-8"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+                                clipRule="evenodd"
+                            />
+                        </svg>
+                    </div>
+                    <h1 className="text-2xl font-bold text-white">eSewa Payment</h1>
+                </div>
+
+                {/* Content */}
+                <div className="p-8 flex flex-col items-center">
+                    {isProcessing ? (
+                        <div className="flex flex-col items-center">
+                            <div className="w-16 h-16 border-4 border-[#1EBE4A] border-t-transparent rounded-full animate-spin mb-4"></div>
+                            <p className="text-gray-600">Processing your payment...</p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Success Animation */}
+                            <div className="relative mb-6">
+                                <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="#1EBE4A"
+                                        className="w-16 h-16 animate-scale-in"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
+                            <p className="text-gray-600 text-center mb-4">
+                                Thank you for your purchase. Redirecting to your account...
+                            </p>
+                        </>
+                    )}
+                </div>
             </div>
-            
-            {/* Payment Success Message */}
-            <h2 className="text-[#2dba4e] font-bold text-2xl mb-2 text-center">
-                Payment Successful!
-            </h2>
-            
-            <p className="text-gray-800 text-base text-center mb-2">
-                Thank you for your payment via <span className="text-[#2dba4e] font-semibold">eSewa</span>.
-            </p>
-            
-            <p className="text-gray-600 text-sm text-center">
-                Redirecting to your orders...
-            </p>
-            
-            {/* Optional eSewa branding */}
-            <div className="mt-6 flex items-center">
-                <span className="text-gray-500 text-xs mr-1">Powered by</span>
-                <span className="text-[#2dba4e] font-bold">eSewa</span>
-            </div>
+
+            {/* Animation styles */}
+            <style jsx global>{`
+                @keyframes scale-in {
+                    0% { transform: scale(0); opacity: 0; }
+                    80% { transform: scale(1.1); }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                .animate-scale-in {
+                    animation: scale-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+                }
+            `}</style>
         </div>
-    </div>
-);
+    );
 };
 
 export default PaymentSuccess;

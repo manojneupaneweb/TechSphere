@@ -89,14 +89,12 @@ const Dashboard = () => {
   }).length;
 
   const pendingOrders = orders.filter((o) => o.order_status === "pending").length;
-  const refundRequests = orders.filter((o) => o.status === "refund").length;
+  const completeOrders = orders.filter((o) => o.order_status === "complete").length;
 
-  const revenue = orders.filter((o) => o.order_status === "complete").length
-    // .reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+  const revenue = orders
+  .filter((o) => o.order_status === "complete")
+  .reduce((sum, o) => sum + (o.quantity * (o.product?.price || 0)), 0);
 
-
-
-  console.log(orders.length);
 
 
 
@@ -106,12 +104,6 @@ const Dashboard = () => {
       value: adminUsers,
       icon: <FiUsers size={24} />,
       color: "bg-emerald-500",
-    },
-    {
-      title: "Orders",
-      value: orders.length,
-      icon: <FiShoppingCart size={24} />,
-      color: "bg-blue-500",
     },
     {
       title: "Customers",
@@ -126,8 +118,20 @@ const Dashboard = () => {
       color: "bg-purple-500",
     },
     {
-      title: "Totle Complete",
-      value: `$${revenue.toLocaleString()}`,
+      title: "Products",
+      value: products.length,
+      icon: <FiEye size={24} />,
+      color: "bg-pink-500",
+    },
+    {
+      title: "Total Orders",
+      value: orders.length,
+      icon: <FiShoppingCart size={24} />,
+      color: "bg-blue-500",
+    },    
+    {
+      title: "Totle Revenue",
+      value: `रु. ${revenue.toLocaleString()}`,
       icon: <FiDollarSign size={24} />,
       color: "bg-orange-500",
     },
@@ -138,17 +142,12 @@ const Dashboard = () => {
       color: "bg-teal-500",
     },
     {
-      title: "Refund Requests",
-      value: refundRequests,
+      title: "Total Completed Orders",
+      value: completeOrders,
       icon: <FiRefreshCw size={24} />,
       color: "bg-rose-500",
     },
-    {
-      title: "Products",
-      value: products.length,
-      icon: <FiEye size={24} />,
-      color: "bg-pink-500",
-    },
+    
   ];
 
   const quickActions = [

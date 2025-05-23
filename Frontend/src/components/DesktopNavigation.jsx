@@ -9,33 +9,33 @@ const DesktopNavigation = () => {
         title: "Featured Laptops",
         description:
           "Discover our top-rated laptops with the latest technology and exceptional performance.",
-        link: "/category/laptops/featured",
+        link: "/category/laptop/featured",
       },
       subcategories: [
         {
           name: "HP",
           description: "High-performance laptops for gaming",
-          link: "/category/laptop/apple"
+          link: "/category/laptop/hp"
         },
         {
           name: "Dell",
           description: "Reliable laptops for professionals",
-          link: "/category/laptops/dell"
+          link: "/category/laptop/dell"
         },
         {
           name: "Lenovo",
           description: "Thin and light with long battery life",
-          link: "/category/laptops/lenovo"
+          link: "/category/laptop/lenovo"
         },
         {
           name: "Asus",
           description: "Affordable laptops with great features",
-          link: "/category/laptops/asus"
+          link: "/category/laptop/asus"
         },
         {
           name: "Apple (MacBooks)",
           description: "Premium laptops with macOS and sleek design",
-          link: "/category/laptops/apple"
+          link: "/category/laptop/apple"
         }
       ]
 

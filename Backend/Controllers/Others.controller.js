@@ -47,9 +47,6 @@ const removeFromCart = asyncHandler(async (req, res) => {
   try {
     const productId = req.params.id;
     const userId = req.user.id;
-    console.log("===========================================================");
-    console.log("productId", productId);
-    console.log("userId", userId);
 
     if (!productId || !userId) {
       return res.status(400).json({ message: "Please provide product ID and user ID" });
@@ -168,8 +165,6 @@ const addToWishlist = async (req, res) => {
     const { product_id } = req.body;
     const userId = req.user.id
 
-    console.log("userId", userId);
-    console.log("product_id", product_id);
     return res.status(200).json({
       message: 'Item added to wishlist',
     });

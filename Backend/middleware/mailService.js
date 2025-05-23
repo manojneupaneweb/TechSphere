@@ -12,6 +12,10 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendOtpMail = async (toEmail, otp) => {
+  console.log("gmail: ", process.env.mail);
+  console.log("password: ", process.env.mail_password);
+  console.log("toEmail: ", toEmail);
+  
   try {
     const info = await transporter.sendMail({
       from: `"TechSphere Support" <no-reply@techsphere.com>`,

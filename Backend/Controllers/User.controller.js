@@ -277,9 +277,6 @@ const changeRole = asyncHandler(async (req, res) => {
   const { id, role } = req.body;
 
   try {
-    console.log("id:", id);
-    console.log("role:", role);
-
     const user = await User.findByPk(id);
 
     if (!user) {

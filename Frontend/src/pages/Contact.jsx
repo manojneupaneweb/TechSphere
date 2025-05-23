@@ -90,11 +90,8 @@ export default function Contact() {
     e.preventDefault();
 
     if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log("Form submitted:", formData);
       setIsSubmitted(true);
 
-      // Reset form after submission
       setFormData({
         name: "",
         email: "",

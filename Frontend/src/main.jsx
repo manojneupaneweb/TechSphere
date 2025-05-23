@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { AdminAccess, UserAccess } from "./utils/AuthContext.jsx";
 
+import { Chart as ChartJS } from 'chart.js/auto'
 // Pages
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
@@ -47,6 +48,7 @@ import ShippedOrder from "./pages/Admin/Orders/ShippedOrder.jsx";
 import UserPermission from "./pages/Admin/Userpermission.jsx";
 import Stocks from "./pages/Admin/Stocks.jsx";
 import Search from "./pages/ProductShow/Search.jsx";
+import Analysis from "./pages/Admin/Analysis.jsx";
 
 const router = createBrowserRouter([
   {
@@ -117,6 +119,7 @@ const router = createBrowserRouter([
 
       { path: "customers", element: <Customers /> },
       { path: "stocks", element: <Stocks /> },
+      { path: "analysis", element: <Analysis /> },
       { path: "reports", element: <Reports /> },
       { path: "marketing", element: <Marketing /> },
       { path: "settings/general", element: <Settings /> },

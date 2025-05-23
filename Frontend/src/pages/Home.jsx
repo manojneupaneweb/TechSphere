@@ -135,7 +135,7 @@ const NewProducts = () => {
             No products available at the moment.
           </div>
         ) : (
-          <div className="flex space-x-4 overflow-x-auto pb-6 scrollbar-hide">
+          <div className="flex space-x-4 overflow-x-auto pb-6 no-scrollbar">
             {products.map((product) => (
               <div
                 key={product.id}
@@ -145,12 +145,12 @@ const NewProducts = () => {
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-64 object-contain p-4 bg-gray-50 group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-52 object-contain p-4 bg-gray-50 group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-4">
                   <a href={`/product/${product.id}`} className="group">
-                    <h3 className="font-semibold text-lg mb-1 group-hover:text-red-700 transition">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-red-700 transition">
                       {product.name.length > 28
                         ? `${product.name.slice(0, 25)}...`
                         : product.name}
@@ -500,6 +500,7 @@ const Home = () => {
       <NewsletterSection />
       <CustomerReviews />
       <ToastContainer />
+
     </>
   );
 };

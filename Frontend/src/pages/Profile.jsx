@@ -40,6 +40,8 @@ const ProfileInfo = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrder(Array.isArray(data.orders) ? data.orders : []);
+        console.log(data.orders);
+        
       } catch (error) {
         console.error("Error fetching order data", error);
         setOrder([]);
@@ -51,7 +53,6 @@ const ProfileInfo = () => {
     fetchOrderData();
   }, []);
 
-  // Sort orders by STATUS_ORDER priority
   const sortedOrders = [...order].sort((a, b) => {
     const aIndex = STATUS_ORDER.indexOf((a.order_status || '').toLowerCase());
     const bIndex = STATUS_ORDER.indexOf((b.order_status || '').toLowerCase());
@@ -141,6 +142,9 @@ const ProfileInfo = () => {
 
                 {/* Product Details */}
                 <div className="flex items-start space-x-4 mb-4">
+                  <div>
+                    <img src={item.product.image} className='w-10' alt={item.product?.name} />
+                  </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900">{item.product?.name}</h3>
                     <p className="text-gray-600">Quantity: {item.quantity}</p>

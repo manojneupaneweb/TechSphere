@@ -1,5 +1,5 @@
 import { Op, fn, col, where } from 'sequelize';
-import { Brand, Order } from '../models/Others.model.js';
+import { Brand, Cart, Order } from '../models/Others.model.js';
 import { Product } from '../models/Product.model.js'
 import User from '../models/User.model.js';
 import { ApiError } from '../Utils/apiError.util.js';
@@ -45,11 +45,6 @@ const addProduct = asyncHandler(async (req, res) => {
     if (!imageUrl) {
       throw new ApiError(500, "Failed to upload image to Cloudinary");
     }
-    console.log("price", price);
-    console.log("category", category);
-    console.log("brand", brand);
-
-
 
     const newProduct = await Product.create({
       name, price, brand, warranty, category, stock, return_policy, description, specifications,
@@ -144,7 +139,6 @@ const getProductById = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.findAll({});
 
@@ -205,16 +199,12 @@ const searchProducts = asyncHandler(async (req, res) => {
         ],
       },
     });
-
-    if (!products.length) {
-      throw new ApiError(404, "No products found matching your search");
-    }
-
-    res
-      .status(200)
-      .json(new ApiResponse(200, "Products fetched successfully", products));
+    res.status(200).json({
+      status: 200,
+      message: "Products fetched successfully",
+      data: products,
+    });
   } catch (error) {
-    console.error("Error searching products:", error);
     throw new ApiError(500, "Internal server error while searching products");
   }
 });
@@ -309,53 +299,58 @@ const updateProductImage = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Product image updated successfully", product));
 });
 
-/// Order related functions
 const createOrder = asyncHandler(async (req, res) => {
   try {
-
     const userId = req.user?.id;
     const orderItems = req.body.orderItems;
+    console.log("=========================================="); 
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required." });
     }
 
-    if (!Array.isArray(orderItems)) {
-      return res.status(400).json({ message: "Order items must be an array." });
-    }
-
-    if (orderItems.length === 0) {
-      return res.status(400).json({ message: "Order items cannot be empty." });
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
+      return res.status(400).json({ message: "Order items must be a non-empty array." });
     }
 
     const createdOrders = [];
 
     for (const item of orderItems) {
-      const order = await Order.create({
-        user_id: userId,
-        product_id: item.productId,
-        quantity: item.quantity,
-        payment_status: item.paymentStatus,
-        order_status: item.orderStatus,
+      const existingOrder = await Order.findOne({
+        where: {
+          user_id: userId,
+          product_id: item.productId,
+        },
       });
 
-      createdOrders.push(order);
+      if (existingOrder && existingOrder.order_status !== "pending") {
+        existingOrder.quantity += item.quantity;
+        await existingOrder.save();
+        createdOrders.push(existingOrder);
+      } else {
+        const newOrder = await Order.create({
+          user_id: userId,
+          product_id: item.productId,
+          quantity: item.quantity,
+          payment_status: item.paymentStatus,
+          order_status: item.orderStatus,
+        });
+        createdOrders.push(newOrder);
+      }
     }
 
-    // clear the cart after order creation
     await Cart.destroy({
-      where: {
-        user_id: userId,
-      },
+      where: { user_id: userId },
     });
 
     res.status(201).json({ message: "Order placed successfully", orders: createdOrders });
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.log("Error creating order:", error);
     res.status(500).json({ message: "Internal server error while creating order." });
-
   }
 });
+
+
 
 
 const AllOrder = asyncHandler(async (req, res) => {
@@ -367,7 +362,7 @@ const AllOrder = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "User ID is required." });
     }
 
-    // Admin: Fetch all orders
+    // If admin: Fetch all orders
     if (userRole === "admin") {
       const orders = await Order.findAll({
         order: [["createdAt", "DESC"]],
@@ -401,7 +396,7 @@ const AllOrder = asyncHandler(async (req, res) => {
       });
     }
 
-    // Regular User: Fetch their own orders
+    // If not admin: Fetch only user's own orders
     const orders = await Order.findAll({
       where: { user_id: userId },
       order: [["createdAt", "DESC"]],
@@ -413,12 +408,17 @@ const AllOrder = asyncHandler(async (req, res) => {
 
     const detailedOrders = await Promise.all(
       orders.map(async (order) => {
+        const user = await User.findByPk(order.user_id, {
+          attributes: ["fullname", "email", "profilePicture", "phone"],
+        });
+
         const product = await Product.findByPk(order.product_id, {
-          attributes: ["name", "price"],
+          attributes: ["name", "price", "image"],
         });
 
         return {
           ...order.toJSON(),
+          user,      // <-- you forgot to include this
           product,
         };
       })
@@ -429,12 +429,13 @@ const AllOrder = asyncHandler(async (req, res) => {
       orders: detailedOrders,
     });
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    console.log("Error fetching orders:", error);
     res.status(500).json({
       message: "Internal server error while fetching orders.",
     });
   }
 });
+
 
 
 const ChengeStatus = asyncHandler(async (req, res) => {
@@ -455,12 +456,12 @@ const ChengeStatus = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Order not found." });
     }
 
+
     orderitem.order_status = status;
     await orderitem.save();
 
     res.status(200).json(new ApiResponse(200, "Order status updated successfully", orderitem));
   } catch (error) {
-    console.error("Error updating order status:", error);
     res.status(500).json({ message: "Something went wrong.", error: error.message });
   }
 });

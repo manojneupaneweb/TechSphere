@@ -174,14 +174,14 @@ const MobileNavigation = ({ isOpen, onClose, isLoggedIn, isAdmin, userData, hand
             {/* Additional Links */}
             <div className="mt-6 pt-6 border-t">
               <div className="space-y-1">
-                <Link
+                {/* <Link
                   to="/wishlist"
                   className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"
                   onClick={onClose}
                 >
                   <span>Wishlist</span>
                   <ChevronRight className="h-4 w-4 opacity-60" />
-                </Link>
+                </Link> */}
                 <Link
                   to="/cart"
                   className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-100"

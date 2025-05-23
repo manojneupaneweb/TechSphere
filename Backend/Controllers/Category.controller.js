@@ -39,11 +39,11 @@ const getProductByCategories = async (req, res) => {
         if (category === "Newproducts") {
             const products = await Product.findAll({
                 order: [['createdAt', 'DESC']],
-                limit: 10,
+                limit: 7,
                 attributes: { exclude: ['createdAt', 'updatedAt'] }
             });
             return res.status(200).json(products);
-        }        
+        }
 
         const products = await Product.findAll({
             where: {
@@ -77,7 +77,6 @@ const getCategoryById = async (req, res) => {
     }
 };
 
-// Update a Category
 const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
@@ -95,7 +94,6 @@ const updateCategory = async (req, res) => {
     }
 };
 
-// Delete a Category
 const deleteCategory = async (req, res) => {
     try {
         let { id } = req.params;
@@ -117,32 +115,56 @@ const deleteCategory = async (req, res) => {
 
 export { addCategory, getCategories, getCategoryById, updateCategory, deleteCategory, getProductByCategories }
 
-//----------------------------Brand     and category ----------------------------------
-
+//----------------------------Brand and category ----------------------------------
 const getProductByCategoriesAndBrand = async (req, res) => {
-    try {
-        const { category, brand } = req.params;
+  try {
+    const { category, brand } = req.params;
 
-        console.log("category:", category, "brand:", brand);
-
-        if (!category || !brand) {
-            return res.status(400).json({ message: "Categories and brand are required" });
-        }
-
-
-        const products = await Product.findAll({
-            where: {
-                category: category,
-                brand: brand,
-            },
-            limit: 10,
-        });
-
-        return res.status(200).json(products);
-    } catch (error) {
-        return res.status(500).json({ message: "Error fetching products by category and brand", error: error.message });
+    if (!category || !brand) {
+      return res.status(400).json({ message: "Categories and brand are required" });
     }
-}
+
+    // First: strict match on category + brand + name includes both
+    let products = await Product.findAll({
+      where: {
+        category,
+        brand,
+        name: {
+          [Op.and]: [
+            { [Op.like]: `%${category}%` },
+            { [Op.like]: `%${brand}%` },
+          ],
+        },
+      },
+    });
+
+    if (products.length === 0) {
+      products = await Product.findAll({
+        where: {
+          [Op.or]: [
+            { name: { [Op.like]: `%${category}%` } },
+            { name: { [Op.like]: `%${brand}%` } },
+          ],
+        },
+      });
+    }
+
+    if (products.length === 0) {
+      products = await Product.findAll({
+        where: {
+          brand,
+        },
+      });
+    }
+    return res.status(200).json(products);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error fetching products by category and brand",
+      error: error.message,
+    });
+  }
+};
+
 
 
 
@@ -171,7 +193,6 @@ const addBrand = async (req, res) => {
 };
 
 const getAllBrand = async (req, res) => {
-    console.log("getAllBrand called ================================================");
     try {
 
         const brands = await Brand.findAll({});
@@ -182,13 +203,11 @@ const getAllBrand = async (req, res) => {
 };
 
 const getProductByBrand = async (req, res) => {
-    console.log("getProductByBrand called ");
 
     try {
 
         const { brand } = req.params;
         const cleanedBrand = brand.replace(/^:/, '');
-        console.log("brand:", brand);
 
         if (!brand) {
             return res.status(400).json({ message: "Brand are required" });
@@ -199,7 +218,6 @@ const getProductByBrand = async (req, res) => {
                 brand: cleanedBrand,
             }
         });
-        console.log("products:", products);
 
         return res.status(200).json(products);
     } catch (error) {
@@ -215,7 +233,6 @@ const deleteBrand = async (req, res) => {
         const brand = await Brand.findByPk(id);
 
         if (!brand) {
-            console.log("Brand not found");
             return res.status(404).json({ message: "Brand not found" });
         }
 

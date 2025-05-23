@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  FiShoppingCart, 
-  FiHeart, 
-  FiStar, 
-  FiChevronLeft, 
-  FiChevronRight, 
+import {
+  FiShoppingCart,
+  FiHeart,
+  FiStar,
+  FiChevronLeft,
+  FiChevronRight,
   FiFilter,
   FiEye,
   FiZoomIn,
@@ -20,7 +20,7 @@ const ImageZoom = ({ src, alt }) => {
 
   const handleMouseMove = (e) => {
     if (!imgRef.current) return;
-    
+
     const { left, top, width, height } = imgRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
     const y = ((e.clientY - top) / height) * 100;
@@ -32,7 +32,7 @@ const ImageZoom = ({ src, alt }) => {
   };
 
   return (
-    <div 
+    <div
       className="relative overflow-hidden rounded-lg bg-gray-100 cursor-zoom-in"
       onClick={toggleZoom}
       onMouseMove={handleMouseMove}
@@ -44,8 +44,8 @@ const ImageZoom = ({ src, alt }) => {
         alt={alt}
         className={`w-full h-60 object-contain transition-transform duration-300 ${isZoomed ? 'cursor-zoom-out' : ''}`}
         style={{
-          transform: isZoomed 
-            ? `scale(2) translate(${-position.x/1.5}%, ${-position.y/1.5}%)` 
+          transform: isZoomed
+            ? `scale(2) translate(${-position.x / 1.5}%, ${-position.y / 1.5}%)`
             : 'scale(1)',
           transformOrigin: `${position.x}% ${position.y}%`
         }}
@@ -64,12 +64,13 @@ const ImageZoom = ({ src, alt }) => {
 };
 
 function ProductCard({ products, find }) {
-  const [priceRange, setPriceRange] = useState({ min: 1000, max: 100000 });
+  const [priceRange, setPriceRange] = useState({ min: 1000, max: 500000 });
   const [currentPage, setCurrentPage] = useState(1);
   const [wishlist, setWishlist] = useState([]);
   const [sortOption, setSortOption] = useState('featured');
   const [quickView, setQuickView] = useState(null);
   const productsPerPage = 9;
+
 
   const filteredProducts = products
     .filter(p => p.price >= priceRange.min && p.price <= priceRange.max);
@@ -98,9 +99,9 @@ function ProductCard({ products, find }) {
   };
 
   const toggleWishlist = (productId) => {
-    setWishlist(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId) 
+    setWishlist(prev =>
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
         : [...prev, productId]
     );
   };
@@ -116,6 +117,8 @@ function ProductCard({ products, find }) {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 sm:px-8 lg:px-16 xl:px-24 py-8">
@@ -145,7 +148,7 @@ function ProductCard({ products, find }) {
               <input
                 type="number"
                 min="1000"
-                max="100000"
+                max="500000"
                 step="500"
                 name="min"
                 value={priceRange.min}
@@ -156,7 +159,7 @@ function ProductCard({ products, find }) {
               <input
                 type="number"
                 min="1000"
-                max="100000"
+                max="500000"
                 step="500"
                 name="max"
                 value={priceRange.max}
@@ -172,9 +175,9 @@ function ProductCard({ products, find }) {
             <div className="space-y-2">
               {[4, 3, 2, 1].map(rating => (
                 <label key={rating} className="flex items-center space-x-3 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
-                    className="rounded text-red-600 focus:ring-red-500 group-hover:ring-2 group-hover:ring-red-200" 
+                  <input
+                    type="checkbox"
+                    className="rounded text-red-600 focus:ring-red-500 group-hover:ring-2 group-hover:ring-red-200"
                   />
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
@@ -197,9 +200,9 @@ function ProductCard({ products, find }) {
             <div className="space-y-2">
               {[...new Set(products.map(p => p.category))].slice(0, 5).map(category => (
                 <label key={category} className="flex items-center space-x-3 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
-                    className="rounded text-red-600 focus:ring-red-500 group-hover:ring-2 group-hover:ring-red-200" 
+                  <input
+                    type="checkbox"
+                    className="rounded text-red-600 focus:ring-red-500 group-hover:ring-2 group-hover:ring-red-200"
                   />
                   <span className="text-gray-600 text-sm group-hover:text-gray-800 transition-colors capitalize">
                     {category}
@@ -242,7 +245,7 @@ function ProductCard({ products, find }) {
 
           {/* Products Grid */}
           {filteredProducts.length === 0 ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="bg-white rounded-xl shadow-sm p-12 text-center"
@@ -250,15 +253,15 @@ function ProductCard({ products, find }) {
               <div className="text-gray-400 text-5xl mb-4">😕</div>
               <h3 className="text-xl font-medium text-gray-700 mb-2">No products found</h3>
               <p className="text-gray-500 mb-4">Try adjusting your price range.</p>
-              <button 
-                onClick={() => setPriceRange({ min: 1000, max: 100000 })}
+              <button
+                onClick={() => setPriceRange({ min: 1000, max: 500000 })}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Reset Filters
               </button>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               initial="hidden"
               animate="visible"
               variants={{
@@ -280,7 +283,7 @@ function ProductCard({ products, find }) {
                   {/* Product Image */}
                   <div className="relative">
                     <ImageZoom src={product.image} alt={product.name} />
-                    
+
                     {/* Badges */}
                     {product.stock < 10 && (
                       <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -292,7 +295,7 @@ function ProductCard({ products, find }) {
                         New
                       </div>
                     )}
-                    
+
                     {/* Action Buttons */}
                     <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button
@@ -317,11 +320,13 @@ function ProductCard({ products, find }) {
                         {product.category}
                       </span>
                     </div>
-                    
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1 hover:text-red-600 transition-colors">
-                      {product.name}
+
+                    <h2 className="text-lg cursor-pointer font-semibold text-gray-800 mb-2 line-clamp-1 hover:text-red-600 transition-colors">
+                      <a href={`/product/${product.id}`}>
+                        {product.name}
+                      </a>
                     </h2>
-                    
+
                     <p className="text-gray-500 text-sm mb-4 line-clamp-2">
                       {product.description}
                     </p>
@@ -355,11 +360,10 @@ function ProductCard({ products, find }) {
                             </p>
                           )}
                         </div>
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                          product.stock > 50 ? 'bg-green-100 text-green-800' : 
-                          product.stock > 10 ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${product.stock > 50 ? 'bg-green-100 text-green-800' :
+                          product.stock > 10 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
                           {product.stock > 50 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
                         </span>
                       </div>
@@ -387,7 +391,7 @@ function ProductCard({ products, find }) {
                 >
                   <FiChevronLeft />
                 </button>
-                
+
                 {[...Array(totalPages)].map((_, index) => {
                   const page = index + 1;
                   if (
@@ -399,11 +403,10 @@ function ProductCard({ products, find }) {
                       <button
                         key={page}
                         onClick={() => paginate(page)}
-                        className={`p-2 px-4 rounded-lg border ${
-                          currentPage === page 
-                            ? 'bg-red-600 text-white border-red-600' 
-                            : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                        } transition-colors`}
+                        className={`p-2 px-4 rounded-lg border ${currentPage === page
+                          ? 'bg-red-600 text-white border-red-600'
+                          : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                          } transition-colors`}
                       >
                         {page}
                       </button>
@@ -416,7 +419,7 @@ function ProductCard({ products, find }) {
                   }
                   return null;
                 })}
-                
+
                 <button
                   onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
@@ -433,7 +436,7 @@ function ProductCard({ products, find }) {
       {/* Quick View Modal */}
       {quickView && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
@@ -441,26 +444,26 @@ function ProductCard({ products, find }) {
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">{quickView.name}</h2>
-                <button 
+                <button
                   onClick={() => setQuickView(null)}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   ✕
                 </button>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="relative">
                   <ImageZoom src={quickView.image} alt={quickView.name} />
                 </div>
-                
+
                 <div>
                   <div className="mb-4">
                     <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">
                       {quickView.category}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center mb-4">
                     <div className="flex items-center mr-2">
                       {[...Array(5)].map((_, i) => (
@@ -475,7 +478,7 @@ function ProductCard({ products, find }) {
                       {quickView.rating || 'No ratings'} ({quickView.reviewCount || 0} reviews)
                     </span>
                   </div>
-                  
+
                   <div className="mb-6">
                     <p className="text-red-700 text-3xl font-bold mb-1">
                       रु {quickView.price.toLocaleString()}
@@ -486,9 +489,9 @@ function ProductCard({ products, find }) {
                       </p>
                     )}
                   </div>
-                  
+
                   <p className="text-gray-700 mb-6">{quickView.description}</p>
-                  
+
                   <div className="mb-6">
                     <h3 className="font-semibold text-gray-800 mb-2">Specifications</h3>
                     <ul className="grid grid-cols-2 gap-2 text-sm text-gray-600">
@@ -500,19 +503,18 @@ function ProductCard({ products, find }) {
                       )) || <li>No specifications available</li>}
                     </ul>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
                       <FiShoppingCart />
                       <span>Add to Cart</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => toggleWishlist(quickView.id)}
-                      className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg transition-all duration-300 shadow-md ${
-                        wishlist.includes(quickView.id)
-                          ? 'bg-white text-red-600 border border-red-600 hover:bg-red-50'
-                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                      }`}
+                      className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg transition-all duration-300 shadow-md ${wishlist.includes(quickView.id)
+                        ? 'bg-white text-red-600 border border-red-600 hover:bg-red-50'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                        }`}
                     >
                       <FiHeart fill={wishlist.includes(quickView.id) ? 'currentColor' : 'none'} />
                       <span>{wishlist.includes(quickView.id) ? 'Saved' : 'Wishlist'}</span>

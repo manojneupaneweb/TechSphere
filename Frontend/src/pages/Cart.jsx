@@ -37,7 +37,6 @@ function Cart() {
             const response = await axios.get("api/v1/product/getcartitem", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
-            console.log("Cart items:", response.data.product);
 
             const processedCart = response.data.product.map(item => ({
                 ...item,
