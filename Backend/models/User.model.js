@@ -38,6 +38,10 @@ const User = sequelize.define('users', {
         type: DataTypes.STRING,
         defaultValue: 'default_profile_picture.jpg'
     },
+    shipping_address:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     refreshToken: {
         type: DataTypes.TEXT
     }

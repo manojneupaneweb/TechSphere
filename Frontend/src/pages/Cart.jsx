@@ -11,13 +11,84 @@ import { useNavigate } from 'react-router-dom';
 import { handelcartcount } from '../utils/Cart.utils.js';
 import { CartContext } from '../context/CartContext.jsx';
 
+// Nepal provinces and districts data
+const nepalAddressData = {
+    provinces: [
+        {
+            id: 1,
+            name: "Province 1",
+            districts: [
+                "Bhojpur", "Dhankuta", "Ilam", "Jhapa", "Khotang", "Morang", "Okhaldhunga",
+                "Panchthar", "Sankhuwasabha", "Solukhumbu", "Sunsari", "Taplejung", "Terhathum", "Udayapur"
+            ]
+        },
+        {
+            id: 2,
+            name: "Province 2",
+            districts: [
+                "Bara", "Parsa", "Rautahat", "Sarlahi", "Dhanusha", "Mahottari", "Saptari", "Siraha"
+            ]
+        },
+        {
+            id: 3,
+            name: "Bagmati Province",
+            districts: [
+                "Bhaktapur", "Chitwan", "Dhading", "Dolakha", "Kathmandu", "Kavrepalanchok",
+                "Lalitpur", "Makwanpur", "Nuwakot", "Ramechhap", "Rasuwa", "Sindhuli", "Sindhupalchok"
+            ]
+        },
+        {
+            id: 4,
+            name: "Gandaki Province",
+            districts: [
+                "Baglung", "Gorkha", "Kaski", "Lamjung", "Manang", "Mustang", "Myagdi",
+                "Nawalpur", "Parbat", "Syangja", "Tanahun"
+            ]
+        },
+        {
+            id: 5,
+            name: "Province 5",
+            districts: [
+                "Arghakhanchi", "Banke", "Bardiya", "Dang", "Eastern Rukum", "Gulmi",
+                "Kapilvastu", "Palpa", "Parasi", "Pyuthan", "Rolpa", "Rupandehi"
+            ]
+        },
+        {
+            id: 6,
+            name: "Karnali Province",
+            districts: [
+                "Dailekh", "Dolpa", "Humla", "Jajarkot", "Jumla", "Kalikot", "Mugu",
+                "Salyan", "Surkhet", "Western Rukum"
+            ]
+        },
+        {
+            id: 7,
+            name: "Sudurpashchim Province",
+            districts: [
+                "Achham", "Baitadi", "Bajhang", "Bajura", "Dadeldhura", "Darchula",
+                "Doti", "Kailali", "Kanchanpur"
+            ]
+        }
+    ]
+};
+
 function Cart() {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
     const navigate = useNavigate();
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showPopup, setShowPopup] = useState(false);
+    const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+    const [showAddressPopup, setShowAddressPopup] = useState(false);
+
+    // Shipping address form state
+    const [shippingAddress, setShippingAddress] = useState({
+        province: "",
+        district: "",
+        localAddress: ""
+    });
+
+    const [filteredDistricts, setFilteredDistricts] = useState([]);
 
     const { setCartCount } = useContext(CartContext);
 
@@ -35,6 +106,57 @@ function Cart() {
         signature: "",
         secret: "8gBm/:&EnhH.1/q",
     });
+
+    // Handle province change to update districts
+    const handleProvinceChange = (e) => {
+        const selectedProvince = e.target.value;
+        setShippingAddress({ ...shippingAddress, province: selectedProvince, district: "" });
+
+        const provinceData = nepalAddressData.provinces.find(p => p.name === selectedProvince);
+        if (provinceData) {
+            setFilteredDistricts(provinceData.districts);
+        } else {
+            setFilteredDistricts([]);
+        }
+    };
+    const handleAddressSubmit = (e) => {
+        e.preventDefault();
+
+        const { province, district, localAddress } = shippingAddress;
+        if (!province || !district || !localAddress) {
+            return toast.error("Please fill all required fields.");
+        }
+        const accessToken = localStorage.getItem("accessToken");
+
+        // Combine address parts into one string here
+        const fullAddress = `${localAddress}, ${district}, ${province}`;
+
+        const addressData = {
+            userId: userId,
+            address: fullAddress
+        };
+
+        axios.post("/api/v1/order/addshippingaddress", addressData, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        })
+            .then(response => {
+                setShippingAddress({
+                    province: "",
+                    district: "",
+                    localAddress: ""
+                });
+
+                setShowAddressPopup(false);
+                setShowPaymentPopup(true);
+            })
+            .catch(error => {
+                toast.error("Failed to add shipping address.");
+                console.error(error);
+            });
+    };
+
+    // Handle shipping address form submit
+
 
     const fetchCart = async () => {
         try {
@@ -111,39 +233,38 @@ function Cart() {
         }
     };
 
-   const removeItem = async (item) => {
-    const accessToken = localStorage.getItem("accessToken");
+    const removeItem = async (item) => {
+        const accessToken = localStorage.getItem("accessToken");
 
-    try {
-        await axios.delete(`/api/v1/order/removecart/${item.id}`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        try {
+            await axios.delete(`/api/v1/order/removecart/${item.id}`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
 
-        toast.success(`${item.name} removed from cart!`);
+            toast.success(`${item.name} removed from cart!`);
 
-        const newCart = cart.filter(cartItem => cartItem.cartItemId !== item.cartItemId);
-        setCart(newCart);
+            const newCart = cart.filter(cartItem => cartItem.cartItemId !== item.cartItemId);
+            setCart(newCart);
 
-        const totalPrice = newCart.reduce(
-            (total, item) => total + (item.price * item.quantity), 0
-        );
+            const totalPrice = newCart.reduce(
+                (total, item) => total + (item.price * item.quantity), 0
+            );
 
-        setFormData(prev => ({
-            ...prev,
-            amount: totalPrice.toString(),
-            total_amount: totalPrice.toString()
-        }));
+            setFormData(prev => ({
+                ...prev,
+                amount: totalPrice.toString(),
+                total_amount: totalPrice.toString()
+            }));
 
-        // 👇 Update cart count in real-time
-        const response = await handelcartcount();
-        setCartCount(response.data.product.length);
+            // Update cart count in real-time
+            const response = await handelcartcount();
+            setCartCount(response.data.product.length);
 
-    } catch (error) {
-        console.error("Error removing item from cart:", error);
-        toast.error("Error removing item from cart!");
-    }
-};
-
+        } catch (error) {
+            console.error("Error removing item from cart:", error);
+            toast.error("Error removing item from cart!");
+        }
+    };
 
     const generateSignature = (formData) => {
         const dataString =
@@ -300,7 +421,7 @@ function Cart() {
                         <p className='text-red-700 font-semibold'>रु {totalPrice}</p>
                     </div>
                     <button
-                        onClick={() => setShowPopup(true)}
+                        onClick={() => setShowAddressPopup(true)}
                         className='w-full py-2 md:py-3 text-white bg-red-700 mt-3 md:mt-5 rounded-md hover:bg-red-800 transition text-sm md:text-base'
                         disabled={cart.length === 0}
                     >
@@ -308,13 +429,14 @@ function Cart() {
                     </button>
                 </div>
 
-                {showPopup && (
+                {/* Shipping Address Popup */}
+                {showAddressPopup && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm transition-opacity duration-300">
-                        <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in-up">
+                        <div className="bg-gradient-to-br from-white to-gray-50 p-6 md:p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 animate-fade-in-up">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-800">Select Payment Method</h2>
+                                <h2 className="text-2xl font-bold text-gray-800">Shipping Address</h2>
                                 <button
-                                    onClick={() => setShowPopup(false)}
+                                    onClick={() => setShowAddressPopup(false)}
                                     className="text-gray-500 hover:text-gray-700 transition-colors"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -323,64 +445,147 @@ function Cart() {
                                 </button>
                             </div>
 
+                            <form onSubmit={handleAddressSubmit} className="space-y-4">
+                                <div>
+                                    <label htmlFor="province" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Province <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        id="province"
+                                        value={shippingAddress.province}
+                                        onChange={handleProvinceChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        required
+                                    >
+                                        <option value="">Select Province</option>
+                                        {nepalAddressData.provinces.map(province => (
+                                            <option key={province.id} value={province.name}>{province.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="district" className="block text-sm font-medium text-gray-700 mb-1">
+                                        District <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        id="district"
+                                        value={shippingAddress.district}
+                                        onChange={(e) => setShippingAddress({ ...shippingAddress, district: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        required
+                                        disabled={!shippingAddress.province}
+                                    >
+                                        <option value="">Select District</option>
+                                        {filteredDistricts.map((district, index) => (
+                                            <option key={index} value={district}>{district}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="localAddress" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Local Address (Street, Ward No.) <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="localAddress"
+                                        value={shippingAddress.localAddress}
+                                        onChange={(e) => setShippingAddress({ ...shippingAddress, localAddress: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="pt-4">
+                                    <button
+                                        type="submit"
+                                        className="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md hover:shadow-lg"
+                                    >
+                                        Continue to Payment
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Payment Method Popup */}
+                {showPaymentPopup && (
+                    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50 transition-all duration-200">
+                        <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-[90%] mx-4 animate-scale-in">
+                            <div className="flex justify-between items-center mb-5">
+                                <h2 className="text-xl font-semibold text-gray-800">Complete Your Purchase</h2>
+                                <button
+                                    onClick={() => setShowPaymentPopup(false)}
+                                    className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+
                             <div className="space-y-4">
                                 <button
-                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg"
+                                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-[#05a84c] text-white rounded-lg hover:bg-[#048b42] transition-all shadow-sm"
                                 >
                                     <img
                                         src="https://esewa.com.np/common/images/esewa_logo.png"
-                                        alt="eSewa Logo"
-                                        className="h-6 object-contain"
+                                        alt="eSewa"
+                                        className="h-5 object-contain"
                                     />
                                     Pay with eSewa
                                 </button>
 
-                                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                                    <p className="text-blue-800 text-sm italic">
-                                        This project demonstrates payment integration for learning purposes.
-                                    </p>
+                                <div className="relative my-4">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full border-t border-gray-200"></div>
+                                    </div>
+                                    <div className="relative flex justify-center">
+                                        <span className="px-2 bg-white text-sm text-gray-500">OR</span>
+                                    </div>
                                 </div>
 
-                                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                    <h3 className="font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-                                        </svg>
-                                        Test Credentials
-                                    </h3>
-                                    <ul className="text-sm text-gray-600 space-y-1.5">
-                                        <li className="flex gap-2">
-                                            <span className="font-medium text-gray-700">eSewa ID:</span>
-                                            <span>9806800001-9806800005</span>
-                                        </li>
-                                        <li className="flex gap-2">
-                                            <span className="font-medium text-gray-700">MPIN:</span>
-                                            <span>1122 (app only)</span>
-                                        </li>
-                                        <li className="flex gap-2">
-                                            <span className="font-medium text-gray-700">Password:</span>
-                                            <span>Nepal@123</span>
-                                        </li>
-                                        <li className="flex gap-2">
-                                            <span className="font-medium text-gray-700">Token:</span>
-                                            <span>123456</span>
-                                        </li>
-                                    </ul>
+                                <div className="bg-gray-50 p-4 rounded-lg">
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 mt-0.5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-700 mb-1">Test Mode Activated</h3>
+                                            <p className="text-xs text-gray-500">
+                                                Use these credentials for testing:
+                                            </p>
+                                            <ul className="mt-2 space-y-1 text-xs text-gray-600">
+                                                <li className="flex gap-2">
+                                                    <span className="font-medium">ID:</span> 9806800001-9806800005
+                                                </li>
+                                                <li className="flex gap-2">
+                                                    <span className="font-medium">MPIN:</span> 1122
+                                                </li>
+                                                <li className="flex gap-2">
+                                                    <span className="font-medium">Password:</span> Nepal@123
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="mt-6 pt-4 border-t border-gray-200">
                                 <button
                                     onClick={() => {
-                                        setShowPopup(false);
+                                        setShowPaymentPopup(false);
                                         handleCheckout();
                                     }}
-                                    className="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                                    className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 mt-4"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                                        <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
                                     </svg>
-                                    Proceed to Payment
+                                    Complete Payment
                                 </button>
                             </div>
                         </div>

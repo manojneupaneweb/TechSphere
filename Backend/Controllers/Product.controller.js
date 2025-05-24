@@ -5,7 +5,8 @@ import User from '../models/User.model.js';
 import { ApiError } from '../Utils/apiError.util.js';
 import { ApiResponse } from '../Utils/apiResponse.util.js';
 import { asyncHandler } from "../Utils/asyncHandler.util.js";
-import { deleteFromCloudinary, uploadOnCloudinary } from '../Utils/cloudiny.util.js';;
+import { deleteFromCloudinary, uploadOnCloudinary } from '../Utils/cloudiny.util.js';
+import sendMail from '../middleware/mailService.js';
 
 const getAllBrand = asyncHandler(async (req, res) => {
   const brands = await Brand.findAll({});
@@ -303,7 +304,6 @@ const createOrder = asyncHandler(async (req, res) => {
   try {
     const userId = req.user?.id;
     const orderItems = req.body.orderItems;
-    console.log("=========================================="); 
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required." });
@@ -345,13 +345,9 @@ const createOrder = asyncHandler(async (req, res) => {
 
     res.status(201).json({ message: "Order placed successfully", orders: createdOrders });
   } catch (error) {
-    console.log("Error creating order:", error);
     res.status(500).json({ message: "Internal server error while creating order." });
   }
 });
-
-
-
 
 const AllOrder = asyncHandler(async (req, res) => {
   try {
@@ -429,42 +425,91 @@ const AllOrder = asyncHandler(async (req, res) => {
       orders: detailedOrders,
     });
   } catch (error) {
-    console.log("Error fetching orders:", error);
     res.status(500).json({
       message: "Internal server error while fetching orders.",
     });
   }
 });
 
-
-
 const ChengeStatus = asyncHandler(async (req, res) => {
   try {
     const { orderId, status } = req.body;
 
-    if (!orderId) {
-      return res.status(400).json({ message: "Order ID is required." });
+    if (!orderId || !status) {
+      return res.status(400).json({ message: "Order ID and Status are required." });
     }
 
-    if (!status) {
-      return res.status(400).json({ message: "Status is required." });
-    }
-
-    const orderitem = await Order.findByPk(orderId);
-
-    if (!orderitem) {
+    const order = await Order.findByPk(orderId);
+    if (!order) {
       return res.status(404).json({ message: "Order not found." });
     }
 
+    const user = await User.findByPk(order.user_id, {
+      attributes: ["email", "fullName", "shipping_address"]
+    });
 
-    orderitem.order_status = status;
-    await orderitem.save();
+    const isCompletingOrder = status === "complete" && order.order_status !== "complete";
 
-    res.status(200).json(new ApiResponse(200, "Order status updated successfully", orderitem));
+    if (isCompletingOrder && user) {
+      const product = await Product.findByPk(order.product_id, {
+        attributes: ["name", "price"]
+      });
+
+      if (product) {
+        await sendMail({
+          to: user.email,
+          subject: "✅ Your Order is Complete!",
+          html: `
+    <div style="font-family: Arial, sans-serif; color: #333;">
+      <h2>Hello ${user.fullName || "Valued Customer"},</h2>
+      <p>We’re happy to inform you that your order has been <strong>successfully completed</strong>. Below are the details of your purchase:</p>
+      
+      <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f4f4f4;">Product</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: right; background-color: #f4f4f4;">Price</th>
+            <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f4f4f4;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;">${product.name}</td>
+            <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">$${product.price}</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">${status.charAt(0).toUpperCase() + status.slice(1)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p><strong>Shipping Address:</strong><br/>${user.shipping_address}</p>
+      
+      <p>If you have any questions, our support team is always here to help. Just reply to this email or contact us through our website.</p>
+      
+      <p>Thank you for shopping with TechSphere. We appreciate your trust and hope to serve you again soon!</p>
+      
+      <br/>
+      <p>Best regards,<br/>The TechSphere Team</p>
+    </div>
+  `
+        });
+
+
+        console.log("Order completion email sent to:", user.email);
+      }
+    }
+
+    order.order_status = status;
+    await order.save();
+
+    res.status(200).json(
+      new ApiResponse(200, "Order status updated successfully", order)
+    );
   } catch (error) {
+    console.error("ChangeStatus Error:", error);
     res.status(500).json({ message: "Something went wrong.", error: error.message });
   }
 });
+
 
 
 

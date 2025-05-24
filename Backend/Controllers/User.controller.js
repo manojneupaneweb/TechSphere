@@ -5,8 +5,8 @@ import { asyncHandler } from "../Utils/asyncHandler.util.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../Utils/cloudiny.util.js";
 import { cookieOption } from "../Utils/cookieOption.util.js";
 import bcrypt from "bcrypt";
-import { sendOtpMail } from "../middleware/mailService.js";
 import { otpStore } from "../Utils/otpStore.js";
+import sendMail from "../middleware/mailService.js";
 
 const IsAdmin = async (userId) => {
   try {
@@ -57,15 +57,28 @@ const sendOtp = asyncHandler(async (req, res) => {
 
   otpStore.set(email, {
     otp,
-    expiresAt: Date.now() + 300000
+    expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
   });
 
-  await sendOtpMail(email, otp);
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333;">
+      <h2>🔐 Email Verification - TechSphere</h2>
+      <p>Hello,</p>
+      <p>Thanks for signing up! Use the OTP below to verify your email:</p>
+      <p style="font-size: 24px; font-weight: bold; color: #2c3e50;">${otp}</p>
+      <p>This code will expire in 5 minutes.</p>
+      <br/>
+      <p>– TechSphere Team</p>
+    </div>
+  `;
+
+  await sendMail(email, otp, html);
 
   return res.status(200).json(
-    new ApiResponse(200, { message: "OTP sent successfully" })
+    new ApiResponse(200, { message: "OTP sent successfully", email })
   );
 });
+
 
 const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
@@ -135,6 +148,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -168,6 +182,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
 });
 
+
 const logOutUser = asyncHandler(async (req, res, next) => {
   try {
 
@@ -178,6 +193,7 @@ const logOutUser = asyncHandler(async (req, res, next) => {
     next(error);
   }
 });
+
 
 const deleteUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -190,6 +206,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   await user.destroy();
   res.status(200).json(new ApiResponse(200, "User deleted successfully"));
 });
+
 
 const getUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -204,6 +221,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "User profile retrieved", user));
 });
+
 
 const changePassword = asyncHandler(async (req, res) => {
   const user = req.user;
@@ -254,6 +272,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "User profile updated successfully", user));
 });
 
+
 const getAllUserProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const isAdmin = await IsAdmin(userId);
@@ -272,6 +291,7 @@ const getAllUserProfile = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "Users profiles retrieved", users));
 });
+
 
 const changeRole = asyncHandler(async (req, res) => {
   const { id, role } = req.body;

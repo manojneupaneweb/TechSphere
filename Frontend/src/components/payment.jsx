@@ -21,6 +21,7 @@ const PaymentSuccess = () => {
                 }
 
                 const parsed = JSON.parse(atob(data));
+                console.log("Parsed Payment Data:", parsed);
 
                 if (parsed.status !== "COMPLETE") {
                     toast.error("Payment failed or incomplete.");
@@ -37,6 +38,7 @@ const PaymentSuccess = () => {
                     cartId: item.cartItemId,
                     paymentStatus: parsed.status,
                     orderStatus: "pending",
+                    addres
                 }));
 
                 await axios.post(
@@ -47,7 +49,7 @@ const PaymentSuccess = () => {
 
                 toast.success("Order placed successfully!");
                 setIsProcessing(false);
-                
+
                 // Redirect after showing success for 2 seconds
                 setTimeout(() => navigate("/account"), 2000);
             } catch (err) {

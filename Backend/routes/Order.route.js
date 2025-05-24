@@ -1,7 +1,7 @@
 import { Router } from "express";
 import verifyJwt from "../middleware/auth.middleware.js";
 import { AllOrder, ChengeStatus, createOrder } from "../Controllers/Product.controller.js";
-import { cartlist, removeFromCart, updateFromCart } from "../Controllers/Others.controller.js";
+import { AddShippingAddress, cartlist, removeFromCart, updateFromCart } from "../Controllers/Others.controller.js";
 
 const router = Router();
 
@@ -12,6 +12,7 @@ router.route('/changestatus').post(verifyJwt, ChengeStatus);
 
 //cartlist routes
 router.route('/cartlist').post(verifyJwt, cartlist);
+router.route('/addshippingaddress').post(verifyJwt, AddShippingAddress);
 router.route('/removecart/:id').delete(verifyJwt, removeFromCart);
 router.route('/updatecart/:id').put(verifyJwt, updateFromCart);
 

@@ -228,6 +228,26 @@ const removeFromWishlist = async (req, res) => {
   }
 };
 
+
+const AddShippingAddress = async (req, res) => {
+  try {
+    const { address } = req.body;
+    const user = req.user;
+
+    if (!address) {
+      return res.status(400).json({ message: "Address are required." });
+    }
+
+    user.shipping_address = address;
+    await user.save();
+    res.status(200).json({ message: "Shipping address updated successfully." });
+  } catch (error) {
+    console.error("Error updating shipping address:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+};
+
+
 export {
   //Cart exports
   getCartItems,
@@ -238,4 +258,6 @@ export {
   addToWishlist,
   getUserWishlist,
   removeFromWishlist,
+
+  AddShippingAddress
 };
