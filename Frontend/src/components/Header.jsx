@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Logo from "../assets/image/logo.png";
@@ -7,6 +7,7 @@ import { Logout } from "../utils/AuthContext";
 import DesktopNavigation from "./DesktopNavigation";
 import MobileNavigation from "./MobileNavigation";
 import { handelcartcount } from "../utils/Cart.utils";
+import { CartContext } from "../context/CartContext.jsx";
 
 const Header = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -14,8 +15,8 @@ const Header = () => {
   const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const { cartCount, setCartCount } = useContext(CartContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,8 +26,11 @@ const Header = () => {
 
       try {
         const { data } = await axios.get("/api/v1/user/getprofile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+        );
         setUserData(data.message);
         setIsLoggedIn(true);
         setIsAdmin(data.message.role === "admin");
@@ -52,7 +56,7 @@ const Header = () => {
 
     fetchUserProfile();
     fetchCartItems();
-  }, []);
+  }, [setCartCount]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

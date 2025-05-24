@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from "axios";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,6 +8,8 @@ import CryptoJS from "crypto-js";
 import "crypto-js/hmac-sha256";
 import "crypto-js/enc-base64";
 import { useNavigate } from 'react-router-dom';
+import { handelcartcount } from '../utils/Cart.utils.js';
+import { CartContext } from '../context/CartContext.jsx';
 
 function Cart() {
     const accessToken = localStorage.getItem("accessToken");
@@ -16,6 +18,9 @@ function Cart() {
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPopup, setShowPopup] = useState(false);
+
+    const { setCartCount } = useContext(CartContext);
+
     const [formData, setFormData] = useState({
         amount: "0",
         tax_amount: "0",
@@ -106,30 +111,39 @@ function Cart() {
         }
     };
 
-    const removeItem = async (item) => {
-        try {
-            await axios.delete(`/api/v1/order/removecart/${item.id}`, {
-                headers: { Authorization: `Bearer ${accessToken}` },
-            });
-            toast.success(`${item.name} removed from cart!`);
+   const removeItem = async (item) => {
+    const accessToken = localStorage.getItem("accessToken");
 
-            const newCart = cart.filter(cartItem => cartItem.cartItemId !== item.cartItemId);
-            setCart(newCart);
+    try {
+        await axios.delete(`/api/v1/order/removecart/${item.id}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
 
-            const totalPrice = newCart.reduce(
-                (total, item) => total + (item.price * item.quantity), 0
-            );
+        toast.success(`${item.name} removed from cart!`);
 
-            setFormData(prev => ({
-                ...prev,
-                amount: totalPrice.toString(),
-                total_amount: totalPrice.toString()
-            }));
-        } catch (error) {
-            console.error("Error removing item from cart:", error);
-            toast.error("Error removing item from cart!");
-        }
-    };
+        const newCart = cart.filter(cartItem => cartItem.cartItemId !== item.cartItemId);
+        setCart(newCart);
+
+        const totalPrice = newCart.reduce(
+            (total, item) => total + (item.price * item.quantity), 0
+        );
+
+        setFormData(prev => ({
+            ...prev,
+            amount: totalPrice.toString(),
+            total_amount: totalPrice.toString()
+        }));
+
+        // 👇 Update cart count in real-time
+        const response = await handelcartcount();
+        setCartCount(response.data.product.length);
+
+    } catch (error) {
+        console.error("Error removing item from cart:", error);
+        toast.error("Error removing item from cart!");
+    }
+};
+
 
     const generateSignature = (formData) => {
         const dataString =

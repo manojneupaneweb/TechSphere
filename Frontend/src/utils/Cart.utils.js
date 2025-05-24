@@ -2,6 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const accessToken = localStorage.getItem("accessToken");
 
+
 export const handelcartcount = async () => {
     const token = localStorage.getItem("accessToken");
     try {
@@ -15,7 +16,7 @@ export const handelcartcount = async () => {
     }
 };
 
-const CartList = async (product) => {
+const CartList = async (product, setCartCount) => {
     const accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken) {
@@ -23,13 +24,20 @@ const CartList = async (product) => {
     }
 
     try {
-        await axios.post("/api/v1/order/cartlist", { productId: product.id }, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-        toast.success(`${product.name} added to Cart!`);
+        await axios.post(
+            "/api/v1/order/cartlist",
+            { productId: product.id },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
 
+        const response = await handelcartcount();
+        setCartCount(response.data.product.length);
+
+        toast.success(`${product.name} added to Cart!`);
     } catch (error) {
         toast.error(error.response?.data?.message || "Failed to add to cart!");
         console.error("Error adding to cart:", error);

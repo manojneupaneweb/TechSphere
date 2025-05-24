@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -27,13 +27,9 @@ import { CartList, handelcartcount } from "../utils/Cart.utils";
 import CustomerReviews from "../components/CustomerReviews";
 import { NewsletterSection } from "../components/Newsletter";
 import { FAQSection } from "../components/FAQ";
+import { CartContext } from "../context/CartContext.jsx";
 
 const images = [laptops, laptops2, laptops3, mobiles, mobiles2];
-
-const handleCartList = async (product) => {
-  await CartList(product);
-  handelcartcount();
-};
 
 // Hero Section
 const HeroSection = () => {
@@ -95,7 +91,7 @@ const HeroSection = () => {
 };
 
 // New Arrivals
-const NewProducts = () => {
+const NewProducts = ({ handleCartList }) => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -169,11 +165,10 @@ const NewProducts = () => {
                       {[...Array(5)].map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-sm ${
-                            i < Math.round(product.ratings)
+                          className={`text-sm ${i < Math.round(product.ratings)
                               ? "text-yellow-400"
                               : "text-gray-300"
-                          }`}
+                            }`}
                         />
                       ))}
                       <span className="text-xs text-gray-500 ml-1">
@@ -199,7 +194,7 @@ const NewProducts = () => {
 };
 
 // Product List Section (Reusable)
-const ProductList = ({ title, category }) => {
+const ProductList = ({ title, category, handleCartList }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -247,44 +242,43 @@ const ProductList = ({ title, category }) => {
           {products.length === 0 ? (
             <div>No Product available in {title}.</div>
           ) : (
-            products.map((product) => (
+           products.map((product) => (
               <div
                 key={product.id}
-                className="w-72 md:w-80 bg-white shadow-lg rounded-lg p-3 relative border-2 border-gray-200 flex-shrink-0 group"
+                className="flex-shrink-0 w-72 bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300 relative group"
               >
-                <div className="w-full flex justify-center items-center relative">
+                <div className="relative">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="border h-56 object-cover rounded group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-52 object-contain p-4 bg-gray-50 group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <div className="p-2">
-                  <a href={`/product/${product.id}`}>
-                    <h3 className="font-medium mb-1 group-hover:text-red-700 transition">
+                <div className="p-4">
+                  <a href={`/product/${product.id}`} className="group">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-red-700 transition">
                       {product.name.length > 28
-                        ? product.name.slice(0, 30) + "..."
+                        ? `${product.name.slice(0, 25)}...`
                         : product.name}
                     </h3>
                   </a>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm text-gray-600 mb-3">
                     {product.description.length > 30
-                      ? product.description.slice(0, 30) + "..."
+                      ? `${product.description.slice(0, 30)}...`
                       : product.description}
                   </p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-lg text-red-700 py-3">
-                      रु {product.price}
-                    </p>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-xl font-bold text-red-700">
+                      रु {product.price.toLocaleString()}
+                    </span>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-xs ${
-                            i < Math.round(product.ratings)
+                          className={`text-sm ${i < Math.round(product.ratings)
                               ? "text-yellow-400"
                               : "text-gray-300"
-                          }`}
+                            }`}
                         />
                       ))}
                       <span className="text-xs text-gray-500 ml-1">
@@ -294,7 +288,7 @@ const ProductList = ({ title, category }) => {
                   </div>
                   <button
                     onClick={() => handleCartList(product)}
-                    className="bg-gradient-to-r from-red-800 to-pink-700 w-full text-white py-2 rounded-md mt-2 hover:from-red-900 hover:to-pink-800 transition font-semibold shadow-md group-hover:scale-105 flex items-center justify-center gap-2"
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-700 to-pink-600 hover:from-red-800 hover:to-pink-700 text-white py-2 px-4 rounded-lg transition font-semibold shadow-md group-hover:scale-105"
                   >
                     <FaShoppingCart />
                     Add to Cart
@@ -469,12 +463,17 @@ const ShopByBrand = () => {
 };
 
 // Accessories Section
-const Accessories = () => (
-  <ProductList title="Accessories" category="Accessories" />
+const Accessories = ({ handleCartList }) => (
+  <ProductList title="Accessories" category="Accessories" handleCartList={handleCartList} />
 );
 
 const Home = () => {
+  const { setCartCount } = useContext(CartContext);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleCartList = (product) => {
+    CartList(product, setCartCount);
+  };
 
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 1200);
@@ -491,16 +490,15 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <NewProducts />
+      <NewProducts handleCartList={handleCartList} />
       <ShopByBrand />
-      <ProductList title="Best Selling Smartphones" category="Smartphone" />
-      <ProductList title="Best Selling Laptops" category="Laptop" />
+      <ProductList title="Best Selling Smartphones" category="Smartphone" handleCartList={handleCartList} />
+      <ProductList title="Best Selling Laptops" category="Laptop" handleCartList={handleCartList} />
       <ShopByCategory />
-      <Accessories />
+      <Accessories handleCartList={handleCartList} />
       <NewsletterSection />
       <CustomerReviews />
       <ToastContainer />
-
     </>
   );
 };
