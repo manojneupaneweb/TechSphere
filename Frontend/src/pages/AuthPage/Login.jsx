@@ -112,7 +112,7 @@ const Login = () => {
             <span className="w-full border-t border-gray-300"></span>
           </div>
 
-          <div className="mt-4 flex space-x-4">
+          {/* <div className="mt-4 flex space-x-4">
             <button className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
@@ -129,7 +129,7 @@ const Login = () => {
               />
               <span className="ml-2">Facebook</span>
             </button>
-          </div>
+          </div> */}
 
           <p className="mt-6 text-center text-gray-500">
             Don't have an account?{" "}

@@ -326,7 +326,7 @@ const Signup = () => {
             <span className="text-gray-500">Or sign up with</span>
           </div>
 
-          <div className="mt-4 flex gap-4">
+          {/* <div className="mt-4 flex gap-4">
             <button
               type="button"
               className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100 transition"
@@ -349,7 +349,7 @@ const Signup = () => {
               />
               <span className="ml-2 font-medium">Facebook</span>
             </button>
-          </div>
+          </div> */}
 
           <p className="mt-6 text-center text-gray-500">
             Already have an account?{" "}
