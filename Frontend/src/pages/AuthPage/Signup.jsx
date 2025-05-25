@@ -175,8 +175,9 @@ const Signup = () => {
       setNotification({ message: "OTP sent to your email.", type: "success" });
       setShowPopup(true);
     } catch (error) {
+     console.log(error);
       setNotification({
-        message: error.response?.data?.message || "Failed to send OTP",
+        message: error.response.data.message || "Failed to send OTP",
         type: "error",
       });
     } finally {
