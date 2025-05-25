@@ -49,6 +49,7 @@ import UserPermission from "./pages/Admin/Userpermission.jsx";
 import Stocks from "./pages/Admin/Stocks.jsx";
 import Search from "./pages/ProductShow/Search.jsx";
 import Analysis from "./pages/Admin/Analysis.jsx";
+import ForgetPassword from "./pages/AuthPage/Forgetpassword.jsx";
 
 const router = createBrowserRouter([
   {
@@ -92,6 +93,7 @@ const router = createBrowserRouter([
     children: [
       { path: "signup", element: <Signup /> },
       { path: "login", element: <Login /> },
+      { path: "forgot-password", element: <ForgetPassword /> },
     ]
   },
   {

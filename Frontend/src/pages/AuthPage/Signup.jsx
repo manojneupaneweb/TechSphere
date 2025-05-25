@@ -2,21 +2,67 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-// OTP Popup Component
-const ShowPopup = ({ onVerify, onClose, loading }) => {
+// OTP Popup Component with timer and resend functionality
+const ShowPopup = ({ onVerify, onClose, loading, onResend }) => {
   const [otp, setOtp] = useState("");
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [showResend, setShowResend] = useState(false);
+
+  useEffect(() => {
+    // Exit early when we reach 0
+    if (timeLeft <= 0) {
+      setShowResend(true);
+      return;
+    }
+
+    // Set up the timer
+    const timer = setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+
+    // Clean up the timer
+    return () => clearTimeout(timer);
+  }, [timeLeft]);
+
+  const handleResend = async () => {
+    try {
+      await onResend();
+      setTimeLeft(300); // Reset timer
+      setShowResend(false);
+    } catch (error) {
+      console.error("Error resending OTP:", error);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full animate-fadeIn">
         <h2 className="text-2xl font-bold mb-4 text-blue-600">OTP Verification</h2>
+        <p className="text-gray-600 mb-4">Enter the 6-digit code sent to your email</p>
+        
         <input
           type="text"
           placeholder="Enter OTP"
           value={otp}
           onChange={e => setOtp(e.target.value)}
           className="p-3 mb-4 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+          maxLength={6}
         />
+        
+        <div className="mb-4 text-sm text-gray-500">
+          {!showResend ? (
+            <span>Code expires in: <span className="font-medium">{formatTime(timeLeft)}</span></span>
+          ) : (
+            <span className="text-red-500">OTP has expired</span>
+          )}
+        </div>
+        
         <div className="flex justify-center gap-4">
           <button
             className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
@@ -25,13 +71,24 @@ const ShowPopup = ({ onVerify, onClose, loading }) => {
           >
             Cancel
           </button>
-          <button
-            className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            onClick={() => onVerify(otp)}
-            disabled={loading}
-          >
-            {loading ? "Verifying..." : "Verify"}
-          </button>
+          
+          {!showResend ? (
+            <button
+              className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              onClick={() => onVerify(otp)}
+              disabled={loading || otp.length < 6}
+            >
+              {loading ? "Verifying..." : "Verify"}
+            </button>
+          ) : (
+            <button
+              className="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+              onClick={handleResend}
+              disabled={loading}
+            >
+              {loading ? "Sending..." : "Resend OTP"}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -127,6 +184,24 @@ const Signup = () => {
     }
   };
 
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+      await axios.post("api/v1/user/sendotp", {
+        email: formData.email,
+      });
+      setNotification({ message: "New OTP sent to your email.", type: "success" });
+    } catch (error) {
+      setNotification({
+        message: error.response?.data?.message || "Failed to resend OTP",
+        type: "error",
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerifyOtpAndRegister = async (otp) => {
     try {
       setLoading(true);
@@ -185,6 +260,7 @@ const Signup = () => {
           onVerify={handleVerifyOtpAndRegister}
           onClose={() => setShowPopup(false)}
           loading={loading}
+          onResend={handleResendOtp}
         />
       )}
 
@@ -321,35 +397,6 @@ const Signup = () => {
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <span className="text-gray-500">Or sign up with</span>
-          </div>
-
-          {/* <div className="mt-4 flex gap-4">
-            <button
-              type="button"
-              className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100 transition"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              <span className="ml-2 font-medium">Google</span>
-            </button>
-            <button
-              type="button"
-              className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100 transition"
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
-                alt="Facebook"
-                className="w-5 h-5"
-              />
-              <span className="ml-2 font-medium">Facebook</span>
-            </button>
-          </div> */}
 
           <p className="mt-6 text-center text-gray-500">
             Already have an account?{" "}

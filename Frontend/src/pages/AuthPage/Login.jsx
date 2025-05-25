@@ -96,7 +96,7 @@ const Login = () => {
             </div>
 
             <div className="mt-2 text-right">
-              <a href="#" className="text-orange-500 text-sm">
+              <a href="/auth/forgot-password" className="text-orange-500 text-sm">
                 Forgot password?
               </a>
             </div>
@@ -106,11 +106,11 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-6 flex items-center justify-between">
+          {/* <div className="mt-6 flex items-center justify-between">
             <span className="w-full border-t border-gray-300"></span>
             <span className="mx-3 text-gray-500">Or Login with</span>
             <span className="w-full border-t border-gray-300"></span>
-          </div>
+          </div> */}
 
           {/* <div className="mt-4 flex space-x-4">
             <button className="w-1/2 flex items-center justify-center border border-gray-300 p-3 rounded-lg hover:bg-gray-100">

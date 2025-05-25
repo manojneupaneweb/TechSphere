@@ -41,6 +41,50 @@ const generateAccessRefreshToken = async (userId) => {
 };
 
 
+const sendOtpForgetPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
+  const existingUser = await User.findOne({ where: { email } });
+
+  if (!existingUser) {
+    throw new ApiError(404, "User not found with this email");
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  otpStore.set(email, {
+    otp,
+    expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes expiry
+  });
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333;">
+      <h2>🔐 Password Reset OTP - TechSphere</h2>
+      <p>Hello ${existingUser.fullName || "User"},</p>
+      <p>We received a request to reset your password. Use the OTP below to proceed:</p>
+      <p style="font-size: 24px; font-weight: bold; color: #2c3e50;">${otp}</p>
+      <p>This code will expire in 5 minutes. If you did not request this, please ignore this email.</p>
+      <br/>
+      <p>– TechSphere Support Team</p>
+    </div>
+  `;
+
+  await sendMail({
+    to: email,
+    subject: "🔐 TechSphere Password Reset OTP",
+    html,
+  });
+
+  return res.status(200).json(
+    new ApiResponse(200, { message: "OTP sent successfully", email })
+  );
+});
+
+
 const sendOtp = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
@@ -57,7 +101,7 @@ const sendOtp = asyncHandler(async (req, res) => {
 
   otpStore.set(email, {
     otp,
-    expiresAt: Date.now() + 5 * 60 * 1000, // 5 minutes
+    expiresAt: Date.now() + 5 * 60 * 1000,
   });
 
   const html = `
@@ -304,14 +348,53 @@ const changeRole = asyncHandler(async (req, res) => {
     }
 
     user.role = role;
-    await user.save(); 
+    await user.save();
     res.status(200).json(new ApiResponse(200, "Role updated successfully"));
   } catch (error) {
     res.status(500).json({ message: error.message || "Something went wrong" });
   }
 });
 
+const ResetPassword = asyncHandler(async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email  || !newPassword) {
+    throw new ApiError(400, "Email, and new password are required");
+  }
+
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+  await user.save();
+
+  otpStore.delete(email);
+
+  res.status(200).json(
+    new ApiResponse(200, "Password has been reset successfully")
+  );
+});
 
 
 
-export { sendOtp, verifyOtp, registerUser, loginUser, logOutUser, deleteUser, getUserProfile, changePassword, updateUserProfile, getAllUserProfile, changeRole };
+export {
+  sendOtp,
+  verifyOtp,
+  sendOtpForgetPassword,
+  registerUser,
+  loginUser,
+  logOutUser,
+  deleteUser,
+  getUserProfile,
+  changePassword,
+  updateUserProfile,
+  getAllUserProfile,
+  changeRole,
+  ResetPassword
+};
+
+
+
