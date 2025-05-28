@@ -38,7 +38,7 @@ const PaymentSuccess = () => {
                     cartId: item.cartItemId,
                     paymentStatus: parsed.status,
                     orderStatus: "pending",
-                    addres
+                    address:item.address,
                 }));
 
                 await axios.post(

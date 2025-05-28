@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FiShoppingCart,
@@ -12,6 +12,9 @@ import {
   FiZoomOut
 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { CartList } from '../utils/Cart.utils';
+import { CartContext } from '../context/CartContext';
+import { ToastContainer } from 'react-toastify';
 
 const ImageZoom = ({ src, alt }) => {
   const [isZoomed, setIsZoomed] = useState(false);
@@ -70,6 +73,11 @@ function ProductCard({ products, find }) {
   const [sortOption, setSortOption] = useState('featured');
   const [quickView, setQuickView] = useState(null);
   const productsPerPage = 9;
+ const { setCartCount } = useContext(CartContext);
+
+  const handleCartList = (product) => {
+    CartList(product, setCartCount);
+  };
 
 
   const filteredProducts = products
@@ -123,6 +131,7 @@ function ProductCard({ products, find }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 px-4 sm:px-8 lg:px-16 xl:px-24 py-8">
       {/* Breadcrumb */}
+      <ToastContainer />
       <nav className="flex items-center text-sm mb-8">
         <Link to="/" className="text-blue-600 hover:text-blue-800 transition-colors">Home</Link>
         {find && (
@@ -369,7 +378,9 @@ function ProductCard({ products, find }) {
                       </div>
 
                       {/* Add to Cart */}
-                      <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+                      <button 
+                       onClick={() => handleCartList(product)}
+                      className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
                         <FiShoppingCart />
                         <span>Add to Cart</span>
                       </button>
@@ -505,7 +516,10 @@ function ProductCard({ products, find }) {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <button className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+                    <button
+                      onClick={() => handleCartList(quickView)}
+                      className="flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                    >
                       <FiShoppingCart />
                       <span>Add to Cart</span>
                     </button>

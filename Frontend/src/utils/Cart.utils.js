@@ -22,6 +22,7 @@ const CartList = async (product, setCartCount) => {
     if (!accessToken) {
         return toast.error("Please login to add to cart!");
     }
+console.log("Adding to cart:", product);
 
     try {
         await axios.post(
@@ -40,7 +41,6 @@ const CartList = async (product, setCartCount) => {
         toast.success(`${product.name} added to Cart!`);
     } catch (error) {
         toast.error(error.response?.data?.message || "Failed to add to cart!");
-        console.error("Error adding to cart:", error);
     }
 };
 
