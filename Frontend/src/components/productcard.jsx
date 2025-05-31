@@ -41,7 +41,7 @@ const ImageZoom = ({ src, alt }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={() => !isZoomed && setPosition({ x: 0, y: 0 })}
       ref={imgRef}
-    >
+    >  
       <img
         src={src}
         alt={alt}
